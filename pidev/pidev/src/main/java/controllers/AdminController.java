@@ -21,26 +21,16 @@ public class AdminController implements Initializable {
     @FXML private Button btnJournal;
     @FXML private Button btnConsultation;
     @FXML private Button btnFormations;
-    @FXML private Button btnQuiz;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         showFormationView();
     }
 
-    // ═══════════════════════════════════
-    //  NAVIGATION
-    // ═══════════════════════════════════
     @FXML
     public void showFormationView() {
         loadPage("/FormationView.fxml");
         setActiveButton(btnFormations);
-    }
-
-    @FXML
-    public void showQuiz() {
-        showComingSoon("Quiz Management");
-        setActiveButton(btnQuiz);
     }
 
     @FXML
@@ -64,15 +54,12 @@ public class AdminController implements Initializable {
     @FXML
     private void handleLogout() {
         Optional<ButtonType> result = showConfirm(
-                "Are you sure you want to logout?");
+                "Êtes-vous sûr de vouloir vous déconnecter?");
         if (result.isPresent() && result.get() == ButtonType.OK) {
             System.exit(0);
         }
     }
 
-    // ═══════════════════════════════════
-    //  LOAD PAGE INTO CENTER
-    // ═══════════════════════════════════
     public void loadPage(String fxmlPath) {
         try {
             Parent page = FXMLLoader.load(getClass().getResource(fxmlPath));
@@ -84,17 +71,11 @@ public class AdminController implements Initializable {
         }
     }
 
-    // ═══════════════════════════════════
-    //  HIGHLIGHT ACTIVE BUTTON
-    // ═══════════════════════════════════
     private void setActiveButton(Button activeBtn) {
-        // Remove active from all
-        Button[] allButtons = {btnUsers, btnJournal, btnConsultation,
-                btnFormations, btnQuiz};
+        Button[] allButtons = {btnUsers, btnJournal, btnConsultation, btnFormations};
         for (Button btn : allButtons) {
             if (btn != null) btn.getStyleClass().remove("sidebar-btn-active");
         }
-        // Add active
         if (activeBtn != null) {
             activeBtn.getStyleClass().add("sidebar-btn-active");
         }
@@ -102,15 +83,15 @@ public class AdminController implements Initializable {
 
     private void showComingSoon(String feature) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Coming Soon");
+        alert.setTitle("Bientôt");
         alert.setHeaderText(null);
-        alert.setContentText(feature + " — Your teammate will implement this!");
+        alert.setContentText(feature + " — Votre coéquipier va l'implémenter!");
         alert.showAndWait();
     }
 
     private void showAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
+        alert.setTitle("Erreur");
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();
@@ -118,7 +99,7 @@ public class AdminController implements Initializable {
 
     private Optional<ButtonType> showConfirm(String msg) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirm");
+        alert.setTitle("Confirmation");
         alert.setHeaderText(null);
         alert.setContentText(msg);
         return alert.showAndWait();
