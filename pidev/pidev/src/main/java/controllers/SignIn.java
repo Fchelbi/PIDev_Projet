@@ -1,5 +1,6 @@
 package controllers;
 
+import entities.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,11 +10,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import entities.User;
 import services.serviceUser;
 
 import java.io.IOException;
-
 
 public class SignIn {
 
@@ -25,71 +24,73 @@ public class SignIn {
     private final serviceUser us = new serviceUser();
 
     @FXML
+    void initialize() {
+        System.out.println("✅ SignIn initialized");
+    }
+
+    /**
+     * Handle Login
+     */
+    @FXML
     void handleLogin(ActionEvent event) {
         String email = tfEmail.getText().trim();
         String mdp = pfMdp.getText();
 
-        // Validation simple
         if (email.isEmpty() || mdp.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Veuillez saisir email et mot de passe.");
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Veuillez remplir tous les champs!");
             return;
         }
 
-        // Appel de la méthode login
-        User connectedUser = us.login(email, mdp);
+        try {
+            User user = us.login(email, mdp);
 
-        if (connectedUser != null) {
-            // Login Réussi ✅
-            System.out.println("✅ Connexion réussie pour: " + connectedUser.getPrenom() + " (" + connectedUser.getRole() + ")");
+            if (user != null) {
+                System.out.println("✅ Connexion réussie pour: " + user.getPrenom() + " (" + user.getRole() + ")");
+                navigateByRole(user);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur",
+                        "Email ou mot de passe incorrect!");
+            }
 
-            // 🎯 Navigation basée sur le rôle
-            navigateByRole(connectedUser, event);
-
-        } else {
-            // Login Échoué ❌
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Email ou mot de passe incorrect.");
+        } catch (Exception e) {
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Erreur de connexion à la base de données.");
+            System.err.println("❌ Error: " + e.getMessage());
         }
     }
 
     /**
-     * 🎯 Méthode pour naviguer vers la bonne page selon le rôle
+     * Navigate to appropriate dashboard based on user role
      */
-    private void navigateByRole(User user, ActionEvent event) {
+    private void navigateByRole(User user) {
         try {
-            String fxmlFile = "";
-            String pageTitle = "";
+            String fxmlFile;
 
-            // Déterminer la page selon le rôle
             switch (user.getRole().toLowerCase()) {
                 case "admin":
                     fxmlFile = "/AdminHome.fxml";
-                    pageTitle = "Espace Administrateur";
                     break;
-
                 case "coach":
                     fxmlFile = "/CoachHome.fxml";
-                    pageTitle = "Espace Coach";
                     break;
-
                 case "patient":
                     fxmlFile = "/PatientHome.fxml";
-                    pageTitle = "Espace Patient";
                     break;
-
                 default:
-                    showAlert(Alert.AlertType.ERROR, "Erreur",
-                            "Rôle inconnu: " + user.getRole());
+                    System.out.println("❌ Rôle inconnu: " + user.getRole());
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Rôle utilisateur non reconnu!");
                     return;
             }
 
-            // Charger la page correspondante
+            System.out.println("🔄 Chargement: " + fxmlFile);
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
             Parent root = loader.load();
 
-            // 🔥 IMPORTANT: Passer les données de l'utilisateur au controller de destination
+            // Pass user to controller
             Object controller = loader.getController();
 
-            // Appeler setUser() sur le controller (si existe)
             if (controller instanceof AdminHome) {
                 ((AdminHome) controller).setUser(user);
             } else if (controller instanceof CoachHome) {
@@ -98,35 +99,46 @@ public class SignIn {
                 ((PatientHome) controller).setUser(user);
             }
 
-            // Changer la scène
             Stage stage = (Stage) tfEmail.getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle(pageTitle);
+            stage.setTitle("Espace " + user.getRole());
 
-            // Message de bienvenue dans la console
-            System.out.println("🏠 Navigation vers: " + pageTitle);
-
-            // Optionnel: Alert de bienvenue
-            showAlert(Alert.AlertType.INFORMATION, "Bienvenue",
-                    "Bonjour " + user.getPrenom() + " " + user.getNom() + " !");
+            System.out.println("✅ Navigation vers: Espace " + user.getRole());
 
         } catch (IOException e) {
-            System.err.println("❌ Erreur lors du chargement de la page: " + e.getMessage());
+            System.err.println("❌ Erreur de navigation: " + e.getMessage());
             showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Impossible de charger la page d'accueil.\nVérifiez que les fichiers FXML existent.");
-            e.printStackTrace();
+                    "Impossible de charger l'interface!");
         }
     }
 
+    /**
+     * Switch to Sign Up page
+     */
     @FXML
-    void switchToSignUp(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/SignUp.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) tfEmail.getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.setTitle("Inscription");
+    void switchToSignUp(ActionEvent event) {
+        try {
+            System.out.println("🔄 Navigation → Sign Up");
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/SignUp.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) tfEmail.getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Inscription");
+
+            System.out.println("✅ Page Sign Up chargée");
+
+        } catch (IOException e) {
+            System.err.println("❌ Erreur chargement Sign Up: " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible de charger la page d'inscription!");
+        }
     }
 
+    /**
+     * Show alert dialog
+     */
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
         alert.setTitle(title);

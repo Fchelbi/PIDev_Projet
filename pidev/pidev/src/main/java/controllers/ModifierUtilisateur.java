@@ -11,7 +11,7 @@ import services.serviceUser;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-public class Modifierutilisateur {
+public class ModifierUtilisateur {
 
     @FXML
     private TextField tfId;
@@ -40,9 +40,80 @@ public class Modifierutilisateur {
     private static final Pattern NAME_PATTERN =
             Pattern.compile("^[a-zA-ZÀ-ÿ\\s'-]+$");
 
+    // Styles pour le feedback visuel
+    private static final String STYLE_ERROR =
+            "-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;";
+    private static final String STYLE_NORMAL =
+            "-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;";
+    private static final String STYLE_SUCCESS =
+            "-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #27ae60; -fx-border-width: 2; -fx-border-radius: 5; -fx-background-radius: 5;";
+
     @FXML
     void initialize() {
         cbRole.setItems(FXCollections.observableArrayList("PATIENT", "COACH", "ADMIN"));
+
+        // Setup real-time validation
+        setupRealTimeValidation();
+    }
+
+    /**
+     * Setup real-time validation for all fields
+     */
+    private void setupRealTimeValidation() {
+        // Nom validation
+        tfNom.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.isEmpty()) {
+                tfNom.setStyle(STYLE_NORMAL);
+            } else if (NAME_PATTERN.matcher(newVal).matches() && newVal.length() >= 2 && newVal.length() <= 50) {
+                tfNom.setStyle(STYLE_SUCCESS);
+            } else {
+                tfNom.setStyle(STYLE_ERROR);
+            }
+        });
+
+        // Prénom validation
+        tfPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.isEmpty()) {
+                tfPrenom.setStyle(STYLE_NORMAL);
+            } else if (NAME_PATTERN.matcher(newVal).matches() && newVal.length() >= 2 && newVal.length() <= 50) {
+                tfPrenom.setStyle(STYLE_SUCCESS);
+            } else {
+                tfPrenom.setStyle(STYLE_ERROR);
+            }
+        });
+
+        // Email validation
+        tfEmail.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.isEmpty()) {
+                tfEmail.setStyle(STYLE_NORMAL);
+            } else if (EMAIL_PATTERN.matcher(newVal).matches()) {
+                tfEmail.setStyle(STYLE_SUCCESS);
+            } else {
+                tfEmail.setStyle(STYLE_ERROR);
+            }
+        });
+
+        // Password validation (optional for update)
+        pfMdp.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.isEmpty()) {
+                pfMdp.setStyle(STYLE_NORMAL); // OK si vide (pas de changement)
+            } else if (newVal.length() >= 6) {
+                pfMdp.setStyle(STYLE_SUCCESS);
+            } else {
+                pfMdp.setStyle(STYLE_ERROR);
+            }
+        });
+
+        // Phone validation
+        tfTel.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.isEmpty()) {
+                tfTel.setStyle(STYLE_NORMAL);
+            } else if (PHONE_PATTERN.matcher(newVal).matches()) {
+                tfTel.setStyle(STYLE_SUCCESS);
+            } else {
+                tfTel.setStyle(STYLE_ERROR);
+            }
+        });
     }
 
     /**

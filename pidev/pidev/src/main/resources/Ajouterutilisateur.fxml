@@ -8,7 +8,7 @@
 <VBox spacing="20.0" style="-fx-background-color: #ecf0f1; -fx-padding: 30;" prefWidth="500.0"
       xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="controllers.Ajouterutilisateur">
+      fx:controller="controllers.AjouterUtilisateur">
 
     <!-- Header -->
     <HBox style="-fx-background-color: #3498db; -fx-padding: 15; -fx-background-radius: 8 8 0 0;" alignment="CENTER">

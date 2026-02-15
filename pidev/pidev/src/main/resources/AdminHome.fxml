@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
@@ -120,14 +121,29 @@
                 </VBox>
 
                 <!-- Activités récentes -->
-                <VBox spacing="12.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25;">
-                    <Label text="📋 Activités récentes">
-                        <font><Font name="System Bold" size="20.0" /></font>
-                    </Label>
-                    <Label text="• Nouvel utilisateur inscrit: Mohamed Ali (Patient)" style="-fx-text-fill: #34495e; -fx-font-size: 13px;" />
-                    <Label text="• Modification profil: Sarah Ben Salah (Coach)" style="-fx-text-fill: #34495e; -fx-font-size: 13px;" />
-                    <Label text="• Suppression compte: Test User" style="-fx-text-fill: #34495e; -fx-font-size: 13px;" />
-                </VBox>
+                <HBox spacing="25.0" alignment="CENTER">
+
+                    <!-- Left: Activities -->
+                    <VBox spacing="12.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25;" HBox.hgrow="ALWAYS">
+                        <Label text="📋 Activités récentes">
+                            <font><Font name="System Bold" size="20.0" /></font>
+                        </Label>
+                        <Separator />
+                        <Label text="• Nouvel utilisateur inscrit: Mohamed Ali (Patient)" style="-fx-text-fill: #34495e; -fx-font-size: 13px;" />
+                        <Label text="• Modification profil: Sarah Ben Salah (Coach)" style="-fx-text-fill: #34495e; -fx-font-size: 13px;" />
+                        <Label text="• Suppression compte: Test User" style="-fx-text-fill: #34495e; -fx-font-size: 13px;" />
+                    </VBox>
+
+                    <!-- Right: Pie Chart -->
+                    <VBox spacing="12.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25;" alignment="CENTER" prefWidth="400.0">
+                        <Label text="📊 Répartition par Rôle">
+                            <font><Font name="System Bold" size="20.0" /></font>
+                        </Label>
+                        <Separator prefWidth="350.0" />
+                        <PieChart fx:id="pieChartRoles" prefHeight="300.0" prefWidth="350.0" legendVisible="true" />
+                    </VBox>
+
+                </HBox>
 
             </VBox>
         </StackPane>

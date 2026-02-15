@@ -1,10 +1,13 @@
 package controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -32,6 +35,9 @@ public class AdminHome {
     private Label lblNbAdmins;
     @FXML
     private Label lblNbTotal;
+
+    @FXML
+    private PieChart pieChartRoles;
 
     @FXML
     private StackPane contentArea;
@@ -94,6 +100,9 @@ public class AdminHome {
             lblNbAdmins.setText(String.valueOf(nbAdmins));
             lblNbTotal.setText(String.valueOf(users.size()));
 
+            // Update Pie Chart
+            updatePieChart(nbPatients, nbCoaches, nbAdmins);
+
             System.out.println("📊 Stats: " + users.size() + " users");
 
         } catch (SQLException e) {
@@ -101,6 +110,24 @@ public class AdminHome {
                     "Impossible de charger les statistiques.");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Update PieChart with role statistics
+     */
+    private void updatePieChart(int patients, int coaches, int admins) {
+        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList(
+                new PieChart.Data("Patients (" + patients + ")", patients),
+                new PieChart.Data("Coaches (" + coaches + ")", coaches),
+                new PieChart.Data("Admins (" + admins + ")", admins)
+        );
+
+        pieChartRoles.setData(pieData);
+
+        // Apply colors
+        pieChartRoles.getData().get(0).getNode().setStyle("-fx-pie-color: #3498db;");
+        pieChartRoles.getData().get(1).getNode().setStyle("-fx-pie-color: #2ecc71;");
+        pieChartRoles.getData().get(2).getNode().setStyle("-fx-pie-color: #e67e22;");
     }
 
     /**
@@ -113,9 +140,9 @@ public class AdminHome {
         // Highlight active button
         highlightButton(btnDashboard);
 
-        // Show dashboard pane
-        dashboardPane.setVisible(true);
-        dashboardPane.setManaged(true);
+        // Clear content area and restore dashboard
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(dashboardPane);
 
         // Refresh stats
         refreshStats(null);
@@ -137,7 +164,7 @@ public class AdminHome {
             VBox gestionPage = loader.load();
 
             // Get controller and pass current user
-            Gestionutilisateurs controller = loader.getController();
+            GestionUtilisateurs controller = loader.getController();
             controller.setCurrentUser(currentUser);
 
             // Replace content

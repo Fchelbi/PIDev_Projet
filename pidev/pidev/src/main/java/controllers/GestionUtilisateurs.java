@@ -8,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -21,12 +20,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class Gestionutilisateurs {
+public class GestionUtilisateurs {
 
     @FXML
     private TableView<User> tableUsers;
-    @FXML
-    private TableColumn<User, Integer> colId;
     @FXML
     private TableColumn<User, String> colNom;
     @FXML
@@ -238,7 +235,7 @@ public class Gestionutilisateurs {
             dialog.setResizable(false);
 
             // Get controller and set callback
-            Ajouterutilisateur controller = loader.getController();
+            AjouterUtilisateur controller = loader.getController();
             controller.setOnUserAdded(() -> refreshTable(null));
 
             dialog.showAndWait();
@@ -267,7 +264,7 @@ public class Gestionutilisateurs {
             dialog.setResizable(false);
 
             // Pass user to modify
-            Modifierutilisateur controller = loader.getController();
+            ModifierUtilisateur controller = loader.getController();
             controller.setUser(user);
             controller.setOnUserUpdated(() -> refreshTable(null));
 
