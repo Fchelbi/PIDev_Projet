@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="20.0" style="-fx-background-color: #ecf0f1; -fx-padding: 30;" prefWidth="500.0"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.Modifierutilisateur">
+
+    <!-- Header -->
+    <HBox style="-fx-background-color: #3498db; -fx-padding: 15; -fx-background-radius: 8 8 0 0;" alignment="CENTER">
+        <Label text="✏️ Modifier l'Utilisateur" textFill="WHITE">
+            <font><Font name="System Bold" size="20.0" /></font>
+        </Label>
+    </HBox>
+
+    <!-- Form -->
+    <VBox spacing="15.0" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 0 0 8 8;">
+
+        <!-- ID (read-only) -->
+        <VBox spacing="5.0">
+            <Label text="ID" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfId" editable="false"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-background-color: #ecf0f1; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Nom -->
+        <VBox spacing="5.0">
+            <Label text="Nom *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfNom"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Prénom -->
+        <VBox spacing="5.0">
+            <Label text="Prénom *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfPrenom"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Email -->
+        <VBox spacing="5.0">
+            <Label text="Email *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfEmail"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Mot de passe -->
+        <VBox spacing="5.0">
+            <Label text="Nouveau mot de passe" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <PasswordField fx:id="pfMdp" promptText="Laisser vide pour ne pas changer"
+                           style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </PasswordField>
+        </VBox>
+
+        <!-- Téléphone -->
+        <VBox spacing="5.0">
+            <Label text="Téléphone" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfTel"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Rôle -->
+        <VBox spacing="5.0">
+            <Label text="Rôle *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <ComboBox fx:id="cbRole" maxWidth="Infinity"
+                      style="-fx-font-size: 13px; -fx-padding: 5;">
+            </ComboBox>
+        </VBox>
+
+        <!-- Buttons -->
+        <HBox spacing="15.0" alignment="CENTER" style="-fx-padding: 15 0 0 0;">
+            <Button text="💾 Enregistrer" onAction="#handleModifier" prefWidth="150.0"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 12; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 6;">
+            </Button>
+            <Button text="❌ Annuler" onAction="#handleAnnuler" prefWidth="150.0"
+                    style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-padding: 12; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 6;">
+            </Button>
+        </HBox>
+
+    </VBox>
+
+</VBox>

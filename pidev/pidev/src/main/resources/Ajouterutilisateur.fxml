@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="20.0" style="-fx-background-color: #ecf0f1; -fx-padding: 30;" prefWidth="500.0"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.Ajouterutilisateur">
+
+    <!-- Header -->
+    <HBox style="-fx-background-color: #3498db; -fx-padding: 15; -fx-background-radius: 8 8 0 0;" alignment="CENTER">
+        <Label text="➕ Ajouter un Utilisateur" textFill="WHITE">
+            <font><Font name="System Bold" size="20.0" /></font>
+        </Label>
+    </HBox>
+
+    <!-- Form -->
+    <VBox spacing="15.0" style="-fx-background-color: white; -fx-padding: 25; -fx-background-radius: 0 0 8 8;">
+
+        <!-- Nom -->
+        <VBox spacing="5.0">
+            <Label text="Nom *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfNom" promptText="Nom de famille"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Prénom -->
+        <VBox spacing="5.0">
+            <Label text="Prénom *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfPrenom" promptText="Prénom"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Email -->
+        <VBox spacing="5.0">
+            <Label text="Email *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfEmail" promptText="exemple@email.com"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Mot de passe -->
+        <VBox spacing="5.0">
+            <Label text="Mot de passe *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <PasswordField fx:id="pfMdp" promptText="Minimum 6 caractères"
+                           style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </PasswordField>
+        </VBox>
+
+        <!-- Téléphone -->
+        <VBox spacing="5.0">
+            <Label text="Téléphone" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <TextField fx:id="tfTel" promptText="12345678 (optionnel)"
+                       style="-fx-padding: 10; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+            </TextField>
+        </VBox>
+
+        <!-- Rôle -->
+        <VBox spacing="5.0">
+            <Label text="Rôle *" style="-fx-font-weight: bold; -fx-font-size: 13px;" />
+            <ComboBox fx:id="cbRole" promptText="Sélectionner un rôle" maxWidth="Infinity"
+                      style="-fx-font-size: 13px; -fx-padding: 5;">
+            </ComboBox>
+        </VBox>
+
+        <!-- Note -->
+        <Label text="* Champs obligatoires" style="-fx-text-fill: #7f8c8d; -fx-font-size: 11px; -fx-font-style: italic;" />
+
+        <!-- Buttons -->
+        <HBox spacing="15.0" alignment="CENTER" style="-fx-padding: 15 0 0 0;">
+            <Button text="✅ Ajouter" onAction="#handleAjouter" prefWidth="150.0"
+                    style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 12; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 6;">
+            </Button>
+            <Button text="❌ Annuler" onAction="#handleAnnuler" prefWidth="150.0"
+                    style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-padding: 12; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 6;">
+            </Button>
+        </HBox>
+
+    </VBox>
+
+</VBox>

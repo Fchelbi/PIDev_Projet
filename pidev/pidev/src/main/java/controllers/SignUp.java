@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -15,6 +16,7 @@ import services.serviceUser;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class SignUp {
@@ -42,87 +44,15 @@ public class SignUp {
     private static final Pattern NAME_PATTERN =
             Pattern.compile("^[a-zA-ZÀ-ÿ\\s'-]+$");
 
-    // Styles pour le feedback visuel
-    private static final String STYLE_ERROR =
-            "-fx-background-radius: 5; -fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 5; -fx-padding: 8;";
-    private static final String STYLE_NORMAL =
-            "-fx-background-radius: 5; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 8;";
-    private static final String STYLE_SUCCESS =
-            "-fx-background-radius: 5; -fx-border-color: #27ae60; -fx-border-width: 2; -fx-border-radius: 5; -fx-padding: 8;";
-
     @FXML
     void initialize() {
         cbRole.getItems().addAll("Patient", "Admin", "Coach");
         cbRole.setValue("Patient");
-
-        // 🎨 Validation en temps réel (optionnel)
-        setupRealTimeValidation();
-    }
-
-    // Méthode pour setup la validation en temps réel
-    private void setupRealTimeValidation() {
-        // Validation NOM en temps réel
-        tfNom.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.isEmpty()) {
-                tfNom.setStyle(STYLE_NORMAL);
-            } else if (NAME_PATTERN.matcher(newVal).matches() && newVal.length() >= 2) {
-                tfNom.setStyle(STYLE_SUCCESS);
-            } else {
-                tfNom.setStyle(STYLE_ERROR);
-            }
-        });
-
-        // Validation PRÉNOM en temps réel
-        tfPrenom.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.isEmpty()) {
-                tfPrenom.setStyle(STYLE_NORMAL);
-            } else if (NAME_PATTERN.matcher(newVal).matches() && newVal.length() >= 2) {
-                tfPrenom.setStyle(STYLE_SUCCESS);
-            } else {
-                tfPrenom.setStyle(STYLE_ERROR);
-            }
-        });
-
-        // Validation EMAIL en temps réel
-        tfEmail.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.isEmpty()) {
-                tfEmail.setStyle(STYLE_NORMAL);
-            } else if (EMAIL_PATTERN.matcher(newVal).matches()) {
-                tfEmail.setStyle(STYLE_SUCCESS);
-            } else {
-                tfEmail.setStyle(STYLE_ERROR);
-            }
-        });
-
-        // Validation TÉLÉPHONE en temps réel
-        tfTel.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.isEmpty()) {
-                tfTel.setStyle(STYLE_NORMAL);
-            } else if (PHONE_PATTERN.matcher(newVal).matches()) {
-                tfTel.setStyle(STYLE_SUCCESS);
-            } else {
-                tfTel.setStyle(STYLE_ERROR);
-            }
-        });
-
-        // Validation MOT DE PASSE en temps réel
-        pfMdp.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal.isEmpty()) {
-                pfMdp.setStyle(STYLE_NORMAL);
-            } else if (newVal.length() >= 6) {
-                pfMdp.setStyle(STYLE_SUCCESS);
-            } else {
-                pfMdp.setStyle(STYLE_ERROR);
-            }
-        });
     }
 
     @FXML
     void handleSignUp(ActionEvent event) {
         try {
-            // Reset des styles
-            resetFieldStyles();
-
             // Récupération des données
             String nom = tfNom.getText().trim();
             String prenom = tfPrenom.getText().trim();
@@ -133,77 +63,39 @@ public class SignUp {
 
             // ========== VALIDATIONS ==========
 
-            // 1. Champs vides
             if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || mdp.isEmpty()) {
-                highlightEmptyFields(nom, prenom, email, mdp);
                 showAlert(Alert.AlertType.ERROR, "Champs vides",
                         "Veuillez remplir tous les champs obligatoires !");
                 return;
             }
 
-            // 2. Validation NOM
-            if (!NAME_PATTERN.matcher(nom).matches()) {
-                tfNom.setStyle(STYLE_ERROR);
+            if (!NAME_PATTERN.matcher(nom).matches() || nom.length() < 2 || nom.length() > 50) {
                 showAlert(Alert.AlertType.ERROR, "Nom invalide",
-                        "Le nom ne doit contenir que des lettres !\nExemple: Benali, Ben-Salah");
-                tfNom.requestFocus();
-                return;
-            }
-            if (nom.length() < 2 || nom.length() > 50) {
-                tfNom.setStyle(STYLE_ERROR);
-                showAlert(Alert.AlertType.ERROR, "Nom invalide",
-                        "Le nom doit contenir entre 2 et 50 caractères !");
-                tfNom.requestFocus();
+                        "Le nom doit contenir entre 2 et 50 lettres uniquement !");
                 return;
             }
 
-            // 3. Validation PRÉNOM
-            if (!NAME_PATTERN.matcher(prenom).matches()) {
-                tfPrenom.setStyle(STYLE_ERROR);
+            if (!NAME_PATTERN.matcher(prenom).matches() || prenom.length() < 2 || prenom.length() > 50) {
                 showAlert(Alert.AlertType.ERROR, "Prénom invalide",
-                        "Le prénom ne doit contenir que des lettres !\nExemple: Mohamed, Marie-Claire");
-                tfPrenom.requestFocus();
-                return;
-            }
-            if (prenom.length() < 2 || prenom.length() > 50) {
-                tfPrenom.setStyle(STYLE_ERROR);
-                showAlert(Alert.AlertType.ERROR, "Prénom invalide",
-                        "Le prénom doit contenir entre 2 et 50 caractères !");
-                tfPrenom.requestFocus();
+                        "Le prénom doit contenir entre 2 et 50 lettres uniquement !");
                 return;
             }
 
-            // 4. Validation EMAIL
             if (!EMAIL_PATTERN.matcher(email).matches()) {
-                tfEmail.setStyle(STYLE_ERROR);
                 showAlert(Alert.AlertType.ERROR, "Email invalide",
                         "Veuillez saisir un email valide !\nExemple: exemple@gmail.com");
-                tfEmail.requestFocus();
                 return;
             }
 
-            // 5. Validation MOT DE PASSE
             if (mdp.length() < 6) {
-                pfMdp.setStyle(STYLE_ERROR);
                 showAlert(Alert.AlertType.ERROR, "Mot de passe faible",
                         "Le mot de passe doit contenir au minimum 6 caractères !");
-                pfMdp.requestFocus();
-                return;
-            }
-            if (mdp.length() > 100) {
-                pfMdp.setStyle(STYLE_ERROR);
-                showAlert(Alert.AlertType.ERROR, "Mot de passe trop long",
-                        "Le mot de passe ne doit pas dépasser 100 caractères !");
-                pfMdp.requestFocus();
                 return;
             }
 
-            // 6. Validation TÉLÉPHONE (optionnel)
             if (!tel.isEmpty() && !PHONE_PATTERN.matcher(tel).matches()) {
-                tfTel.setStyle(STYLE_ERROR);
                 showAlert(Alert.AlertType.ERROR, "Numéro invalide",
-                        "Le numéro doit contenir exactement 8 chiffres !\nExemple: 12345678");
-                tfTel.requestFocus();
+                        "Le numéro doit contenir exactement 8 chiffres !");
                 return;
             }
 
@@ -215,36 +107,78 @@ public class SignUp {
             // Appel service
             us.signUp(u);
 
-            showAlert(Alert.AlertType.INFORMATION, "Succès",
-                    "Compte créé avec succès !\nBienvenue " + prenom + " " + nom + " !");
+            System.out.println("✅ Compte créé: " + prenom + " " + nom + " (" + role + ")");
 
-            // Navigation
-            switchToLogin(event);
+            // 🎯 Demander à l'utilisateur: Se connecter maintenant ou plus tard?
+            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmAlert.setTitle("Inscription réussie");
+            confirmAlert.setHeaderText("Compte créé avec succès !");
+            confirmAlert.setContentText("Voulez-vous vous connecter maintenant ?");
+
+            ButtonType btnOui = new ButtonType("Oui, me connecter");
+            ButtonType btnNon = new ButtonType("Non, plus tard");
+            confirmAlert.getButtonTypes().setAll(btnOui, btnNon);
+
+            Optional<ButtonType> result = confirmAlert.showAndWait();
+
+            if (result.isPresent() && result.get() == btnOui) {
+                // 🔥 Option 1: Se connecter directement (navigation par rôle)
+                navigateByRole(u, event);
+            } else {
+                // Option 2: Retour au Login
+                switchToLogin(event);
+            }
 
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur Inscription", e.getMessage());
         } catch (IOException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur Navigation",
-                    "Impossible de charger la page de connexion !");
+                    "Impossible de charger la page !");
             e.printStackTrace();
         }
     }
 
-    // Highlight les champs vides en rouge
-    private void highlightEmptyFields(String nom, String prenom, String email, String mdp) {
-        if (nom.isEmpty()) tfNom.setStyle(STYLE_ERROR);
-        if (prenom.isEmpty()) tfPrenom.setStyle(STYLE_ERROR);
-        if (email.isEmpty()) tfEmail.setStyle(STYLE_ERROR);
-        if (mdp.isEmpty()) pfMdp.setStyle(STYLE_ERROR);
-    }
+    /**
+     * 🎯 Navigation basée sur le rôle (après inscription)
+     */
+    private void navigateByRole(User user, ActionEvent event) throws IOException {
+        String fxmlFile = "";
+        String pageTitle = "";
 
-    // Reset tous les styles
-    private void resetFieldStyles() {
-        tfNom.setStyle(STYLE_NORMAL);
-        tfPrenom.setStyle(STYLE_NORMAL);
-        tfEmail.setStyle(STYLE_NORMAL);
-        tfTel.setStyle(STYLE_NORMAL);
-        pfMdp.setStyle(STYLE_NORMAL);
+        switch (user.getRole().toLowerCase()) {
+            case "admin":
+                fxmlFile = "/AdminHome.fxml";
+                pageTitle = "Espace Administrateur";
+                break;
+            case "coach":
+                fxmlFile = "/CoachHome.fxml";
+                pageTitle = "Espace Coach";
+                break;
+            case "patient":
+                fxmlFile = "/PatientHome.fxml";
+                pageTitle = "Espace Patient";
+                break;
+            default:
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Rôle inconnu!");
+                return;
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+        Parent root = loader.load();
+
+        // Passer l'utilisateur au controller
+        Object controller = loader.getController();
+        if (controller instanceof AdminHome) {
+            ((AdminHome) controller).setUser(user);
+        } else if (controller instanceof CoachHome) {
+            ((CoachHome) controller).setUser(user);
+        } else if (controller instanceof PatientHome) {
+            ((PatientHome) controller).setUser(user);
+        }
+
+        Stage stage = (Stage) tfEmail.getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.setTitle(pageTitle);
     }
 
     @FXML

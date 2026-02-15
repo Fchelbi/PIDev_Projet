@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="20.0" style="-fx-background-color: #ecf0f1; -fx-padding: 30;"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.Gestionutilisateurs">
+
+    <!-- Header avec titre et boutons -->
+    <HBox alignment="CENTER_LEFT" spacing="20.0">
+        <Label text="👥 Gestion des Utilisateurs">
+            <font><Font name="System Bold" size="28.0" /></font>
+        </Label>
+        <Region HBox.hgrow="ALWAYS" />
+
+        <!-- Boutons Actions -->
+        <Button text="🔄 Actualiser" onAction="#refreshTable"
+                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-padding: 10 18; -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 6;">
+        </Button>
+        <Button text="➕ Ajouter Utilisateur" onAction="#showAjouterDialog"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 10 18; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-background-radius: 6;">
+        </Button>
+    </HBox>
+
+    <!-- Barre de recherche -->
+    <HBox spacing="15.0" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8;">
+        <Label text="🔍 Rechercher:" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+        <TextField fx:id="tfSearch" promptText="Nom, prénom, email..." prefWidth="300.0"
+                   style="-fx-padding: 8; -fx-font-size: 13px; -fx-border-color: #bdc3c7; -fx-border-radius: 5; -fx-background-radius: 5;">
+        </TextField>
+        <ComboBox fx:id="cbFilterRole" promptText="Filtrer par rôle" prefWidth="180.0"
+                  style="-fx-font-size: 13px;">
+        </ComboBox>
+        <Button text="Rechercher" onAction="#handleSearch"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 5;">
+        </Button>
+        <Button text="Réinitialiser" onAction="#resetFilters"
+                style="-fx-background-color: #7f8c8d; -fx-text-fill: white; -fx-padding: 8 16; -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 5;">
+        </Button>
+    </HBox>
+
+    <!-- Tableau des utilisateurs -->
+    <TableView fx:id="tableUsers" style="-fx-background-color: white; -fx-background-radius: 10;" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn text="ID" prefWidth="60.0" style="-fx-alignment: CENTER;">
+                <cellValueFactory>
+                    <PropertyValueFactory property="id_user" />
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Nom" prefWidth="140.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="nom" />
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Prénom" prefWidth="140.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="prenom" />
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Email" prefWidth="220.0">
+                <cellValueFactory>
+                    <PropertyValueFactory property="email" />
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Téléphone" prefWidth="120.0" style="-fx-alignment: CENTER;">
+                <cellValueFactory>
+                    <PropertyValueFactory property="num_tel" />
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn text="Rôle" prefWidth="100.0" style="-fx-alignment: CENTER;">
+                <cellValueFactory>
+                    <PropertyValueFactory property="role" />
+                </cellValueFactory>
+            </TableColumn>
+
+            <TableColumn fx:id="colActions" text="Actions" prefWidth="200.0" style="-fx-alignment: CENTER;" sortable="false">
+            </TableColumn>
+        </columns>
+
+        <placeholder>
+            <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 40;">
+                <Label text="📋" style="-fx-font-size: 48px;" />
+                <Label text="Aucun utilisateur trouvé" style="-fx-font-size: 16px; -fx-text-fill: #7f8c8d;" />
+            </VBox>
+        </placeholder>
+    </TableView>
+
+    <!-- Footer avec statistiques -->
+    <HBox spacing="20.0" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 8;">
+        <Label fx:id="lblTotalUsers" text="Total: 0 utilisateurs" style="-fx-font-size: 14px; -fx-font-weight: bold;" />
+        <Separator orientation="VERTICAL" />
+        <Label fx:id="lblFilteredCount" text="Affichés: 0" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;" />
+    </HBox>
+
+</VBox>
