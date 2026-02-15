@@ -5,17 +5,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import services.FormationService;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -23,7 +21,7 @@ import java.util.ResourceBundle;
 
 public class FormationController implements Initializable {
 
-    // ─── Table (FormationView.fxml) ──────
+    // ─── Table ───────────────────────
     @FXML private TableView<Formation> tvFormations;
     @FXML private TableColumn<Formation, String> colTitle;
     @FXML private TableColumn<Formation, String> colDescription;
@@ -33,20 +31,26 @@ public class FormationController implements Initializable {
     @FXML private TextField tfSearch;
     @FXML private Label lblTotal;
 
-    // ─── Form (FormationAdd + FormationEdit) ──
+    // ─── Sections ────────────────────
+    @FXML private StackPane formationContent;
+    @FXML private VBox tableSection;
+    @FXML private VBox formSection;
+
+    // ─── Form ────────────────────────
     @FXML private TextField tfTitle;
     @FXML private TextArea taDescription;
     @FXML private TextField tfVideoUrl;
     @FXML private ComboBox<String> cbCategory;
     @FXML private Label lblError;
+    @FXML private Label lblFormTitle;
+    @FXML private Button btnSave;
 
-    // ─── Data ────────────────────────────
+    // ─── Data ────────────────────────
     private FormationService formationService;
     private ObservableList<Formation> formationList;
     private FilteredList<Formation> filteredList;
-
-    // Used for edit mode
-    private static Formation formationToEdit;
+    private Formation editingFormation = null;
+    private boolean isEditMode = false;
 
     private final String[] CATEGORIES = {
             "Communication", "Leadership", "Teamwork",
@@ -55,37 +59,32 @@ public class FormationController implements Initializable {
             "Time Management"
     };
 
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     //  INITIALIZE
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         formationService = new FormationService();
 
-        // If table exists → we are on FormationView
-        if (tvFormations != null) {
-            initTable();
-        }
-
-        // If form exists → we are on Add or Edit
+        // Setup categories
         if (cbCategory != null) {
-            initForm();
+            cbCategory.setItems(FXCollections.observableArrayList(CATEGORIES));
+        }
+
+        // Setup table
+        if (tvFormations != null) {
+            colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+            colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+            colVideoUrl.setCellValueFactory(new PropertyValueFactory<>("videoUrl"));
+            colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
+            setupActionsColumn();
+            loadFormations();
         }
     }
 
-    // ═════════════════════════════════════
-    //  INIT TABLE (FormationView.fxml)
-    // ═════════════════════════════════════
-    private void initTable() {
-        colTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
-        colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colVideoUrl.setCellValueFactory(new PropertyValueFactory<>("videoUrl"));
-        colCategory.setCellValueFactory(new PropertyValueFactory<>("category"));
-
-        setupActionsColumn();
-        loadFormations();
-    }
-
+    // ═════════════════════════════════
+    //  LOAD DATA
+    // ═════════════════════════════════
     private void loadFormations() {
         try {
             formationList = FXCollections.observableArrayList(
@@ -95,10 +94,14 @@ public class FormationController implements Initializable {
             tvFormations.setItems(filteredList);
             lblTotal.setText("Total: " + formationList.size() + " formations");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
+            showAlert(Alert.AlertType.ERROR, "Erreur",
+                    "Impossible de charger les formations:\n" + e.getMessage());
         }
     }
 
+    // ═════════════════════════════════
+    //  ACTION BUTTONS IN TABLE
+    // ═════════════════════════════════
     private void setupActionsColumn() {
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button btnEdit = new Button("✏️");
@@ -113,11 +116,14 @@ public class FormationController implements Initializable {
                         "-fx-background-color: #d63031; -fx-text-fill: white;" +
                                 "-fx-font-size: 14px; -fx-cursor: hand;" +
                                 "-fx-background-radius: 5; -fx-padding: 5 10;");
+
+                btnEdit.setTooltip(new Tooltip("Modifier"));
+                btnDelete.setTooltip(new Tooltip("Supprimer"));
                 buttons.setAlignment(Pos.CENTER);
 
                 btnEdit.setOnAction(e -> {
                     Formation f = getTableView().getItems().get(getIndex());
-                    goToEdit(f);
+                    showEditForm(f);
                 });
 
                 btnDelete.setOnAction(e -> {
@@ -134,91 +140,123 @@ public class FormationController implements Initializable {
         });
     }
 
-    // ═════════════════════════════════════
-    //  INIT FORM (Add + Edit)
-    // ═════════════════════════════════════
-    private void initForm() {
-        cbCategory.setItems(FXCollections.observableArrayList(CATEGORIES));
+    // ═════════════════════════════════
+    //  SHOW TABLE
+    // ═════════════════════════════════
+    @FXML
+    private void showTable() {
+        tableSection.setVisible(true);
+        tableSection.setManaged(true);
+        formSection.setVisible(false);
+        formSection.setManaged(false);
+
+        clearForm();
+        loadFormations();
+    }
+
+    // ═════════════════════════════════
+    //  SHOW ADD FORM
+    // ═════════════════════════════════
+    @FXML
+    private void showAddForm() {
+        isEditMode = false;
+        editingFormation = null;
+        lblFormTitle.setText("➕ Ajouter Formation");
+        btnSave.setText("✅ Enregistrer");
+        clearForm();
+
+        tableSection.setVisible(false);
+        tableSection.setManaged(false);
+        formSection.setVisible(true);
+        formSection.setManaged(true);
+    }
+
+    // ═════════════════════════════════
+    //  SHOW EDIT FORM
+    // ═════════════════════════════════
+    private void showEditForm(Formation f) {
+        isEditMode = true;
+        editingFormation = f;
+        lblFormTitle.setText("✏️ Modifier Formation");
+        btnSave.setText("💾 Mettre à jour");
+
+        // Fill form with data
+        tfTitle.setText(f.getTitle());
+        taDescription.setText(f.getDescription());
+        tfVideoUrl.setText(f.getVideoUrl());
+        cbCategory.setValue(f.getCategory());
         lblError.setText("");
 
-        // If editing → fill form with data
-        if (formationToEdit != null && tfTitle != null) {
-            tfTitle.setText(formationToEdit.getTitle());
-            taDescription.setText(formationToEdit.getDescription());
-            tfVideoUrl.setText(formationToEdit.getVideoUrl());
-            cbCategory.setValue(formationToEdit.getCategory());
-        }
+        tableSection.setVisible(false);
+        tableSection.setManaged(false);
+        formSection.setVisible(true);
+        formSection.setManaged(true);
     }
 
-    // ═════════════════════════════════════
-    //  ADD (from FormationAdd.fxml)
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
+    //  SAVE (Add or Update)
+    // ═════════════════════════════════
     @FXML
-    private void handleAdd() {
+    private void handleSave() {
         if (!validateForm()) return;
 
-        Formation f = new Formation();
-        f.setTitle(tfTitle.getText().trim());
-        f.setDescription(taDescription.getText().trim());
-        f.setVideoUrl(tfVideoUrl.getText().trim());
-        f.setCategory(cbCategory.getValue());
+        if (isEditMode) {
+            // UPDATE
+            editingFormation.setTitle(tfTitle.getText().trim());
+            editingFormation.setDescription(taDescription.getText().trim());
+            editingFormation.setVideoUrl(tfVideoUrl.getText().trim());
+            editingFormation.setCategory(cbCategory.getValue());
 
-        try {
-            formationService.insertOne(f);
-            showAlert(Alert.AlertType.INFORMATION, "Success",
-                    "Formation added successfully! ✅");
-            handleBackToList();
-        } catch (SQLException e) {
-            lblError.setText("Error: " + e.getMessage());
-        }
-    }
-
-    // ═════════════════════════════════════
-    //  UPDATE (from FormationEdit.fxml)
-    // ═════════════════════════════════════
-    @FXML
-    private void handleUpdate() {
-        if (!validateForm()) return;
-        if (formationToEdit == null) return;
-
-        formationToEdit.setTitle(tfTitle.getText().trim());
-        formationToEdit.setDescription(taDescription.getText().trim());
-        formationToEdit.setVideoUrl(tfVideoUrl.getText().trim());
-        formationToEdit.setCategory(cbCategory.getValue());
-
-        try {
-            formationService.updateOne(formationToEdit);
-            showAlert(Alert.AlertType.INFORMATION, "Success",
-                    "Formation updated successfully! ✅");
-            formationToEdit = null;
-            handleBackToList();
-        } catch (SQLException e) {
-            lblError.setText("Error: " + e.getMessage());
-        }
-    }
-
-    // ═════════════════════════════════════
-    //  DELETE (from table buttons)
-    // ═════════════════════════════════════
-    private void handleDelete(Formation f) {
-        Optional<ButtonType> result = showConfirm(
-                "Delete \"" + f.getTitle() + "\"?");
-
-        if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                formationService.deleteOne(f);
-                showAlert(Alert.AlertType.INFORMATION, "Deleted",
-                        "Formation deleted! 🗑️");
-                loadFormations();
+                formationService.updateOne(editingFormation);
+                showAlert(Alert.AlertType.INFORMATION, "Succès",
+                        "Formation modifiée avec succès! ✅");
+                showTable();
             } catch (SQLException e) {
-                showAlert(Alert.AlertType.ERROR, "Error", e.getMessage());
+                lblError.setText("Erreur: " + e.getMessage());
+            }
+
+        } else {
+            // ADD
+            Formation f = new Formation();
+            f.setTitle(tfTitle.getText().trim());
+            f.setDescription(taDescription.getText().trim());
+            f.setVideoUrl(tfVideoUrl.getText().trim());
+            f.setCategory(cbCategory.getValue());
+
+            try {
+                formationService.insertOne(f);
+                showAlert(Alert.AlertType.INFORMATION, "Succès",
+                        "Formation ajoutée avec succès! ✅");
+                showTable();
+            } catch (SQLException e) {
+                lblError.setText("Erreur: " + e.getMessage());
             }
         }
     }
 
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
+    //  DELETE
+    // ═════════════════════════════════
+    private void handleDelete(Formation f) {
+        Optional<ButtonType> result = showConfirm(
+                "Supprimer \"" + f.getTitle() + "\"?\nCette action est irréversible!");
+
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                formationService.deleteOne(f);
+                showAlert(Alert.AlertType.INFORMATION, "Supprimé",
+                        "Formation supprimée! 🗑️");
+                loadFormations();
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+            }
+        }
+    }
+
+    // ═════════════════════════════════
     //  SEARCH
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     @FXML
     private void handleSearch() {
         String keyword = tfSearch.getText().toLowerCase().trim();
@@ -231,75 +269,47 @@ public class FormationController implements Initializable {
         lblTotal.setText("Total: " + filteredList.size() + " formations");
     }
 
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     //  REFRESH
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     @FXML
     private void handleRefresh() {
         tfSearch.clear();
         loadFormations();
     }
 
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     //  CLEAR FORM
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     @FXML
     private void handleClear() {
-        tfTitle.clear();
-        taDescription.clear();
-        tfVideoUrl.clear();
-        cbCategory.getSelectionModel().clearSelection();
-        lblError.setText("");
+        clearForm();
     }
 
-    // ═════════════════════════════════════
-    //  NAVIGATION
-    // ═════════════════════════════════════
-    private void goToEdit(Formation f) {
-        formationToEdit = f;
-        loadPage("/FormationEdit.fxml");
+    private void clearForm() {
+        if (tfTitle != null) tfTitle.clear();
+        if (taDescription != null) taDescription.clear();
+        if (tfVideoUrl != null) tfVideoUrl.clear();
+        if (cbCategory != null) cbCategory.getSelectionModel().clearSelection();
+        if (lblError != null) lblError.setText("");
+        editingFormation = null;
+        isEditMode = false;
     }
 
-    @FXML
-    private void handleBackToList() {
-        formationToEdit = null;
-        loadPage("/FormationView.fxml");
-    }
-
-    private void loadPage(String fxmlPath) {
-        try {
-            Parent page = FXMLLoader.load(getClass().getResource(fxmlPath));
-            // Find the contentArea in AdminDashboard
-            StackPane contentArea = (StackPane) getAnyNode().getScene()
-                    .lookup("#contentArea");
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Get any available node to access the scene
-    private javafx.scene.Node getAnyNode() {
-        if (tvFormations != null) return tvFormations;
-        if (tfTitle != null) return tfTitle;
-        return null;
-    }
-
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     //  VALIDATION
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     private boolean validateForm() {
         StringBuilder errors = new StringBuilder();
 
         if (tfTitle.getText().trim().isEmpty())
-            errors.append("• Title is required\n");
+            errors.append("• Le titre est obligatoire\n");
         if (taDescription.getText().trim().isEmpty())
-            errors.append("• Description is required\n");
+            errors.append("• La description est obligatoire\n");
         if (tfVideoUrl.getText().trim().isEmpty())
-            errors.append("• Video URL is required\n");
+            errors.append("• L'URL vidéo est obligatoire\n");
         if (cbCategory.getValue() == null)
-            errors.append("• Category is required\n");
+            errors.append("• La catégorie est obligatoire\n");
 
         if (errors.length() > 0) {
             lblError.setText(errors.toString());
@@ -308,9 +318,9 @@ public class FormationController implements Initializable {
         return true;
     }
 
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     //  HELPERS
-    // ═════════════════════════════════════
+    // ═════════════════════════════════
     private void showAlert(Alert.AlertType type, String title, String msg) {
         Alert alert = new Alert(type);
         alert.setTitle(title);
@@ -321,7 +331,7 @@ public class FormationController implements Initializable {
 
     private Optional<ButtonType> showConfirm(String msg) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirm");
+        alert.setTitle("Confirmation");
         alert.setHeaderText(null);
         alert.setContentText(msg);
         return alert.showAndWait();

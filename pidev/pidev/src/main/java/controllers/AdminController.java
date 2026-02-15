@@ -17,19 +17,19 @@ import java.util.ResourceBundle;
 public class AdminController implements Initializable {
 
     @FXML private StackPane contentArea;
+    @FXML private Button btnUsers;
+    @FXML private Button btnJournal;
+    @FXML private Button btnConsultation;
     @FXML private Button btnFormations;
-    @FXML private Button btnAddFormation;
     @FXML private Button btnQuiz;
-    @FXML private Button btnQuestions;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Show formation list by default
         showFormationView();
     }
 
     // ═══════════════════════════════════
-    //  SIDEBAR NAVIGATION
+    //  NAVIGATION
     // ═══════════════════════════════════
     @FXML
     public void showFormationView() {
@@ -38,19 +38,27 @@ public class AdminController implements Initializable {
     }
 
     @FXML
-    public void showFormationAdd() {
-        loadPage("/FormationAdd.fxml");
-        setActiveButton(btnAddFormation);
-    }
-
-    @FXML
-    private void showQuiz() {
+    public void showQuiz() {
         showComingSoon("Quiz Management");
+        setActiveButton(btnQuiz);
     }
 
     @FXML
-    private void showQuestions() {
-        showComingSoon("Question Management");
+    private void showUsers() {
+        showComingSoon("Gestion Utilisateurs");
+        setActiveButton(btnUsers);
+    }
+
+    @FXML
+    private void showJournal() {
+        showComingSoon("Gestion Journal");
+        setActiveButton(btnJournal);
+    }
+
+    @FXML
+    private void showConsultation() {
+        showComingSoon("Gestion Consultation");
+        setActiveButton(btnConsultation);
     }
 
     @FXML
@@ -80,24 +88,23 @@ public class AdminController implements Initializable {
     //  HIGHLIGHT ACTIVE BUTTON
     // ═══════════════════════════════════
     private void setActiveButton(Button activeBtn) {
-        btnFormations.getStyleClass().remove("sidebar-btn-active");
-        btnAddFormation.getStyleClass().remove("sidebar-btn-active");
-        btnQuiz.getStyleClass().remove("sidebar-btn-active");
-        btnQuestions.getStyleClass().remove("sidebar-btn-active");
-
+        // Remove active from all
+        Button[] allButtons = {btnUsers, btnJournal, btnConsultation,
+                btnFormations, btnQuiz};
+        for (Button btn : allButtons) {
+            if (btn != null) btn.getStyleClass().remove("sidebar-btn-active");
+        }
+        // Add active
         if (activeBtn != null) {
             activeBtn.getStyleClass().add("sidebar-btn-active");
         }
     }
 
-    // ═══════════════════════════════════
-    //  HELPERS
-    // ═══════════════════════════════════
     private void showComingSoon(String feature) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Coming Soon");
         alert.setHeaderText(null);
-        alert.setContentText(feature + " coming soon!");
+        alert.setContentText(feature + " — Your teammate will implement this!");
         alert.showAndWait();
     }
 

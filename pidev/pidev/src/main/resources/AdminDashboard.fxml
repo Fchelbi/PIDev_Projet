@@ -14,17 +14,17 @@
         <HBox alignment="CENTER_RIGHT" spacing="15" styleClass="top-bar">
             <padding><Insets top="10" bottom="10" left="20" right="20"/></padding>
 
-            <Label text="Admin Dashboard"
-                   style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"
+            <Label text="🏥 EchoCare"
+                   style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"
                    HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
 
             <Label text="🔔" style="-fx-font-size: 18px;"/>
             <Separator orientation="VERTICAL" prefHeight="30"/>
             <Label text="👤" style="-fx-font-size: 20px;"/>
             <VBox alignment="CENTER_LEFT">
-                <Label text="Admin User"
+                <Label text="Admin"
                        style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <Label text="admin@softskills.com"
+                <Label text="admin@echocare.com"
                        style="-fx-text-fill: #b2bec3; -fx-font-size: 11px;"/>
             </VBox>
         </HBox>
@@ -32,24 +32,44 @@
 
     <!-- ══════════ SIDEBAR ══════════ -->
     <left>
-        <VBox spacing="5" prefWidth="220" styleClass="sidebar">
+        <VBox spacing="5" prefWidth="230" styleClass="sidebar">
             <padding><Insets top="20" bottom="20" left="10" right="10"/></padding>
 
-            <Label text="🎓 SoftSkills"
+            <!-- Logo -->
+            <Label text="🏥 EchoCare"
                    style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"
+                   alignment="CENTER" maxWidth="Infinity"/>
+            <Label text="Soft Skills Platform"
+                   style="-fx-font-size: 11px; -fx-text-fill: #636e72;"
                    alignment="CENTER" maxWidth="Infinity"/>
             <Separator style="-fx-background-color: #636e72;"/>
 
-            <Label text="MENU"
+            <Label text="GESTION"
+                   style="-fx-text-fill: #636e72; -fx-font-size: 11px; -fx-padding: 10 0 5 15;"/>
+
+            <!-- Menu Items -->
+            <Button fx:id="btnUsers" text="   👥  Utilisateurs"
+                    onAction="#showUsers"
+                    styleClass="sidebar-btn" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"/>
+
+            <Button fx:id="btnJournal" text="   📰  Journal"
+                    onAction="#showJournal"
+                    styleClass="sidebar-btn" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"/>
+
+            <Button fx:id="btnConsultation" text="   🩺  Consultation"
+                    onAction="#showConsultation"
+                    styleClass="sidebar-btn" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"/>
+
+            <Separator style="-fx-background-color: #636e72;"/>
+
+            <Label text="FORMATION"
                    style="-fx-text-fill: #636e72; -fx-font-size: 11px; -fx-padding: 10 0 5 15;"/>
 
             <Button fx:id="btnFormations" text="   📚  Formations"
                     onAction="#showFormationView"
-                    styleClass="sidebar-btn" maxWidth="Infinity"
-                    alignment="CENTER_LEFT"/>
-
-            <Button fx:id="btnAddFormation" text="   ➕  Add Formation"
-                    onAction="#showFormationAdd"
                     styleClass="sidebar-btn" maxWidth="Infinity"
                     alignment="CENTER_LEFT"/>
 
@@ -58,11 +78,7 @@
                     styleClass="sidebar-btn" maxWidth="Infinity"
                     alignment="CENTER_LEFT"/>
 
-            <Button fx:id="btnQuestions" text="   ❓  Questions"
-                    onAction="#showQuestions"
-                    styleClass="sidebar-btn" maxWidth="Infinity"
-                    alignment="CENTER_LEFT"/>
-
+            <!-- Spacer -->
             <VBox VBox.vgrow="ALWAYS"/>
 
             <Separator style="-fx-background-color: #636e72;"/>
@@ -73,7 +89,7 @@
         </VBox>
     </left>
 
-    <!-- ══════════ CENTER CONTENT ══════════ -->
+    <!-- ══════════ CENTER ══════════ -->
     <center>
         <StackPane fx:id="contentArea" styleClass="content-area">
             <padding><Insets top="20" bottom="20" left="20" right="20"/></padding>
