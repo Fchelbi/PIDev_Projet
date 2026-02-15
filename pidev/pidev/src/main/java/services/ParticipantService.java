@@ -65,7 +65,6 @@ public class ParticipantService implements CRUD<Participant> {
         return list;
     }
 
-    // Get participants by formation
     public List<Participant> selectByFormation(int formationId) throws SQLException {
         List<Participant> list = new ArrayList<>();
         String req = "SELECT * FROM `participant` WHERE `formation_id` = ?";
@@ -86,7 +85,6 @@ public class ParticipantService implements CRUD<Participant> {
         return list;
     }
 
-    // Check if user already registered
     public boolean isAlreadyRegistered(int userId, int formationId) throws SQLException {
         String req = "SELECT COUNT(*) FROM `participant` WHERE `user_id` = ? AND `formation_id` = ?";
         PreparedStatement ps = cnx.prepareStatement(req);
