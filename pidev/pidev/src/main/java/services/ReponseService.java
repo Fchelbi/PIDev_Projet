@@ -23,28 +23,25 @@ public class ReponseService implements CRUD<Reponse> {
         ps.setString(2, reponse.getOptionText());
         ps.setBoolean(3, reponse.isCorrect());
         ps.executeUpdate();
-        System.out.println("Reponse added successfully!");
     }
 
     @Override
     public void updateOne(Reponse reponse) throws SQLException {
-        String req = "UPDATE `reponse` SET `question_id` = ?, `option_text` = ?, `is_correct` = ? WHERE `id` = ?";
+        String req = "UPDATE `reponse` SET `question_id`=?, `option_text`=?, `is_correct`=? WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, reponse.getQuestionId());
         ps.setString(2, reponse.getOptionText());
         ps.setBoolean(3, reponse.isCorrect());
         ps.setInt(4, reponse.getId());
         ps.executeUpdate();
-        System.out.println("Reponse updated successfully!");
     }
 
     @Override
     public void deleteOne(Reponse reponse) throws SQLException {
-        String req = "DELETE FROM `reponse` WHERE `id` = ?";
+        String req = "DELETE FROM `reponse` WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, reponse.getId());
         ps.executeUpdate();
-        System.out.println("Reponse deleted successfully!");
     }
 
     @Override
@@ -53,54 +50,23 @@ public class ReponseService implements CRUD<Reponse> {
         String req = "SELECT * FROM `reponse`";
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
-
         while (rs.next()) {
-            Reponse r = new Reponse(
-                    rs.getInt("id"),
-                    rs.getInt("question_id"),
-                    rs.getString("option_text"),
-                    rs.getBoolean("is_correct")
-            );
-            list.add(r);
+            list.add(new Reponse(rs.getInt("id"), rs.getInt("question_id"),
+                    rs.getString("option_text"), rs.getBoolean("is_correct")));
         }
         return list;
     }
 
-    // Get responses by question
     public List<Reponse> selectByQuestion(int questionId) throws SQLException {
         List<Reponse> list = new ArrayList<>();
-        String req = "SELECT * FROM `reponse` WHERE `question_id` = ?";
+        String req = "SELECT * FROM `reponse` WHERE `question_id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, questionId);
         ResultSet rs = ps.executeQuery();
-
         while (rs.next()) {
-            Reponse r = new Reponse(
-                    rs.getInt("id"),
-                    rs.getInt("question_id"),
-                    rs.getString("option_text"),
-                    rs.getBoolean("is_correct")
-            );
-            list.add(r);
+            list.add(new Reponse(rs.getInt("id"), rs.getInt("question_id"),
+                    rs.getString("option_text"), rs.getBoolean("is_correct")));
         }
         return list;
-    }
-
-    // Get correct answer for a question
-    public Reponse getCorrectAnswer(int questionId) throws SQLException {
-        String req = "SELECT * FROM `reponse` WHERE `question_id` = ? AND `is_correct` = 1";
-        PreparedStatement ps = cnx.prepareStatement(req);
-        ps.setInt(1, questionId);
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            return new Reponse(
-                    rs.getInt("id"),
-                    rs.getInt("question_id"),
-                    rs.getString("option_text"),
-                    rs.getBoolean("is_correct")
-            );
-        }
-        return null;
     }
 }

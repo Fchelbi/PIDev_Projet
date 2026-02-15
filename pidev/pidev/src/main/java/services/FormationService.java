@@ -24,12 +24,12 @@ public class FormationService implements CRUD<Formation> {
         ps.setString(3, formation.getVideoUrl());
         ps.setString(4, formation.getCategory());
         ps.executeUpdate();
-        System.out.println("Formation added successfully!");
+        System.out.println("Formation added!");
     }
 
     @Override
     public void updateOne(Formation formation) throws SQLException {
-        String req = "UPDATE `formation` SET `title` = ?, `description` = ?, `video_url` = ?, `category` = ? WHERE `id` = ?";
+        String req = "UPDATE `formation` SET `title`=?, `description`=?, `video_url`=?, `category`=? WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setString(1, formation.getTitle());
         ps.setString(2, formation.getDescription());
@@ -37,16 +37,16 @@ public class FormationService implements CRUD<Formation> {
         ps.setString(4, formation.getCategory());
         ps.setInt(5, formation.getId());
         ps.executeUpdate();
-        System.out.println("Formation updated successfully!");
+        System.out.println("Formation updated!");
     }
 
     @Override
     public void deleteOne(Formation formation) throws SQLException {
-        String req = "DELETE FROM `formation` WHERE `id` = ?";
+        String req = "DELETE FROM `formation` WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, formation.getId());
         ps.executeUpdate();
-        System.out.println("Formation deleted successfully!");
+        System.out.println("Formation deleted!");
     }
 
     @Override
@@ -55,16 +55,14 @@ public class FormationService implements CRUD<Formation> {
         String req = "SELECT * FROM `formation`";
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
-
         while (rs.next()) {
-            Formation f = new Formation(
+            list.add(new Formation(
                     rs.getInt("id"),
                     rs.getString("title"),
                     rs.getString("description"),
                     rs.getString("video_url"),
                     rs.getString("category")
-            );
-            list.add(f);
+            ));
         }
         return list;
     }

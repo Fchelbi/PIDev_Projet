@@ -22,27 +22,24 @@ public class ParticipantService implements CRUD<Participant> {
         ps.setInt(1, participant.getUserId());
         ps.setInt(2, participant.getFormationId());
         ps.executeUpdate();
-        System.out.println("Participant added successfully!");
     }
 
     @Override
     public void updateOne(Participant participant) throws SQLException {
-        String req = "UPDATE `participant` SET `user_id` = ?, `formation_id` = ? WHERE `id` = ?";
+        String req = "UPDATE `participant` SET `user_id`=?, `formation_id`=? WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, participant.getUserId());
         ps.setInt(2, participant.getFormationId());
         ps.setInt(3, participant.getId());
         ps.executeUpdate();
-        System.out.println("Participant updated successfully!");
     }
 
     @Override
     public void deleteOne(Participant participant) throws SQLException {
-        String req = "DELETE FROM `participant` WHERE `id` = ?";
+        String req = "DELETE FROM `participant` WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, participant.getId());
         ps.executeUpdate();
-        System.out.println("Participant deleted successfully!");
     }
 
     @Override
@@ -51,49 +48,43 @@ public class ParticipantService implements CRUD<Participant> {
         String req = "SELECT * FROM `participant`";
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
-
         while (rs.next()) {
-            Participant p = new Participant(
+            list.add(new Participant(
                     rs.getInt("id"),
                     rs.getInt("user_id"),
                     rs.getInt("formation_id"),
                     rs.getTimestamp("date_inscription") != null ?
                             rs.getTimestamp("date_inscription").toLocalDateTime() : null
-            );
-            list.add(p);
+            ));
         }
         return list;
     }
 
     public List<Participant> selectByFormation(int formationId) throws SQLException {
         List<Participant> list = new ArrayList<>();
-        String req = "SELECT * FROM `participant` WHERE `formation_id` = ?";
+        String req = "SELECT * FROM `participant` WHERE `formation_id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, formationId);
         ResultSet rs = ps.executeQuery();
-
         while (rs.next()) {
-            Participant p = new Participant(
+            list.add(new Participant(
                     rs.getInt("id"),
                     rs.getInt("user_id"),
                     rs.getInt("formation_id"),
                     rs.getTimestamp("date_inscription") != null ?
                             rs.getTimestamp("date_inscription").toLocalDateTime() : null
-            );
-            list.add(p);
+            ));
         }
         return list;
     }
 
     public boolean isAlreadyRegistered(int userId, int formationId) throws SQLException {
-        String req = "SELECT COUNT(*) FROM `participant` WHERE `user_id` = ? AND `formation_id` = ?";
+        String req = "SELECT COUNT(*) FROM `participant` WHERE `user_id`=? AND `formation_id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, userId);
         ps.setInt(2, formationId);
         ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            return rs.getInt(1) > 0;
-        }
+        if (rs.next()) return rs.getInt(1) > 0;
         return false;
     }
 }

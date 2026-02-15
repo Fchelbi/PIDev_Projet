@@ -8,8 +8,7 @@ public class Question {
     private String questionText;
     private int points;
 
-    public Question() {
-    }
+    public Question() {}
 
     public Question(int id, int quizId, String questionText, int points) {
         this.id = id;
@@ -18,58 +17,26 @@ public class Question {
         this.points = points;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getQuizId() {
-        return quizId;
-    }
-
-    public void setQuizId(int quizId) {
-        this.quizId = quizId;
-    }
-
-    public String getQuestionText() {
-        return questionText;
-    }
-
-    public void setQuestionText(String questionText) {
-        this.questionText = questionText;
-    }
-
-    public int getPoints() {
-        return points;
-    }
-
-    public void setPoints(int points) {
-        this.points = points;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getQuizId() { return quizId; }
+    public void setQuizId(int quizId) { this.quizId = quizId; }
+    public String getQuestionText() { return questionText; }
+    public void setQuestionText(String questionText) { this.questionText = questionText; }
+    public int getPoints() { return points; }
+    public void setPoints(int points) { this.points = points; }
 
     @Override
     public String toString() {
-        return "Question{" +
-                "id=" + id +
-                ", quizId=" + quizId +
-                ", questionText='" + questionText + '\'' +
-                ", points=" + points +
-                '}';
+        return "Question{id=" + id + ", text='" + questionText + "'}";
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Question question)) return false;
-        return id == question.id &&
-                quizId == question.quizId &&
-                Objects.equals(questionText, question.questionText);
+        if (!(o instanceof Question q)) return false;
+        return id == q.id;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, quizId, questionText);
-    }
+    public int hashCode() { return Objects.hash(id); }
 }

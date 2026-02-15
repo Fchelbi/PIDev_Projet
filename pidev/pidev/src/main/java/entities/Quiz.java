@@ -8,8 +8,7 @@ public class Quiz {
     private String title;
     private int passingScore;
 
-    public Quiz() {
-    }
+    public Quiz() {}
 
     public Quiz(int id, int formationId, String title, int passingScore) {
         this.id = id;
@@ -18,58 +17,26 @@ public class Quiz {
         this.passingScore = passingScore;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getFormationId() {
-        return formationId;
-    }
-
-    public void setFormationId(int formationId) {
-        this.formationId = formationId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public int getPassingScore() {
-        return passingScore;
-    }
-
-    public void setPassingScore(int passingScore) {
-        this.passingScore = passingScore;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getFormationId() { return formationId; }
+    public void setFormationId(int formationId) { this.formationId = formationId; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+    public int getPassingScore() { return passingScore; }
+    public void setPassingScore(int passingScore) { this.passingScore = passingScore; }
 
     @Override
     public String toString() {
-        return "Quiz{" +
-                "id=" + id +
-                ", formationId=" + formationId +
-                ", title='" + title + '\'' +
-                ", passingScore=" + passingScore +
-                '}';
+        return "Quiz{id=" + id + ", title='" + title + "', formationId=" + formationId + "}";
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Quiz quiz)) return false;
-        return id == quiz.id &&
-                formationId == quiz.formationId &&
-                Objects.equals(title, quiz.title);
+        if (!(o instanceof Quiz q)) return false;
+        return id == q.id;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, formationId, title);
-    }
+    public int hashCode() { return Objects.hash(id); }
 }

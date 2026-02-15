@@ -53,8 +53,7 @@ public class AdminController implements Initializable {
 
     @FXML
     private void handleLogout() {
-        Optional<ButtonType> result = showConfirm(
-                "Êtes-vous sûr de vouloir vous déconnecter?");
+        Optional<ButtonType> result = showConfirm("Voulez-vous vous déconnecter?");
         if (result.isPresent() && result.get() == ButtonType.OK) {
             System.exit(0);
         }
@@ -67,41 +66,39 @@ public class AdminController implements Initializable {
             contentArea.getChildren().add(page);
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Error loading page: " + e.getMessage());
+            showAlert("Error: " + e.getMessage());
         }
     }
 
     private void setActiveButton(Button activeBtn) {
-        Button[] allButtons = {btnUsers, btnJournal, btnConsultation, btnFormations};
-        for (Button btn : allButtons) {
-            if (btn != null) btn.getStyleClass().remove("sidebar-btn-active");
+        Button[] all = {btnUsers, btnJournal, btnConsultation, btnFormations};
+        for (Button b : all) {
+            if (b != null) b.getStyleClass().remove("sidebar-btn-active");
         }
-        if (activeBtn != null) {
-            activeBtn.getStyleClass().add("sidebar-btn-active");
-        }
+        if (activeBtn != null) activeBtn.getStyleClass().add("sidebar-btn-active");
     }
 
     private void showComingSoon(String feature) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Bientôt");
-        alert.setHeaderText(null);
-        alert.setContentText(feature + " — Votre coéquipier va l'implémenter!");
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.INFORMATION);
+        a.setTitle("Bientôt");
+        a.setHeaderText(null);
+        a.setContentText(feature + " — Bientôt disponible!");
+        a.showAndWait();
     }
 
     private void showAlert(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erreur");
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("Erreur");
+        a.setHeaderText(null);
+        a.setContentText(msg);
+        a.showAndWait();
     }
 
     private Optional<ButtonType> showConfirm(String msg) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText(null);
-        alert.setContentText(msg);
-        return alert.showAndWait();
+        Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+        a.setTitle("Confirmation");
+        a.setHeaderText(null);
+        a.setContentText(msg);
+        return a.showAndWait();
     }
 }

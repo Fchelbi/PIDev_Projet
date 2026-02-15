@@ -23,28 +23,25 @@ public class QuestionService implements CRUD<Question> {
         ps.setString(2, question.getQuestionText());
         ps.setInt(3, question.getPoints());
         ps.executeUpdate();
-        System.out.println("Question added successfully!");
     }
 
     @Override
     public void updateOne(Question question) throws SQLException {
-        String req = "UPDATE `question` SET `quiz_id` = ?, `question_text` = ?, `points` = ? WHERE `id` = ?";
+        String req = "UPDATE `question` SET `quiz_id`=?, `question_text`=?, `points`=? WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, question.getQuizId());
         ps.setString(2, question.getQuestionText());
         ps.setInt(3, question.getPoints());
         ps.setInt(4, question.getId());
         ps.executeUpdate();
-        System.out.println("Question updated successfully!");
     }
 
     @Override
     public void deleteOne(Question question) throws SQLException {
-        String req = "DELETE FROM `question` WHERE `id` = ?";
+        String req = "DELETE FROM `question` WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, question.getId());
         ps.executeUpdate();
-        System.out.println("Question deleted successfully!");
     }
 
     @Override
@@ -53,35 +50,22 @@ public class QuestionService implements CRUD<Question> {
         String req = "SELECT * FROM `question`";
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
-
         while (rs.next()) {
-            Question q = new Question(
-                    rs.getInt("id"),
-                    rs.getInt("quiz_id"),
-                    rs.getString("question_text"),
-                    rs.getInt("points")
-            );
-            list.add(q);
+            list.add(new Question(rs.getInt("id"), rs.getInt("quiz_id"),
+                    rs.getString("question_text"), rs.getInt("points")));
         }
         return list;
     }
 
-    // Get questions by quiz
     public List<Question> selectByQuiz(int quizId) throws SQLException {
         List<Question> list = new ArrayList<>();
-        String req = "SELECT * FROM `question` WHERE `quiz_id` = ?";
+        String req = "SELECT * FROM `question` WHERE `quiz_id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, quizId);
         ResultSet rs = ps.executeQuery();
-
         while (rs.next()) {
-            Question q = new Question(
-                    rs.getInt("id"),
-                    rs.getInt("quiz_id"),
-                    rs.getString("question_text"),
-                    rs.getInt("points")
-            );
-            list.add(q);
+            list.add(new Question(rs.getInt("id"), rs.getInt("quiz_id"),
+                    rs.getString("question_text"), rs.getInt("points")));
         }
         return list;
     }

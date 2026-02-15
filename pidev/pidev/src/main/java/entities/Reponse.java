@@ -8,8 +8,7 @@ public class Reponse {
     private String optionText;
     private boolean isCorrect;
 
-    public Reponse() {
-    }
+    public Reponse() {}
 
     public Reponse(int id, int questionId, String optionText, boolean isCorrect) {
         this.id = id;
@@ -18,58 +17,26 @@ public class Reponse {
         this.isCorrect = isCorrect;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getQuestionId() {
-        return questionId;
-    }
-
-    public void setQuestionId(int questionId) {
-        this.questionId = questionId;
-    }
-
-    public String getOptionText() {
-        return optionText;
-    }
-
-    public void setOptionText(String optionText) {
-        this.optionText = optionText;
-    }
-
-    public boolean isCorrect() {
-        return isCorrect;
-    }
-
-    public void setCorrect(boolean correct) {
-        isCorrect = correct;
-    }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    public int getQuestionId() { return questionId; }
+    public void setQuestionId(int questionId) { this.questionId = questionId; }
+    public String getOptionText() { return optionText; }
+    public void setOptionText(String optionText) { this.optionText = optionText; }
+    public boolean isCorrect() { return isCorrect; }
+    public void setCorrect(boolean correct) { isCorrect = correct; }
 
     @Override
     public String toString() {
-        return "Reponse{" +
-                "id=" + id +
-                ", questionId=" + questionId +
-                ", optionText='" + optionText + '\'' +
-                ", isCorrect=" + isCorrect +
-                '}';
+        return "Reponse{id=" + id + ", text='" + optionText + "', correct=" + isCorrect + "}";
     }
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Reponse reponse)) return false;
-        return id == reponse.id &&
-                questionId == reponse.questionId &&
-                Objects.equals(optionText, reponse.optionText);
+        if (!(o instanceof Reponse r)) return false;
+        return id == r.id;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, questionId, optionText);
-    }
+    public int hashCode() { return Objects.hash(id); }
 }

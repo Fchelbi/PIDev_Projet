@@ -13,7 +13,7 @@ public class MainFX extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("/AdminDashboard.fxml"));
         Scene scene = new Scene(root, 1100, 700);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
-        primaryStage.setTitle("Admin Dashboard");
+        primaryStage.setTitle("EchoCare - Admin Dashboard");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
