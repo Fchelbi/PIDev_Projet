@@ -52,6 +52,17 @@ public class AdminController implements Initializable {
     }
 
     @FXML
+    private void switchToPatient() {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/PatientDashboard.fxml"));
+            btnFormations.getScene().setRoot(root);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error: " + e.getMessage());
+        }
+    }
+
+    @FXML
     private void handleLogout() {
         Optional<ButtonType> result = showConfirm("Voulez-vous vous déconnecter?");
         if (result.isPresent() && result.get() == ButtonType.OK) {
