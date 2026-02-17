@@ -17,7 +17,8 @@ public class ParticipantService implements CRUD<Participant> {
 
     @Override
     public void insertOne(Participant participant) throws SQLException {
-        String req = "INSERT INTO `participant`(`user_id`, `formation_id`) VALUES (?, ?)";
+        // ↓↓↓ Changed from "participant" to "participation" ↓↓↓
+        String req = "INSERT INTO `participation`(`user_id`, `formation_id`) VALUES (?, ?)";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, participant.getUserId());
         ps.setInt(2, participant.getFormationId());
@@ -26,7 +27,7 @@ public class ParticipantService implements CRUD<Participant> {
 
     @Override
     public void updateOne(Participant participant) throws SQLException {
-        String req = "UPDATE `participant` SET `user_id`=?, `formation_id`=? WHERE `id`=?";
+        String req = "UPDATE `participation` SET `user_id`=?, `formation_id`=? WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, participant.getUserId());
         ps.setInt(2, participant.getFormationId());
@@ -36,7 +37,7 @@ public class ParticipantService implements CRUD<Participant> {
 
     @Override
     public void deleteOne(Participant participant) throws SQLException {
-        String req = "DELETE FROM `participant` WHERE `id`=?";
+        String req = "DELETE FROM `participation` WHERE `id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, participant.getId());
         ps.executeUpdate();
@@ -45,7 +46,7 @@ public class ParticipantService implements CRUD<Participant> {
     @Override
     public List<Participant> selectALL() throws SQLException {
         List<Participant> list = new ArrayList<>();
-        String req = "SELECT * FROM `participant`";
+        String req = "SELECT * FROM `participation`";
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
         while (rs.next()) {
@@ -62,7 +63,7 @@ public class ParticipantService implements CRUD<Participant> {
 
     public List<Participant> selectByFormation(int formationId) throws SQLException {
         List<Participant> list = new ArrayList<>();
-        String req = "SELECT * FROM `participant` WHERE `formation_id`=?";
+        String req = "SELECT * FROM `participation` WHERE `formation_id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, formationId);
         ResultSet rs = ps.executeQuery();
@@ -79,7 +80,7 @@ public class ParticipantService implements CRUD<Participant> {
     }
 
     public boolean isAlreadyRegistered(int userId, int formationId) throws SQLException {
-        String req = "SELECT COUNT(*) FROM `participant` WHERE `user_id`=? AND `formation_id`=?";
+        String req = "SELECT COUNT(*) FROM `participation` WHERE `user_id`=? AND `formation_id`=?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, userId);
         ps.setInt(2, formationId);
