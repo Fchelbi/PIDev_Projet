@@ -2,16 +2,27 @@ package tn.esprit.projet.gui.patient;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import tn.esprit.projet.entities.Consultation;
 import tn.esprit.projet.entities.Psychologue;
 import tn.esprit.projet.services.ConsultationService;
 import tn.esprit.projet.services.PsychologueService;
+import tn.esprit.projet.utils.AlertUtils;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 public class PatientConsultationController {
 
@@ -35,19 +46,17 @@ public class PatientConsultationController {
     public void showConsultationsView() {
         labelTitre.setText("Mes consultations");
         paneReservation.setVisible(false);
-        colId.setVisible(false); // Cacher la colonne ID technique
+        colId.setVisible(false);
 
-        // CHANGEMENT DYNAMIQUE DES TITRES DE COLONNES
         colPsy.setText("Psychologue (Nom)");
         colDate.setText("Date du RDV");
         colStatut.setText("État du dossier");
 
-        // Remplacement de l'ID par le Nom du psy
         colPsy.setCellValueFactory(cellData -> {
             Consultation c = (Consultation) cellData.getValue();
             try {
                 Psychologue p = psychologueService.getById(c.getPsychologueId());
-                return new SimpleStringProperty(p != null ? p.getNom() : "Inconnu");
+                return new SimpleStringProperty(p != null ? p.getNom() + " " + p.getPrenom() : "Inconnu");
             } catch (SQLException e) {
                 return new SimpleStringProperty("Erreur DB");
             }
@@ -65,14 +74,16 @@ public class PatientConsultationController {
         paneReservation.setVisible(true);
         colId.setVisible(true);
 
-        // CHANGEMENT DYNAMIQUE DES TITRES DE COLONNES
         colId.setText("ID");
         colPsy.setText("Nom du Praticien");
         colDate.setText("Spécialité");
         colStatut.setText("Email de contact");
 
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colPsy.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colPsy.setCellValueFactory(cellData -> {
+            Psychologue p = (Psychologue) cellData.getValue();
+            return new SimpleStringProperty(p.getNom() + " " + p.getPrenom());
+        });
         colDate.setCellValueFactory(new PropertyValueFactory<>("specialite"));
         colStatut.setCellValueFactory(new PropertyValueFactory<>("email"));
 
@@ -81,17 +92,52 @@ public class PatientConsultationController {
 
     @FXML
     public void confirmBooking() {
-        Psychologue selectedPsy = (Psychologue) tableConsultations.getSelectionModel().getSelectedItem();
-        if (selectedPsy == null || dateRes.getValue() == null || heureRes.getText().isEmpty()) {
-            System.out.println("Erreur: Sélectionnez un psy et remplissez les champs.");
+        // --- DÉBUT CONTRÔLE DE SAISIE RIGOUREUX ---
+
+        // 1. Sélection
+        Object selectedItem = tableConsultations.getSelectionModel().getSelectedItem();
+        if (!(selectedItem instanceof Psychologue)) {
+            AlertUtils.showError("Sélection requise", "Veuillez sélectionner un psychologue dans la liste.");
             return;
         }
-        String dateComplete = dateRes.getValue().toString() + " " + heureRes.getText();
+        Psychologue selectedPsy = (Psychologue) selectedItem;
+
+        // 2. Date
+        LocalDate pickedDate = dateRes.getValue();
+        if (pickedDate == null) {
+            AlertUtils.showError("Date manquante", "Veuillez choisir une date.");
+            return;
+        }
+        if (pickedDate.isBefore(LocalDate.now())) {
+            AlertUtils.showError("Date invalide", "La date ne peut pas être dans le passé.");
+            return;
+        }
+
+        // Optionnel : Bloquer les Week-ends (Samedi=6, Dimanche=7)
+        int dayValue = pickedDate.getDayOfWeek().getValue();
+        if (dayValue == 7) {
+            AlertUtils.showError("Date invalide", "Le psy n'est pas dispo le dimanche.");
+            return;
+        }
+
+        // 3. Heure
+        String heureStr = heureRes.getText().trim();
+        if (!heureStr.matches("^([01]?[0-9]|2[0-3]):[0-5][0-9]$")) {
+            AlertUtils.showError("Format invalide", "L'heure doit être au format HH:mm (ex: 09:00).");
+            return;
+        }
+
+
+
+        // --- FIN CONTRÔLE DE SAISIE ---
+
+        String dateComplete = pickedDate.toString() + " " + heureStr;
         try {
             consultationService.reserverConsultation(selectedPsy.getId(), CURRENT_USER_ID, dateComplete);
-            showConsultationsView(); // Revenir auto à la liste
+            AlertUtils.showInfo("Succès", "Demande envoyée !");
+            showConsultationsView();
         } catch (SQLException e) {
-            e.printStackTrace();
+            AlertUtils.showError("Erreur DB", e.getMessage());
         }
     }
 
@@ -105,5 +151,15 @@ public class PatientConsultationController {
         try {
             tableConsultations.setItems(FXCollections.observableArrayList(psychologueService.getAll()));
         } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    @FXML
+    void retourMenu(ActionEvent event) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("/MainMenu.fxml"));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

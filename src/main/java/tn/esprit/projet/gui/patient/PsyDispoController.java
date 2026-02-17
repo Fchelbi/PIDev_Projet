@@ -1,102 +1,93 @@
 package tn.esprit.projet.gui.patient;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Alert;
-import tn.esprit.projet.services.DisponibiliteService;
-
-import java.sql.Date;
-import java.sql.SQLException;
-import java.sql.Time;
-import java.time.LocalDate;
-
-import javafx.event.ActionEvent;
-import javafx.scene.Node;
-import javafx.stage.Stage;
-
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import tn.esprit.projet.entities.Consultation;
+import tn.esprit.projet.services.ConsultationService;
+import tn.esprit.projet.utils.AlertUtils;
+
 import java.io.IOException;
-import tn.esprit.projet.utils.AlertUtils; // Pour utiliser tes nouvelles alertes
+import java.sql.SQLException;
 
 public class PsyDispoController {
 
-    @FXML private DatePicker pickerDate;
-    @FXML private TextField txtHeure;
+    @FXML private TableView<Consultation> tableRdv;
+    @FXML private TableColumn<Consultation, String> colPatient; // Changé en String pour l'affichage
+    @FXML private TableColumn<Consultation, String> colDate, colStatut;
 
-    private DisponibiliteService ds = new DisponibiliteService();
+    private ConsultationService consultationService = new ConsultationService();
+    private int CURRENT_PSY_ID = 1;
+
+    @FXML
+    public void initialize() {
+        // Affichage personnalisé pour le patient
+        colPatient.setCellValueFactory(cellData ->
+                new SimpleStringProperty("Patient #" + cellData.getValue().getUtilisateurId()));
+
+        colDate.setCellValueFactory(new PropertyValueFactory<>("dateConsultation"));
+        colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+
+        refreshTable();
+    }
+
+    @FXML
+    public void handleAccepter() {
+        Consultation selected = tableRdv.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertUtils.showError("Sélection", "Veuillez sélectionner un rendez-vous à accepter.");
+            return;
+        }
+        try {
+            consultationService.updateStatut(selected.getId(), "Confirmé");
+            AlertUtils.showInfo("Succès", "Le rendez-vous a été confirmé.");
+            refreshTable();
+        } catch (SQLException e) {
+            AlertUtils.showError("Erreur SQL", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleRefuser() {
+        Consultation selected = tableRdv.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            AlertUtils.showError("Sélection", "Veuillez sélectionner un rendez-vous à refuser.");
+            return;
+        }
+        try {
+            consultationService.updateStatut(selected.getId(), "À replanifier");
+            AlertUtils.showInfo("Statut mis à jour", "Le rendez-vous est marqué 'À replanifier'.");
+            refreshTable();
+        } catch (SQLException e) {
+            AlertUtils.showError("Erreur SQL", e.getMessage());
+        }
+    }
+
+    private void refreshTable() {
+        try {
+            tableRdv.setItems(FXCollections.observableArrayList(
+                    consultationService.getConsultationsByPsychologue(CURRENT_PSY_ID)
+            ));
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
 
     @FXML
     void retourMenu(ActionEvent event) {
         try {
-            // Chargement du menu principal situé à la racine de resources
             Parent root = FXMLLoader.load(getClass().getResource("/MainMenu.fxml"));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("PI-DEV : Menu Principal");
             stage.show();
         } catch (IOException e) {
-            System.err.println("Erreur retour menu : " + e.getMessage());
-        }
-    }
-    @FXML
-    private void handleAjouterDispo() {
-        LocalDate localDate = pickerDate.getValue();
-        String heureStr = txtHeure.getText();
-
-        if (localDate == null || heureStr.isEmpty()) {
-            showAlert("Erreur", "Veuillez remplir tous les champs.");
-            return;
-        }
-
-        try {
-            // Conversion vers les types SQL
-            Date dateSql = Date.valueOf(localDate);
-            Time heureSql = Time.valueOf(heureStr);
-
-            // On simule l'ID du psychologue connecté (ex: ID 1 pour hama)
-            ds.ajouterDispo(1, dateSql, heureSql);
-
-            showAlert("Succès", "Disponibilité ajoutée ! Elle est maintenant visible par les patients.");
-            txtHeure.clear();
-            pickerDate.setValue(null);
-
-        } catch (IllegalArgumentException e) {
-            showAlert("Format Heure", "L'heure doit être au format HH:mm:ss");
-        } catch (SQLException e) {
-            showAlert("Erreur SQL", e.getMessage());
-        }
-    }
-
-    private void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    @FXML
-    void handleEnregistrerCreneau() {
-        try {
-            // 1. Déclarer et convertir les données de l'interface
-            java.sql.Date sqlDate = java.sql.Date.valueOf(pickerDate.getValue());
-            java.sql.Time sqlHeure = java.sql.Time.valueOf(txtHeure.getText());
-
-            // 2. Appeler le service avec les variables déclarées
-            // Remplacez '1' par un ID qui existe vraiment dans votre table psychologue
-            ds.ajouterDispo(1, sqlDate, sqlHeure);
-
-            AlertUtils.showInfo("Succès", "Créneau ajouté !");
-        } catch (SQLException e) {
-            AlertUtils.showError("Erreur SQL", e.getMessage());
-        } catch (Exception e) {
-            AlertUtils.showError("Erreur", "Vérifiez le format de l'heure (HH:mm:ss)");
+            e.printStackTrace();
         }
     }
 }

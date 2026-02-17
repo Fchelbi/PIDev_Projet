@@ -34,4 +34,7 @@
             </children>
         </HBox>
     </children>
+    <Button text="⬅ Retour au Menu" onAction="#retourMenu"
+            style="-fx-background-color: #607D8B; -fx-text-fill: white;"
+            AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0" />
 </AnchorPane>
