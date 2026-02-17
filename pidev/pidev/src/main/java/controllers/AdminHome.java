@@ -8,224 +8,142 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import entities.User;
 import services.serviceUser;
-
+import utils.LightDialog;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class AdminHome {
-
-    @FXML
-    private Label lblWelcome;
-    @FXML
-    private Label lblNbPatients;
-    @FXML
-    private Label lblNbCoaches;
-    @FXML
-    private Label lblNbAdmins;
-    @FXML
-    private Label lblNbTotal;
-
-    @FXML
-    private PieChart pieChartRoles;
-
-    @FXML
-    private StackPane contentArea;
-    @FXML
-    private VBox dashboardPane;
-
-    @FXML
-    private Button btnDashboard;
-    @FXML
-    private Button btnUtilisateurs;
+    @FXML private Label lblWelcome, lblNbPatients, lblNbCoaches, lblNbAdmins, lblNbTotal;
+    @FXML private Label lblHeaderAvatar;
+    @FXML private PieChart pieChartRoles;
+    @FXML private StackPane contentArea;
+    @FXML private VBox dashboardPane;
+    @FXML private HBox btnDashboard, btnUtilisateurs;
+    @FXML private ImageView imgHeaderPhoto;
+    @FXML private Circle headerAvatarCircle;
 
     private User currentUser;
     private final serviceUser us = new serviceUser();
 
-    /**
-     * Méthode appelée par SignIn pour passer l'utilisateur connecté
-     */
     public void setUser(User user) {
         this.currentUser = user;
-        lblWelcome.setText("Bienvenue " + user.getPrenom() + " " + user.getNom());
-
-        // Charger les statistiques
+        lblWelcome.setText(user.getPrenom() + " " + user.getNom());
+        lblHeaderAvatar.setText(user.getPrenom().substring(0, 1).toUpperCase());
+        loadHeaderPhoto();
         refreshStats(null);
     }
 
-    @FXML
-    void initialize() {
-        System.out.println("✅ AdminHome initialized");
+    /**
+     * Charger la photo dans le header
+     */
+    private void loadHeaderPhoto() {
+        if (currentUser.getPhoto() != null && !currentUser.getPhoto().isEmpty()) {
+            File f = new File(currentUser.getPhoto());
+            if (f.exists()) {
+                imgHeaderPhoto.setImage(new Image(f.toURI().toString(), 40, 40, false, true));
+                imgHeaderPhoto.setVisible(true);
+                lblHeaderAvatar.setVisible(false);
+                return;
+            }
+        }
+        imgHeaderPhoto.setVisible(false);
+        lblHeaderAvatar.setVisible(true);
     }
 
-    /**
-     * Actualiser les statistiques
-     */
-    @FXML
-    void refreshStats(ActionEvent event) {
+    @FXML void initialize() { System.out.println("✅ AdminHome initialized"); }
+
+    @FXML void refreshStats(ActionEvent event) {
         try {
             List<User> users = us.selectALL();
-
-            int nbPatients = 0;
-            int nbCoaches = 0;
-            int nbAdmins = 0;
-
+            int p = 0, c = 0, a = 0;
             for (User u : users) {
-                String role = u.getRole().toUpperCase();
-                switch (role) {
-                    case "PATIENT":
-                        nbPatients++;
-                        break;
-                    case "COACH":
-                        nbCoaches++;
-                        break;
-                    case "ADMIN":
-                        nbAdmins++;
-                        break;
+                switch (u.getRole().toUpperCase()) {
+                    case "PATIENT": p++; break;
+                    case "COACH": c++; break;
+                    case "ADMIN": a++; break;
                 }
             }
-
-            lblNbPatients.setText(String.valueOf(nbPatients));
-            lblNbCoaches.setText(String.valueOf(nbCoaches));
-            lblNbAdmins.setText(String.valueOf(nbAdmins));
+            lblNbPatients.setText(String.valueOf(p));
+            lblNbCoaches.setText(String.valueOf(c));
+            lblNbAdmins.setText(String.valueOf(a));
             lblNbTotal.setText(String.valueOf(users.size()));
 
-            // Update Pie Chart
-            updatePieChart(nbPatients, nbCoaches, nbAdmins);
-
-            System.out.println("📊 Stats: " + users.size() + " users");
-
+            ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList(
+                    new PieChart.Data("Patients (" + p + ")", p),
+                    new PieChart.Data("Coaches (" + c + ")", c),
+                    new PieChart.Data("Admins (" + a + ")", a));
+            pieChartRoles.setData(pieData);
+            pieChartRoles.getData().get(0).getNode().setStyle("-fx-pie-color: #A7B5E0;");
+            pieChartRoles.getData().get(1).getNode().setStyle("-fx-pie-color: #D4A5BD;");
+            pieChartRoles.getData().get(2).getNode().setStyle("-fx-pie-color: #C3CEF0;");
         } catch (SQLException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Impossible de charger les statistiques.");
-            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger les statistiques.");
         }
     }
 
-    /**
-     * Update PieChart with role statistics
-     */
-    private void updatePieChart(int patients, int coaches, int admins) {
-        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList(
-                new PieChart.Data("Patients (" + patients + ")", patients),
-                new PieChart.Data("Coaches (" + coaches + ")", coaches),
-                new PieChart.Data("Admins (" + admins + ")", admins)
-        );
-
-        pieChartRoles.setData(pieData);
-
-        // Apply colors
-        pieChartRoles.getData().get(0).getNode().setStyle("-fx-pie-color: #3498db;");
-        pieChartRoles.getData().get(1).getNode().setStyle("-fx-pie-color: #2ecc71;");
-        pieChartRoles.getData().get(2).getNode().setStyle("-fx-pie-color: #e67e22;");
-    }
-
-    /**
-     * Afficher le Dashboard
-     */
-    @FXML
-    void showDashboard(ActionEvent event) {
-        System.out.println("📊 Navigation → Dashboard");
-
-        // Highlight active button
+    @FXML void showDashboard(MouseEvent event) {
         highlightButton(btnDashboard);
-
-        // Clear content area and restore dashboard
         contentArea.getChildren().clear();
         contentArea.getChildren().add(dashboardPane);
-
-        // Refresh stats
         refreshStats(null);
     }
 
-    /**
-     * Afficher la page Gestion Utilisateurs
-     */
-    @FXML
-    void showUtilisateurs(ActionEvent event) {
-        System.out.println("👥 Navigation → Gestion Utilisateurs");
-
+    @FXML void showUtilisateurs(MouseEvent event) {
         try {
-            // Highlight active button
             highlightButton(btnUtilisateurs);
-
-            // Load GestionUtilisateurs page
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GestionUtilisateurs.fxml"));
-            VBox gestionPage = loader.load();
-
-            // Get controller and pass current user
-            GestionUtilisateurs controller = loader.getController();
-            controller.setCurrentUser(currentUser);
-
-            // Replace content
+            VBox page = loader.load();
+            ((GestionUtilisateurs) loader.getController()).setCurrentUser(currentUser);
             contentArea.getChildren().clear();
-            contentArea.getChildren().add(gestionPage);
-
-            System.out.println("✅ Page Gestion Utilisateurs chargée");
-
+            contentArea.getChildren().add(page);
         } catch (IOException e) {
-            System.err.println("❌ Erreur chargement page Utilisateurs:");
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Erreur",
-                    "Impossible de charger la page Gestion Utilisateurs");
+            LightDialog.showError("Erreur", "Impossible de charger la page.");
         }
     }
 
-    /**
-     * Highlight le bouton actif du menu
-     */
-    private void highlightButton(Button activeButton) {
-        // Reset all buttons
-        btnDashboard.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 12; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px; -fx-cursor: hand;");
-        btnUtilisateurs.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 12; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px; -fx-cursor: hand;");
-
-        // Highlight active button
-        activeButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 12; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px; -fx-cursor: hand;");
+    @FXML void showProfil(MouseEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
+            ScrollPane page = loader.load();
+            ((Profil) loader.getController()).setCurrentUser(currentUser);
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger le profil.");
+        }
     }
 
-    /**
-     * Déconnexion
-     */
-    @FXML
-    void handleLogout(ActionEvent event) {
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Déconnexion");
-        confirmAlert.setHeaderText("Êtes-vous sûr de vouloir vous déconnecter ?");
+    private void highlightButton(HBox active) {
+        String reset = "-fx-padding: 14 25; -fx-cursor: hand;";
+        String activeStyle = "-fx-padding: 14 25; -fx-background-color: linear-gradient(to right, rgba(167,181,224,0.12), transparent); " +
+                "-fx-border-color: transparent transparent transparent #A7B5E0; -fx-border-width: 0 0 0 3; -fx-cursor: hand;";
+        btnDashboard.setStyle(reset);
+        btnUtilisateurs.setStyle(reset);
+        active.setStyle(activeStyle);
+    }
 
-        Optional<ButtonType> result = confirmAlert.showAndWait();
-
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+    @FXML void handleLogout(ActionEvent event) {
+        if (LightDialog.showConfirmation("Déconnexion", "Êtes-vous sûr ?", "👋")) {
             try {
-                // Retour au Login
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
-                Parent root = loader.load();
-                Stage stage = (Stage) lblWelcome.getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.setTitle("Connexion");
-
-                System.out.println("👋 Déconnexion de " + currentUser.getPrenom());
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
+                ((Stage) lblWelcome.getScene().getWindow()).setScene(new Scene(root));
+            } catch (IOException e) { e.printStackTrace(); }
         }
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

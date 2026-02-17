@@ -5,107 +5,81 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import entities.User;
-
+import utils.LightDialog;
+import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 public class CoachHome {
-
-    @FXML
-    private Label lblWelcome;
-    @FXML
-    private Label lblNbPatients;
-    @FXML
-    private Label lblNbSeances;
-    @FXML
-    private Label lblNom;
-    @FXML
-    private Label lblEmail;
-    @FXML
-    private Label lblTel;
+    @FXML private Label lblWelcome, lblNbPatients, lblNbSeances;
+    @FXML private Label lblNom, lblEmail, lblTel, lblAvatarHeader;
+    @FXML private StackPane contentArea;
+    @FXML private VBox accueilPane;
+    @FXML private ImageView imgHeaderPhoto;
+    @FXML private Circle headerAvatarCircle;
 
     private User currentUser;
 
-    /**
-     * Méthode appelée par SignIn pour passer l'utilisateur connecté
-     */
     public void setUser(User user) {
         this.currentUser = user;
-        lblWelcome.setText("Bienvenue " + user.getPrenom() + " " + user.getNom());
-
-        // Afficher les infos du coach
-        lblNom.setText(user.getNom() + " " + user.getPrenom());
+        lblWelcome.setText(user.getPrenom() + " " + user.getNom());
+        lblAvatarHeader.setText(user.getPrenom().substring(0, 1).toUpperCase());
+        lblNom.setText(user.getPrenom() + " " + user.getNom());
         lblEmail.setText(user.getEmail());
-        lblTel.setText(user.getNum_tel() != null && !user.getNum_tel().isEmpty()
-                ? user.getNum_tel()
-                : "Non renseigné");
-
-        // TODO: Charger le nombre de patients de ce coach depuis la BD
+        lblTel.setText(user.getNum_tel() != null && !user.getNum_tel().isEmpty() ? user.getNum_tel() : "Non renseigné");
         lblNbPatients.setText("0");
         lblNbSeances.setText("0");
-
-        System.out.println("💪 Coach connecté: " + user.getPrenom());
+        loadHeaderPhoto();
     }
 
-    @FXML
-    void initialize() {
-        // Initialisation si nécessaire
-    }
-
-    /**
-     * Afficher le profil du coach
-     */
-    @FXML
-    void showProfile(ActionEvent event) {
-        if (currentUser != null) {
-            String info = "👤 PROFIL COACH\n\n" +
-                    "Nom: " + currentUser.getNom() + "\n" +
-                    "Prénom: " + currentUser.getPrenom() + "\n" +
-                    "Email: " + currentUser.getEmail() + "\n" +
-                    "Téléphone: " + (currentUser.getNum_tel() != null ? currentUser.getNum_tel() : "Non renseigné") + "\n" +
-                    "Rôle: " + currentUser.getRole();
-
-            showAlert(Alert.AlertType.INFORMATION, "Mon Profil", info);
-        }
-    }
-
-    /**
-     * Déconnexion
-     */
-    @FXML
-    void handleLogout(ActionEvent event) {
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Déconnexion");
-        confirmAlert.setHeaderText("Êtes-vous sûr de vouloir vous déconnecter ?");
-
-        Optional<ButtonType> result = confirmAlert.showAndWait();
-
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/Login.fxml"));
-                Parent root = loader.load();
-                Stage stage = (Stage) lblWelcome.getScene().getWindow();
-                stage.setScene(new Scene(root));
-                stage.setTitle("Connexion");
-
-                System.out.println("👋 Déconnexion de " + currentUser.getPrenom());
-
-            } catch (IOException e) {
-                e.printStackTrace();
+    private void loadHeaderPhoto() {
+        if (currentUser.getPhoto() != null && !currentUser.getPhoto().isEmpty()) {
+            File f = new File(currentUser.getPhoto());
+            if (f.exists()) {
+                imgHeaderPhoto.setImage(new Image(f.toURI().toString(), 40, 40, false, true));
+                imgHeaderPhoto.setVisible(true);
+                lblAvatarHeader.setVisible(false);
+                return;
             }
         }
+        imgHeaderPhoto.setVisible(false);
+        lblAvatarHeader.setVisible(true);
     }
 
-    private void showAlert(Alert.AlertType type, String title, String content) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
+    @FXML void initialize() { System.out.println("✅ CoachHome initialized"); }
+
+    @FXML void showAccueil(ActionEvent event) {
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(accueilPane);
+    }
+
+    @FXML void showProfil(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
+            ScrollPane page = loader.load();
+            ((Profil) loader.getController()).setCurrentUser(currentUser);
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger le profil.");
+        }
+    }
+
+    @FXML void handleLogout(ActionEvent event) {
+        if (LightDialog.showConfirmation("Déconnexion", "Êtes-vous sûr ?", "👋")) {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
+                ((Stage) lblWelcome.getScene().getWindow()).setScene(new Scene(root));
+            } catch (IOException e) { e.printStackTrace(); }
+        }
     }
 }

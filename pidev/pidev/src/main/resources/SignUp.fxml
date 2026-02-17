@@ -1,107 +1,153 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="450.0"
-            style="-fx-background-color: linear-gradient(to bottom, #667eea 0%, #764ba2 100%);"
-            xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controllers.SignUp">
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.SignUp"
+           prefHeight="750.0" prefWidth="1200.0"
+           style="-fx-background-color: #F8F9FC;">
 
-    <VBox alignment="TOP_CENTER" spacing="20.0" AnchorPane.topAnchor="30.0"
-          AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
+    <HBox alignment="CENTER" spacing="0">
 
-        <!-- Titre -->
-        <Label text="Inscription" textFill="WHITE">
-            <font>
-                <Font name="System Bold" size="32.0" />
-            </font>
-        </Label>
+        <ScrollPane fitToWidth="true" fitToHeight="true" hbarPolicy="NEVER"
+                    style="-fx-background: white; -fx-background-color: white;"
+                    HBox.hgrow="ALWAYS">
 
-        <!-- Conteneur blanc pour le formulaire -->
-        <VBox spacing="12.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 25;">
+            <VBox alignment="TOP_CENTER" spacing="0" style="-fx-padding: 50 60 50 60;">
+                <VBox alignment="CENTER_LEFT" spacing="30" maxWidth="500">
 
-            <!-- Nom -->
-            <VBox spacing="5.0">
-                <Label text="Nom" style="-fx-text-fill: #333;">
-                    <font><Font size="13.0" /></font>
-                </Label>
-                <TextField fx:id="tfNom" promptText="Votre nom"
-                           style="-fx-background-radius: 5; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 8;">
-                </TextField>
+                    <VBox spacing="8">
+                        <Label text="Créer un compte"
+                               style="-fx-font-size: 36px; -fx-font-weight: 600; -fx-text-fill: #4A5568;">
+                            <font><Font name="System Bold" size="36"/></font>
+                        </Label>
+                        <Label text="Rejoignez-nous en quelques clics"
+                               style="-fx-font-size: 14px; -fx-text-fill: #A0AEC0;"/>
+                    </VBox>
+
+                    <!-- ✅ Photo de profil optionnelle -->
+                    <VBox spacing="10" alignment="CENTER">
+                        <StackPane fx:id="photoContainer" style="-fx-cursor: hand;"
+                                   onMouseClicked="#handleChoosePhoto">
+                            <Circle radius="50"
+                                    fill="linear-gradient(to bottom right, #C3CEF0, #EABDD4)"/>
+                            <ImageView fx:id="imgSignUpPhoto" fitWidth="100" fitHeight="100"
+                                       preserveRatio="false" smooth="true" visible="false">
+                                <clip>
+                                    <Circle radius="50" centerX="50" centerY="50"/>
+                                </clip>
+                            </ImageView>
+                            <Label fx:id="lblPhotoPlaceholder" text="📷"
+                                   style="-fx-font-size: 30px;"/>
+                        </StackPane>
+                        <Label text="Ajouter une photo (optionnel)"
+                               style="-fx-font-size: 12px; -fx-text-fill: #A0AEC0;"/>
+                    </VBox>
+
+                    <GridPane hgap="15" vgap="20">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50"/>
+                            <ColumnConstraints percentWidth="50"/>
+                        </columnConstraints>
+
+                        <VBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label text="Nom" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
+                            <TextField fx:id="tfNom" promptText="Votre nom"
+                                       style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0;
+                                              -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5;
+                                              -fx-padding: 13; -fx-font-size: 14px; -fx-prompt-text-fill: #CBD5E0;"/>
+                        </VBox>
+
+                        <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label text="Prénom" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
+                            <TextField fx:id="tfPrenom" promptText="Votre prénom"
+                                       style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0;
+                                              -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5;
+                                              -fx-padding: 13; -fx-font-size: 14px; -fx-prompt-text-fill: #CBD5E0;"/>
+                        </VBox>
+
+                        <VBox spacing="10" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1">
+                            <Label text="Email" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
+                            <TextField fx:id="tfEmail" promptText="vous@exemple.com"
+                                       style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0;
+                                              -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5;
+                                              -fx-padding: 13; -fx-font-size: 14px; -fx-prompt-text-fill: #CBD5E0;"/>
+                        </VBox>
+
+                        <VBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                            <Label text="Mot de passe" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
+                            <PasswordField fx:id="pfMdp" promptText="Minimum 6 caractères"
+                                           style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0;
+                                                  -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5;
+                                                  -fx-padding: 13; -fx-font-size: 14px; -fx-prompt-text-fill: #CBD5E0;"/>
+                        </VBox>
+
+                        <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                            <Label text="Téléphone (optionnel)" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
+                            <TextField fx:id="tfTel" promptText="12345678"
+                                       style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0;
+                                              -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5;
+                                              -fx-padding: 13; -fx-font-size: 14px; -fx-prompt-text-fill: #CBD5E0;"/>
+                        </VBox>
+
+                        <VBox spacing="10" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3">
+                            <Label text="Rôle" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
+                            <ComboBox fx:id="cbRole" maxWidth="Infinity"
+                                      style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0;
+                                             -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5;
+                                             -fx-padding: 8; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </GridPane>
+
+                    <Button text="Créer mon compte" onAction="#handleSignUp" maxWidth="Infinity"
+                            style="-fx-background-color: linear-gradient(to right, #A7B5E0, #D4A5BD);
+                                   -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 600;
+                                   -fx-padding: 16; -fx-background-radius: 8; -fx-cursor: hand;">
+                        <font><Font name="System Bold" size="15"/></font>
+                    </Button>
+
+                    <HBox alignment="CENTER" spacing="6">
+                        <Label text="Vous avez déjà un compte ?" style="-fx-text-fill: #A0AEC0; -fx-font-size: 14px;"/>
+                        <Hyperlink text="Se connecter" onAction="#switchToLogin"
+                                   style="-fx-text-fill: #9FAEE0; -fx-font-weight: 600; -fx-font-size: 14px;"/>
+                    </HBox>
+                </VBox>
             </VBox>
+        </ScrollPane>
 
-            <!-- Prénom -->
-            <VBox spacing="5.0">
-                <Label text="Prénom" style="-fx-text-fill: #333;">
-                    <font><Font size="13.0" /></font>
-                </Label>
-                <TextField fx:id="tfPrenom" promptText="Votre prénom"
-                           style="-fx-background-radius: 5; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 8;">
-                </TextField>
+        <VBox alignment="CENTER" spacing="35" prefWidth="480"
+              style="-fx-background-color: linear-gradient(to bottom right, #C3CEF0, #EABDD4); -fx-padding: 60;">
+            <GridPane hgap="30" vgap="30" alignment="CENTER">
+                <Circle radius="50" fill="WHITE" opacity="0.4" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Circle radius="50" fill="WHITE" opacity="0.3" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Circle radius="50" fill="WHITE" opacity="0.45" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Circle radius="50" fill="WHITE" opacity="0.25" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            </GridPane>
+            <VBox alignment="CENTER" spacing="15">
+                <Label text="Rejoignez-nous" textFill="#4A5568" style="-fx-font-size: 38px; -fx-font-weight: 300;">
+                    <font><Font name="System Light" size="38"/></font></Label>
+                <Label text="Commencez votre expérience dès aujourd'hui" textFill="#5A6578"
+                       style="-fx-font-size: 15px; -fx-opacity: 0.9;" wrapText="true" textAlignment="CENTER" maxWidth="320"/>
             </VBox>
-
-            <!-- Email -->
-            <VBox spacing="5.0">
-                <Label text="Email" style="-fx-text-fill: #333;">
-                    <font><Font size="13.0" /></font>
-                </Label>
-                <TextField fx:id="tfEmail" promptText="exemple@email.com"
-                           style="-fx-background-radius: 5; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 8;">
-                </TextField>
+            <VBox spacing="18" alignment="CENTER">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <SVGPath content="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="#4A5568" scaleX="1.3" scaleY="1.3"/>
+                    <Label text="Accès instantané" textFill="#4A5568" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                </HBox>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <SVGPath content="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="#4A5568" scaleX="1.3" scaleY="1.3"/>
+                    <Label text="Sécurité garantie" textFill="#4A5568" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                </HBox>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <SVGPath content="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" fill="#4A5568" scaleX="1.3" scaleY="1.3"/>
+                    <Label text="Support 24/7" textFill="#4A5568" style="-fx-font-size: 15px; -fx-font-weight: 500;"/>
+                </HBox>
             </VBox>
-
-            <!-- Téléphone -->
-            <VBox spacing="5.0">
-                <Label text="Numéro de téléphone" style="-fx-text-fill: #333;">
-                    <font><Font size="13.0" /></font>
-                </Label>
-                <TextField fx:id="tfTel" promptText="12345678"
-                           style="-fx-background-radius: 5; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 8;">
-                </TextField>
-            </VBox>
-
-            <!-- Mot de passe -->
-            <VBox spacing="5.0">
-                <Label text="Mot de passe" style="-fx-text-fill: #333;">
-                    <font><Font size="13.0" /></font>
-                </Label>
-                <PasswordField fx:id="pfMdp" promptText="••••••••"
-                               style="-fx-background-radius: 5; -fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 8;">
-                </PasswordField>
-            </VBox>
-
-            <!-- Rôle (ComboBox) -->
-            <VBox spacing="5.0">
-                <Label text="Rôle" style="-fx-text-fill: #333;">
-                    <font><Font size="13.0" /></font>
-                </Label>
-                <ComboBox fx:id="cbRole" maxWidth="Infinity"
-                          style="-fx-background-radius: 5; -fx-border-color: #ddd; -fx-border-radius: 5;">
-                </ComboBox>
-            </VBox>
-
-            <!-- Bouton S'inscrire -->
-            <Button text="Créer mon compte" onAction="#handleSignUp" maxWidth="Infinity"
-                    style="-fx-background-color: #667eea; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 12; -fx-font-size: 14px; -fx-font-weight: bold;">
-            </Button>
-
-            <!-- Ligne de séparation -->
-            <Separator prefWidth="200.0" />
-
-            <!-- Lien vers Login -->
-            <HBox alignment="CENTER" spacing="5.0">
-                <Label text="Déjà un compte ?" style="-fx-text-fill: #666;" />
-                <Button text="Se connecter" onAction="#switchToLogin"
-                        style="-fx-background-color: transparent; -fx-text-fill: #667eea; -fx-underline: true; -fx-cursor: hand;">
-                </Button>
-            </HBox>
-
         </VBox>
-
-    </VBox>
-
-</AnchorPane>
+    </HBox>
+</StackPane>
