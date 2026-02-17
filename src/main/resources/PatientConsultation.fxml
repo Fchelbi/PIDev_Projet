@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="500.0" prefWidth="700.0"
-            xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<AnchorPane prefHeight="600.0" prefWidth="750.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
             fx:controller="tn.esprit.projet.gui.patient.PatientConsultationController">
-
     <children>
+        <Label fx:id="labelTitre" layoutX="50.0" layoutY="20.0" text="Mes consultations" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
 
-        <Label layoutX="260.0" layoutY="20.0"
-               text="Mes consultations"
-               style="-fx-font-size: 20px; -fx-font-weight: bold;" />
-
-        <TableView fx:id="tableConsultations"
-                   layoutX="50.0" layoutY="70.0"
-                   prefWidth="600.0" prefHeight="300.0">
-
+        <TableView fx:id="tableConsultations" layoutX="50.0" layoutY="70.0" prefWidth="650.0" prefHeight="300.0">
             <columns>
-
-                <TableColumn fx:id="colId" text="ID" prefWidth="80.0"/>
-                <TableColumn fx:id="colPsy" text="Psychologue" prefWidth="150.0"/>
+                <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
+                <TableColumn fx:id="colPsy" text="Psychologue" prefWidth="200.0"/>
                 <TableColumn fx:id="colDate" text="Date" prefWidth="200.0"/>
-                <TableColumn fx:id="colStatut" text="Statut" prefWidth="150.0"/>
-
+                <TableColumn fx:id="colStatut" text="Statut" prefWidth="180.0"/>
             </columns>
         </TableView>
 
-        <Button text="Actualiser"
-                layoutX="300.0" layoutY="400.0"
-                onAction="#handleRefresh"/>
+        <VBox fx:id="paneReservation" layoutX="50.0" layoutY="380.0" spacing="10.0" visible="false">
+            <children>
+                <Label text="Réserver avec le psy sélectionné :" style="-fx-font-weight: bold;" />
+                <HBox spacing="10.0">
+                    <DatePicker fx:id="dateRes" promptText="Date" />
+                    <TextField fx:id="heureRes" promptText="Heure (ex: 15:30)" />
+                    <Button text="Confirmer la réservation" onAction="#confirmBooking" style="-fx-background-color: #27ae60; -fx-text-fill: white;" />
+                </HBox>
+            </children>
+        </VBox>
 
+        <HBox layoutX="150.0" layoutY="520.0" spacing="30.0">
+            <children>
+                <Button text="Mes Consultations" onAction="#showConsultationsView" prefWidth="200.0"/>
+                <Button text="Liste des Psychologues" onAction="#showPsyView" prefWidth="200.0" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            </children>
+        </HBox>
     </children>
 </AnchorPane>
