@@ -72,19 +72,25 @@ public class PatientConsultationController {
     public void showPsyView() {
         labelTitre.setText("Liste des Psychologues");
         paneReservation.setVisible(true);
-        colId.setVisible(true);
 
-        colId.setText("ID");
-        colPsy.setText("Nom du Praticien");
+        // 1. On cache définitivement la colonne ID pour le patient
+        colId.setVisible(false);
+
+        // 2. Configuration des titres de colonnes restants
+        colPsy.setText("Psychologue");
         colDate.setText("Spécialité");
-        colStatut.setText("Email de contact");
+        colStatut.setText("Contact Email");
 
-        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        // 3. Liaison des données (On garde Nom + Prénom pour la clarté)
         colPsy.setCellValueFactory(cellData -> {
             Psychologue p = (Psychologue) cellData.getValue();
             return new SimpleStringProperty(p.getNom() + " " + p.getPrenom());
         });
+
+        // colDate affiche ici la spécialité (vu que tu réutilises la même colonne pour deux vues)
         colDate.setCellValueFactory(new PropertyValueFactory<>("specialite"));
+
+        // colStatut affiche ici l'email
         colStatut.setCellValueFactory(new PropertyValueFactory<>("email"));
 
         loadPsychologues();
