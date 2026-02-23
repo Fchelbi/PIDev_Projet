@@ -77,13 +77,9 @@
                     <Label text="Adresse email"
                            style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
                     <HBox spacing="0" alignment="CENTER_LEFT"
-                          style="-fx-background-color: #F7FAFC;
-                                 -fx-border-color: #E2E8F0;
-                                 -fx-border-radius: 8;
-                                 -fx-background-radius: 8;
-                                 -fx-border-width: 1.5;
-                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);
-                                 -fx-padding: 4;">
+                          style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;
+                                 -fx-border-width: 1.5; -fx-padding: 4;">
                         <StackPane prefWidth="45" alignment="CENTER">
                             <SVGPath content="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"
                                      fill="#A0AEC0" scaleX="0.9" scaleY="0.9"/>
@@ -91,11 +87,8 @@
                         <TextField fx:id="tfEmail"
                                    promptText="vous@exemple.com"
                                    HBox.hgrow="ALWAYS"
-                                   style="-fx-background-color: transparent;
-                                          -fx-border-color: transparent;
-                                          -fx-padding: 12 15;
-                                          -fx-font-size: 14px;
-                                          -fx-prompt-text-fill: #CBD5E0;"/>
+                                   style="-fx-background-color: transparent; -fx-border-color: transparent;
+                                          -fx-padding: 12 15; -fx-font-size: 14px; -fx-prompt-text-fill: #CBD5E0;"/>
                     </HBox>
                 </VBox>
 
@@ -105,17 +98,14 @@
                         <Label text="Mot de passe"
                                style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
                         <Region HBox.hgrow="ALWAYS"/>
-                        <Hyperlink text="Mot de passe oublié ?"
+                        <!-- ✅ FIX: onAction ajouté au lien "Mot de passe oublié" -->
+                        <Hyperlink text="Mot de passe oublié ?" onAction="#handleForgotPassword"
                                    style="-fx-text-fill: #D4A5BD; -fx-font-size: 12px;"/>
                     </HBox>
                     <HBox spacing="0" alignment="CENTER_LEFT"
-                          style="-fx-background-color: #F7FAFC;
-                                 -fx-border-color: #E2E8F0;
-                                 -fx-border-radius: 8;
-                                 -fx-background-radius: 8;
-                                 -fx-border-width: 1.5;
-                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);
-                                 -fx-padding: 4;">
+                          style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;
+                                 -fx-border-width: 1.5; -fx-padding: 4;">
                         <StackPane prefWidth="45" alignment="CENTER">
                             <SVGPath content="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"
                                      fill="#A0AEC0" scaleX="0.9" scaleY="0.9"/>
@@ -123,11 +113,8 @@
                         <PasswordField fx:id="pfMdp"
                                        promptText="••••••••"
                                        HBox.hgrow="ALWAYS"
-                                       style="-fx-background-color: transparent;
-                                              -fx-border-color: transparent;
-                                              -fx-padding: 12 15;
-                                              -fx-font-size: 14px;
-                                              -fx-prompt-text-fill: #CBD5E0;"/>
+                                       style="-fx-background-color: transparent; -fx-border-color: transparent;
+                                              -fx-padding: 12 15; -fx-font-size: 14px; -fx-prompt-text-fill: #CBD5E0;"/>
                     </HBox>
                 </VBox>
 
@@ -135,13 +122,8 @@
                 <Button text="Se connecter" onAction="#handleLogin"
                         maxWidth="Infinity"
                         style="-fx-background-color: linear-gradient(to right, #A7B5E0, #D4A5BD);
-                               -fx-text-fill: white;
-                               -fx-font-size: 15px;
-                               -fx-font-weight: 600;
-                               -fx-padding: 16;
-                               -fx-background-radius: 8;
-                               -fx-cursor: hand;
-                               -fx-effect: dropshadow(gaussian, rgba(167,181,224,0.35), 12, 0, 0, 4);">
+                               -fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: 600;
+                               -fx-padding: 16; -fx-background-radius: 8; -fx-cursor: hand;">
                     <font><Font name="System Bold" size="15"/></font>
                 </Button>
 
@@ -157,9 +139,7 @@
                     <Label text="Pas encore de compte ?"
                            style="-fx-text-fill: #A0AEC0; -fx-font-size: 14px;"/>
                     <Hyperlink text="Créer un compte" onAction="#switchToSignUp"
-                               style="-fx-text-fill: #9FAEE0;
-                                      -fx-font-weight: 600;
-                                      -fx-font-size: 14px;"/>
+                               style="-fx-text-fill: #9FAEE0; -fx-font-weight: 600; -fx-font-size: 14px;"/>
                 </HBox>
 
             </VBox>

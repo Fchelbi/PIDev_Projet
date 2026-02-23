@@ -48,6 +48,7 @@ public class Profil {
     private final serviceUser us = new serviceUser();
     private String selectedPhotoPath = null;
     private String EDITABLE_STYLE;
+    private Runnable onPhotoChanged;
 
     private final String READONLY_STYLE =
             "-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; " +
@@ -302,6 +303,7 @@ public class Profil {
                 currentUser.setPhoto(selectedPhotoPath);
             }
 
+
             us.updateOne(currentUser);
             selectedPhotoPath = null;
             loadUserData();
@@ -309,6 +311,9 @@ public class Profil {
             cancelEdit();
             LightDialog.showSuccess("Succès", "Profil mis à jour !");
 
+            if (onPhotoChanged != null) {
+                onPhotoChanged.run();
+            }
         } catch (SQLException e) {
             LightDialog.showError("Erreur", "Impossible de sauvegarder.");
             e.printStackTrace();
@@ -342,5 +347,8 @@ public class Profil {
         pfNewPassword.setStyle(s);
         pfConfirmPassword.setStyle(s);
         tfRole.setEditable(false);
+    }
+    public void setOnPhotoChanged(Runnable callback) {
+        this.onPhotoChanged = callback;
     }
 }

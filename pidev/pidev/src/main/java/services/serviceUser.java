@@ -57,16 +57,7 @@ public class serviceUser implements CRUD<User> {
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
         while (rs.next()) {
-            User u = new User();
-            u.setId_user(rs.getInt("id_user"));
-            u.setNom(rs.getString("nom"));
-            u.setPrenom(rs.getString("prenom"));
-            u.setEmail(rs.getString("email"));
-            u.setMdp(rs.getString("mdp"));
-            u.setRole(rs.getString("role"));
-            u.setNum_tel(rs.getString("num_tel"));
-            u.setPhoto(rs.getString("photo"));
-            userList.add(u);
+            userList.add(mapResultSetToUser(rs));
         }
         return userList;
     }
@@ -79,16 +70,7 @@ public class serviceUser implements CRUD<User> {
             ps.setString(2, mdp);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                User u = new User();
-                u.setId_user(rs.getInt("id_user"));
-                u.setNom(rs.getString("nom"));
-                u.setPrenom(rs.getString("prenom"));
-                u.setEmail(rs.getString("email"));
-                u.setMdp(rs.getString("mdp"));
-                u.setRole(rs.getString("role"));
-                u.setNum_tel(rs.getString("num_tel"));
-                u.setPhoto(rs.getString("photo"));
-                return u;
+                return mapResultSetToUser(rs);
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -97,7 +79,7 @@ public class serviceUser implements CRUD<User> {
     }
 
     public boolean emailExists(String email) {
-        String req = "SELECT * FROM `user` WHERE email = ?";
+        String req = "SELECT id_user FROM `user` WHERE email = ?";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setString(1, email);
@@ -114,5 +96,58 @@ public class serviceUser implements CRUD<User> {
             throw new SQLException("Cet email est déjà utilisé !");
         }
         insertOne(user);
+    }
+
+    public User getUserById(int userId) throws SQLException {
+        String req = "SELECT * FROM user WHERE id_user = ?";
+        PreparedStatement ps = cnx.prepareStatement(req);
+        ps.setInt(1, userId);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return mapResultSetToUser(rs);
+        }
+        return null;
+    }
+
+    public User getUserByEmail(String email) throws SQLException {
+        String req = "SELECT * FROM user WHERE email = ?";
+        PreparedStatement ps = cnx.prepareStatement(req);
+        ps.setString(1, email);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return mapResultSetToUser(rs);
+        }
+        return null;
+    }
+
+    public void updatePassword(String email, String newPassword) throws SQLException {
+        // ✅ FIX: Vérifie que le nouveau mot de passe n'est pas vide
+        if (newPassword == null || newPassword.trim().isEmpty()) {
+            throw new SQLException("Le nouveau mot de passe ne peut pas être vide !");
+        }
+        String req = "UPDATE user SET mdp = ? WHERE email = ?";
+        PreparedStatement ps = cnx.prepareStatement(req);
+        ps.setString(1, newPassword);
+        ps.setString(2, email);
+        int rows = ps.executeUpdate();
+        if (rows > 0) {
+            System.out.println("✅ Mot de passe mis à jour pour: " + email);
+        } else {
+            throw new SQLException("Aucun utilisateur trouvé avec l'email: " + email);
+        }
+    }
+
+    // ✅ FIX: Méthode utilitaire pour éviter la duplication de code (DRY principle)
+    private User mapResultSetToUser(ResultSet rs) throws SQLException {
+        User u = new User();
+        u.setId_user(rs.getInt("id_user"));
+        u.setNom(rs.getString("nom"));
+        u.setPrenom(rs.getString("prenom"));
+        u.setEmail(rs.getString("email"));
+        u.setMdp(rs.getString("mdp"));
+        u.setRole(rs.getString("role"));
+        u.setNum_tel(rs.getString("num_tel"));
+        u.setPhoto(rs.getString("photo"));
+        return u;
     }
 }

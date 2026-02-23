@@ -14,9 +14,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import entities.User;
+import services.serviceUser;
 import utils.LightDialog;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class PatientHome {
     @FXML private Label lblWelcome, lblNbRdv, lblNbSeances;
@@ -27,24 +29,45 @@ public class PatientHome {
     @FXML private Circle headerAvatarCircle;
 
     private User currentUser;
+    private final serviceUser us = new serviceUser();
 
     public void setUser(User user) {
         this.currentUser = user;
-        lblWelcome.setText(user.getPrenom() + " " + user.getNom());
-        lblAvatarHeader.setText(user.getPrenom().substring(0, 1).toUpperCase());
-        lblNom.setText(user.getPrenom() + " " + user.getNom());
-        lblEmail.setText(user.getEmail());
-        lblTel.setText(user.getNum_tel() != null && !user.getNum_tel().isEmpty() ? user.getNum_tel() : "Non renseigné");
-        lblNbRdv.setText("0");
-        lblNbSeances.setText("0");
-        loadHeaderPhoto();
+        refreshUserData();
     }
 
-    private void loadHeaderPhoto() {
+    /**
+     * ✅ REFRESH USER DATA
+     */
+    public void refreshUserData() {
+        try {
+            User updatedUser = us.getUserById(currentUser.getId_user());
+            if (updatedUser != null) {
+                this.currentUser = updatedUser;
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur refresh: " + e.getMessage());
+        }
+
+        lblWelcome.setText(currentUser.getPrenom() + " " + currentUser.getNom());
+        lblAvatarHeader.setText(currentUser.getPrenom().substring(0, 1).toUpperCase());
+        lblNom.setText(currentUser.getPrenom() + " " + currentUser.getNom());
+        lblEmail.setText(currentUser.getEmail());
+        lblTel.setText(currentUser.getNum_tel() != null ? currentUser.getNum_tel() : "Non renseigné");
+        lblNbRdv.setText("0");
+        lblNbSeances.setText("0");
+        updateHeaderPhoto();
+    }
+
+    /**
+     * ✅ UPDATE PHOTO
+     */
+    private void updateHeaderPhoto() {
         if (currentUser.getPhoto() != null && !currentUser.getPhoto().isEmpty()) {
             File f = new File(currentUser.getPhoto());
             if (f.exists()) {
-                imgHeaderPhoto.setImage(new Image(f.toURI().toString(), 40, 40, false, true));
+                String url = f.toURI().toString() + "?t=" + System.currentTimeMillis();
+                imgHeaderPhoto.setImage(new Image(url, 40, 40, false, true));
                 imgHeaderPhoto.setVisible(true);
                 lblAvatarHeader.setVisible(false);
                 return;
@@ -54,7 +77,9 @@ public class PatientHome {
         lblAvatarHeader.setVisible(true);
     }
 
-    @FXML void initialize() { System.out.println("✅ PatientHome initialized"); }
+    @FXML void initialize() {
+        System.out.println("✅ PatientHome initialized");
+    }
 
     @FXML void showAccueil(ActionEvent event) {
         contentArea.getChildren().clear();
@@ -65,7 +90,14 @@ public class PatientHome {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
             ScrollPane page = loader.load();
-            ((Profil) loader.getController()).setCurrentUser(currentUser);
+            Profil profilController = loader.getController();
+            profilController.setCurrentUser(currentUser);
+
+            // ✅ CALLBACK
+            profilController.setOnPhotoChanged(() -> {
+                refreshUserData();
+            });
+
             contentArea.getChildren().clear();
             contentArea.getChildren().add(page);
         } catch (IOException e) {

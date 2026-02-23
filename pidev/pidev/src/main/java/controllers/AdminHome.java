@@ -41,30 +41,53 @@ public class AdminHome {
 
     public void setUser(User user) {
         this.currentUser = user;
-        lblWelcome.setText(user.getPrenom() + " " + user.getNom());
-        lblHeaderAvatar.setText(user.getPrenom().substring(0, 1).toUpperCase());
-        loadHeaderPhoto();
+        refreshUserData();
         refreshStats(null);
     }
 
     /**
-     * Charger la photo dans le header
+     * ✅ REFRESH COMPLET USER (photo + infos)
      */
-    private void loadHeaderPhoto() {
+    public void refreshUserData() {
+        try {
+            // Recharger depuis DB
+            User updatedUser = us.getUserById(currentUser.getId_user());
+            if (updatedUser != null) {
+                this.currentUser = updatedUser;
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Erreur refresh user: " + e.getMessage());
+        }
+
+        // Update UI
+        lblWelcome.setText(currentUser.getPrenom() + " " + currentUser.getNom());
+        lblHeaderAvatar.setText(currentUser.getPrenom().substring(0, 1).toUpperCase());
+        updateHeaderPhoto();  // ← Nouvelle méthode
+    }
+
+    /**
+     * ✅ UPDATE PHOTO HEADER (avec anti-cache)
+     */
+    private void updateHeaderPhoto() {
         if (currentUser.getPhoto() != null && !currentUser.getPhoto().isEmpty()) {
             File f = new File(currentUser.getPhoto());
             if (f.exists()) {
-                imgHeaderPhoto.setImage(new Image(f.toURI().toString(), 40, 40, false, true));
+                // Timestamp pour éviter cache
+                String imageUrl = f.toURI().toString() + "?t=" + System.currentTimeMillis();
+                imgHeaderPhoto.setImage(new Image(imageUrl, 40, 40, false, true));
                 imgHeaderPhoto.setVisible(true);
                 lblHeaderAvatar.setVisible(false);
                 return;
             }
         }
+        // Fallback: initiale
         imgHeaderPhoto.setVisible(false);
         lblHeaderAvatar.setVisible(true);
     }
 
-    @FXML void initialize() { System.out.println("✅ AdminHome initialized"); }
+    @FXML void initialize() {
+        System.out.println("✅ AdminHome initialized");
+    }
 
     @FXML void refreshStats(ActionEvent event) {
         try {
@@ -82,14 +105,15 @@ public class AdminHome {
             lblNbAdmins.setText(String.valueOf(a));
             lblNbTotal.setText(String.valueOf(users.size()));
 
+            // ✅ COULEURS COHÉRENTES
             ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList(
                     new PieChart.Data("Patients (" + p + ")", p),
                     new PieChart.Data("Coaches (" + c + ")", c),
                     new PieChart.Data("Admins (" + a + ")", a));
             pieChartRoles.setData(pieData);
-            pieChartRoles.getData().get(0).getNode().setStyle("-fx-pie-color: #A7B5E0;");
-            pieChartRoles.getData().get(1).getNode().setStyle("-fx-pie-color: #D4A5BD;");
-            pieChartRoles.getData().get(2).getNode().setStyle("-fx-pie-color: #C3CEF0;");
+            pieChartRoles.getData().get(0).getNode().setStyle("-fx-pie-color: #E0A7B5;");
+            pieChartRoles.getData().get(1).getNode().setStyle("-fx-pie-color: #81C995;");
+            pieChartRoles.getData().get(2).getNode().setStyle("-fx-pie-color: #A7B5E0;");
         } catch (SQLException e) {
             LightDialog.showError("Erreur", "Impossible de charger les statistiques.");
         }
@@ -120,7 +144,15 @@ public class AdminHome {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
             ScrollPane page = loader.load();
-            ((Profil) loader.getController()).setCurrentUser(currentUser);
+            Profil profilController = loader.getController();
+            profilController.setCurrentUser(currentUser);
+
+            // ✅ CALLBACK PHOTO CHANGED
+            profilController.setOnPhotoChanged(() -> {
+                System.out.println("🔄 Photo changed - refreshing...");
+                refreshUserData();
+            });
+
             contentArea.getChildren().clear();
             contentArea.getChildren().add(page);
         } catch (IOException e) {
