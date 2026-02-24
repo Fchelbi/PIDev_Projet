@@ -11,7 +11,8 @@
 
     <top>
         <HBox alignment="CENTER_RIGHT" spacing="15"
-              style="-fx-background-color: linear-gradient(to right, #e8a0bf, #7fc8f8); -fx-padding: 12 20;">
+              style="-fx-background-color: linear-gradient(to right, #e8a0bf, #7fc8f8);
+                     -fx-padding: 12 20;">
             <Label text="🏥 EchoCare"
                    style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"
                    HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
@@ -26,14 +27,16 @@
               style="-fx-background-color: linear-gradient(to bottom, #2d3436, #3d3d3d);">
             <padding><Insets top="20" bottom="20" left="10" right="10"/></padding>
 
-            <Label text="🏥" style="-fx-font-size: 40px;" alignment="CENTER" maxWidth="Infinity"/>
+            <Label text="🏥" style="-fx-font-size: 40px;" alignment="CENTER"
+                   maxWidth="Infinity"/>
             <Label text="EchoCare"
                    style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #e8a0bf;"
                    alignment="CENTER" maxWidth="Infinity"/>
             <Separator style="-fx-background-color: #636e72;"/>
 
             <Label text="MON ESPACE"
-                   style="-fx-text-fill: #636e72; -fx-font-size: 11px; -fx-padding: 10 0 5 15;"/>
+                   style="-fx-text-fill: #636e72; -fx-font-size: 11px;
+                          -fx-padding: 10 0 5 15;"/>
 
             <Button fx:id="btnAccueil" text="   🏠  Accueil"
                     onAction="#showAccueil"
@@ -47,10 +50,15 @@
                     onAction="#showMyFormations"
                     styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT"/>
 
+            <Button fx:id="btnMyResults" text="   📊  Mes Résultats"
+                    onAction="#showMyResults"
+                    styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+
             <Separator style="-fx-background-color: #636e72;"/>
 
             <Label text="AUTRE"
-                   style="-fx-text-fill: #636e72; -fx-font-size: 11px; -fx-padding: 10 0 5 15;"/>
+                   style="-fx-text-fill: #636e72; -fx-font-size: 11px;
+                          -fx-padding: 10 0 5 15;"/>
 
             <Button fx:id="btnJournal" text="   📰  Mon Journal"
                     onAction="#showJournal"
@@ -69,7 +77,8 @@
                     styleClass="sidebar-btn" maxWidth="Infinity" alignment="CENTER_LEFT"/>
 
             <Button text="   🚪  Déconnexion" onAction="#handleLogout"
-                    styleClass="sidebar-btn-logout" maxWidth="Infinity" alignment="CENTER_LEFT"/>
+                    styleClass="sidebar-btn-logout" maxWidth="Infinity"
+                    alignment="CENTER_LEFT"/>
         </VBox>
     </left>
 

@@ -3,11 +3,17 @@
     -fx-font-family: "Segoe UI", Arial, sans-serif;
 }
 
+/* ═══════════════════════════════
+   TOP BAR
+   ═══════════════════════════════ */
 .top-bar {
     -fx-background-color: #2d3436;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 3);
 }
 
+/* ═══════════════════════════════
+   SIDEBAR
+   ═══════════════════════════════ */
 .sidebar {
     -fx-background-color: #2d3436;
 }
@@ -20,14 +26,17 @@
     -fx-cursor: hand;
     -fx-background-radius: 8;
 }
+
 .sidebar-btn:hover {
     -fx-background-color: #636e72;
     -fx-text-fill: white;
 }
+
 .sidebar-btn-active {
     -fx-background-color: #4a90d9;
     -fx-text-fill: white;
 }
+
 .sidebar-btn-logout {
     -fx-background-color: transparent;
     -fx-text-fill: #d63031;
@@ -36,32 +45,43 @@
     -fx-cursor: hand;
     -fx-background-radius: 8;
 }
+
 .sidebar-btn-logout:hover {
     -fx-background-color: #d63031;
     -fx-text-fill: white;
 }
 
+/* ═══════════════════════════════
+   CONTENT AREA
+   ═══════════════════════════════ */
 .content-area {
     -fx-background-color: #f0f2f5;
 }
 
+/* ═══════════════════════════════
+   FORM STYLES
+   ═══════════════════════════════ */
 .form-card {
     -fx-background-color: white;
     -fx-background-radius: 10;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 2);
 }
+
 .form-label {
     -fx-font-size: 13px;
     -fx-font-weight: bold;
     -fx-text-fill: #2d3436;
 }
+
 .form-input {
     -fx-background-color: #f8f9fa;
     -fx-border-color: #dfe6e9;
     -fx-border-radius: 5;
     -fx-background-radius: 5;
     -fx-padding: 8;
+    -fx-text-fill: #2d3436;
 }
+
 .form-input:focused {
     -fx-border-color: #4a90d9;
 }
@@ -72,8 +92,12 @@
     -fx-border-radius: 20;
     -fx-background-radius: 20;
     -fx-padding: 8 15;
+    -fx-text-fill: #2d3436;
 }
 
+/* ═══════════════════════════════
+   BUTTONS
+   ═══════════════════════════════ */
 .btn-add-new {
     -fx-background-color: #00b894;
     -fx-text-fill: white;
@@ -83,7 +107,10 @@
     -fx-background-radius: 20;
     -fx-cursor: hand;
 }
-.btn-add-new:hover { -fx-background-color: #00a381; }
+
+.btn-add-new:hover {
+    -fx-background-color: #00a381;
+}
 
 .btn-save {
     -fx-background-color: #00b894;
@@ -93,7 +120,10 @@
     -fx-background-radius: 5;
     -fx-cursor: hand;
 }
-.btn-save:hover { -fx-background-color: #00a381; }
+
+.btn-save:hover {
+    -fx-background-color: #00a381;
+}
 
 .btn-clear {
     -fx-background-color: #636e72;
@@ -122,13 +152,98 @@
     -fx-cursor: hand;
 }
 
+/* ═══════════════════════════════
+   TABLE - FIXED: dark text
+   ═══════════════════════════════ */
+.table-view {
+    -fx-background-color: white;
+}
+
 .table-view .column-header {
     -fx-background-color: #4a90d9;
 }
+
 .table-view .column-header .label {
     -fx-text-fill: white;
     -fx-font-weight: bold;
 }
-.table-row-cell:selected {
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-view .table-row-cell:selected {
     -fx-background-color: #74b9ff;
+}
+
+.table-view .table-row-cell .text {
+    -fx-fill: #2d3436;
+}
+
+.table-view .table-row-cell:selected .text {
+    -fx-fill: white;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #2d3436;
+}
+
+/* ═══════════════════════════════
+   FIXED: Radio buttons readable
+   ═══════════════════════════════ */
+.radio-button {
+    -fx-text-fill: #2d3436;
+}
+
+.radio-button .text {
+    -fx-fill: #2d3436;
+}
+
+.check-box {
+    -fx-text-fill: #2d3436;
+}
+
+.check-box .text {
+    -fx-fill: #2d3436;
+}
+
+/* ═══════════════════════════════
+   FIXED: Labels readable
+   ═══════════════════════════════ */
+.label {
+    -fx-text-fill: #2d3436;
+}
+
+/* ═══════════════════════════════
+   ScrollPane transparent
+   ═══════════════════════════════ */
+.scroll-pane {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ═══════════════════════════════
+   ComboBox readable
+   ═══════════════════════════════ */
+.combo-box .list-cell {
+    -fx-text-fill: #2d3436;
+}
+
+.combo-box-popup .list-cell {
+    -fx-text-fill: #2d3436;
+}
+
+/* ═══════════════════════════════
+   Separator
+   ═══════════════════════════════ */
+.separator .line {
+    -fx-border-color: #dfe6e9;
 }

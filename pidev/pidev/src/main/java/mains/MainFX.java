@@ -10,12 +10,7 @@ public class MainFX extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // FOR ADMIN:
         Parent root = FXMLLoader.load(getClass().getResource("/AdminDashboard.fxml"));
-
-        // FOR PATIENT:
-        // Parent root = FXMLLoader.load(getClass().getResource("/PatientDashboard.fxml"));
-
         Scene scene = new Scene(root, 1100, 700);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         primaryStage.setTitle("EchoCare");
