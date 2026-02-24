@@ -75,4 +75,27 @@ public class ConsultationService {
         }
         return list;
     }
+
+    // 🔥 Vérifier s'il existe déjà un RDV confirmé au même moment
+    public boolean hasConflit(int psyId, String dateConsultation, int consultationId) throws SQLException {
+
+        String req = "SELECT COUNT(*) FROM consultation_en_ligne " +
+                "WHERE psychologue_id = ? " +
+                "AND date_consultation = ? " +
+                "AND statut = 'Confirmé' " +
+                "AND id <> ?";
+
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setInt(1, psyId);
+            ps.setString(2, dateConsultation);
+            ps.setInt(3, consultationId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; // 🔥 conflit si > 0
+                }
+            }
+        }
+        return false;
+    }
 }

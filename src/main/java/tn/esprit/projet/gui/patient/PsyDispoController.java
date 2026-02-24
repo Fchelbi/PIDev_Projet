@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import tn.esprit.projet.entities.Consultation;
 import tn.esprit.projet.services.ConsultationService;
+import tn.esprit.projet.services.SmsService;
 import tn.esprit.projet.utils.AlertUtils;
 
 import java.io.IOException;
@@ -36,20 +37,77 @@ public class PsyDispoController {
         colDate.setCellValueFactory(new PropertyValueFactory<>("dateConsultation"));
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
 
+        colStatut.setCellFactory(column -> new TableCell<Consultation, String>() {
+            @Override
+            protected void updateItem(String statut, boolean empty) {
+                super.updateItem(statut, empty);
+
+                if (empty || statut == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
+
+                setText(statut);
+
+                switch (statut) {
+                    case "Confirmé":
+                        setStyle("-fx-background-color: #c8e6c9; -fx-text-fill: #2e7d32; -fx-font-weight: bold;");
+                        break;
+
+                    case "À replanifier":
+                        setStyle("-fx-background-color: #ffcdd2; -fx-text-fill: #c62828; -fx-font-weight: bold;");
+                        break;
+
+                    case "En attente":
+                    default:
+                        setStyle("-fx-background-color: #ffe0b2; -fx-text-fill: #ef6c00; -fx-font-weight: bold;");
+                        break;
+                }
+            }
+        });
+
         refreshTable();
     }
 
     @FXML
     public void handleAccepter() {
         Consultation selected = tableRdv.getSelectionModel().getSelectedItem();
+
         if (selected == null) {
             AlertUtils.showError("Sélection", "Veuillez sélectionner un rendez-vous à accepter.");
             return;
         }
+
         try {
+            // 🔥 Vérification conflit AVANT acceptation
+            boolean conflit = consultationService.hasConflit(
+                    selected.getPsychologueId(),
+                    selected.getDateConsultation(),
+                    selected.getId()
+            );
+
+            if (conflit) {
+                AlertUtils.showError(
+                        "Conflit détecté",
+                        "⚠️ Vous avez déjà une consultation confirmée à cette heure."
+                );
+                return;
+            }
+
+            // ✅ pas de conflit → confirmer
             consultationService.updateStatut(selected.getId(), "Confirmé");
+            SmsService.envoyerSMS(
+                    "+21642253001", // numéro patient
+                    "Votre consultation a été confirmée par le psychologue."
+            );
+
+            // 🚀 HOOK SMS (on branchera après)
+            System.out.println("SMS confirmation envoyé au patient " + selected.getUtilisateurId());
+
             AlertUtils.showInfo("Succès", "Le rendez-vous a été confirmé.");
             refreshTable();
+
         } catch (SQLException e) {
             AlertUtils.showError("Erreur SQL", e.getMessage());
         }
@@ -64,6 +122,10 @@ public class PsyDispoController {
         }
         try {
             consultationService.updateStatut(selected.getId(), "À replanifier");
+            SmsService.envoyerSMS(
+                    "+21642253001",
+                    "Votre consultation doit être replanifiée. Merci de choisir une autre date."
+            );
             AlertUtils.showInfo("Statut mis à jour", "Le rendez-vous est marqué 'À replanifier'.");
             refreshTable();
         } catch (SQLException e) {

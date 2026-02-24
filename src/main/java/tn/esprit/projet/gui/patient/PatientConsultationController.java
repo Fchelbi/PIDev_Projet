@@ -21,8 +21,8 @@ import tn.esprit.projet.utils.AlertUtils;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
+import java.util.Objects;
+
 
 public class PatientConsultationController {
 
@@ -33,9 +33,9 @@ public class PatientConsultationController {
     @FXML private DatePicker dateRes;
     @FXML private TextField heureRes;
 
-    private ConsultationService consultationService = new ConsultationService();
-    private PsychologueService psychologueService = new PsychologueService();
-    private int CURRENT_USER_ID = 1;
+    private final ConsultationService consultationService = new ConsultationService();
+    private final PsychologueService psychologueService = new PsychologueService();
+    private final int CURRENT_USER_ID = 1;
 
     @FXML
     public void initialize() {
@@ -102,11 +102,10 @@ public class PatientConsultationController {
 
         // 1. Sélection
         Object selectedItem = tableConsultations.getSelectionModel().getSelectedItem();
-        if (!(selectedItem instanceof Psychologue)) {
+        if (!(selectedItem instanceof Psychologue selectedPsy)) {
             AlertUtils.showError("Sélection requise", "Veuillez sélectionner un psychologue dans la liste.");
             return;
         }
-        Psychologue selectedPsy = (Psychologue) selectedItem;
 
         // 2. Date
         LocalDate pickedDate = dateRes.getValue();
@@ -137,7 +136,7 @@ public class PatientConsultationController {
 
         // --- FIN CONTRÔLE DE SAISIE ---
 
-        String dateComplete = pickedDate.toString() + " " + heureStr;
+        String dateComplete = pickedDate + " " + heureStr;
         try {
             consultationService.reserverConsultation(selectedPsy.getId(), CURRENT_USER_ID, dateComplete);
             AlertUtils.showInfo("Succès", "Demande envoyée !");
@@ -162,7 +161,7 @@ public class PatientConsultationController {
     @FXML
     void retourMenu(ActionEvent event) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/MainMenu.fxml"));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/MainMenu.fxml")));
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.show();
