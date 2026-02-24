@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import tn.esprit.projet.entities.Consultation;
@@ -23,13 +24,16 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Objects;
 
-
 public class PatientConsultationController {
 
     @FXML private TableView<Object> tableConsultations;
     @FXML private TableColumn<Object, String> colId, colPsy, colDate, colStatut;
     @FXML private Label labelTitre;
     @FXML private VBox paneReservation;
+
+    // ✅ Injection de l'HBox du bouton annuler pour gérer sa visibilité
+    @FXML private HBox paneAnnuler;
+
     @FXML private DatePicker dateRes;
     @FXML private TextField heureRes;
 
@@ -39,15 +43,22 @@ public class PatientConsultationController {
 
     @FXML
     public void initialize() {
+        // Au démarrage, on initialise la vue des consultations
         showConsultationsView();
     }
 
+    /**
+     * Affiche l'historique des consultations du patient
+     */
     @FXML
     public void showConsultationsView() {
         labelTitre.setText("Mes consultations");
-        paneReservation.setVisible(false);
-        colId.setVisible(false);
+        paneReservation.setVisible(false); // Cache le formulaire de réservation
 
+        // ✅ AFFICHE le bouton d'annulation
+        if (paneAnnuler != null) paneAnnuler.setVisible(true);
+
+        colId.setVisible(false);
         colPsy.setText("Psychologue (Nom)");
         colDate.setText("Date du RDV");
         colStatut.setText("État du dossier");
@@ -68,29 +79,28 @@ public class PatientConsultationController {
         loadConsultations();
     }
 
+    /**
+     * Affiche la liste des psychologues disponibles pour réserver
+     */
     @FXML
     public void showPsyView() {
         labelTitre.setText("Liste des Psychologues");
-        paneReservation.setVisible(true);
+        paneReservation.setVisible(true); // Affiche le formulaire de réservation
 
-        // 1. On cache définitivement la colonne ID pour le patient
+        // ✅ CACHE le bouton d'annulation (ne doit pas être vu ici)
+        if (paneAnnuler != null) paneAnnuler.setVisible(false);
+
         colId.setVisible(false);
-
-        // 2. Configuration des titres de colonnes restants
         colPsy.setText("Psychologue");
         colDate.setText("Spécialité");
         colStatut.setText("Contact Email");
 
-        // 3. Liaison des données (On garde Nom + Prénom pour la clarté)
         colPsy.setCellValueFactory(cellData -> {
             Psychologue p = (Psychologue) cellData.getValue();
             return new SimpleStringProperty(p.getNom() + " " + p.getPrenom());
         });
 
-        // colDate affiche ici la spécialité (vu que tu réutilises la même colonne pour deux vues)
         colDate.setCellValueFactory(new PropertyValueFactory<>("specialite"));
-
-        // colStatut affiche ici l'email
         colStatut.setCellValueFactory(new PropertyValueFactory<>("email"));
 
         loadPsychologues();
@@ -98,16 +108,14 @@ public class PatientConsultationController {
 
     @FXML
     public void confirmBooking() {
-        // --- DÉBUT CONTRÔLE DE SAISIE RIGOUREUX ---
-
-        // 1. Sélection
         Object selectedItem = tableConsultations.getSelectionModel().getSelectedItem();
+
+        // Vérification que l'élément sélectionné est bien un Psychologue
         if (!(selectedItem instanceof Psychologue selectedPsy)) {
             AlertUtils.showError("Sélection requise", "Veuillez sélectionner un psychologue dans la liste.");
             return;
         }
 
-        // 2. Date
         LocalDate pickedDate = dateRes.getValue();
         if (pickedDate == null) {
             AlertUtils.showError("Date manquante", "Veuillez choisir une date.");
@@ -118,31 +126,51 @@ public class PatientConsultationController {
             return;
         }
 
-        // Optionnel : Bloquer les Week-ends (Samedi=6, Dimanche=7)
-        int dayValue = pickedDate.getDayOfWeek().getValue();
-        if (dayValue == 7) {
+        // Blocage du dimanche
+        if (pickedDate.getDayOfWeek().getValue() == 7) {
             AlertUtils.showError("Date invalide", "Le psy n'est pas dispo le dimanche.");
             return;
         }
 
-        // 3. Heure
         String heureStr = heureRes.getText().trim();
         if (!heureStr.matches("^([01]?[0-9]|2[0-3]):[0-5][0-9]$")) {
             AlertUtils.showError("Format invalide", "L'heure doit être au format HH:mm (ex: 09:00).");
             return;
         }
 
-
-
-        // --- FIN CONTRÔLE DE SAISIE ---
-
         String dateComplete = pickedDate + " " + heureStr;
         try {
             consultationService.reserverConsultation(selectedPsy.getId(), CURRENT_USER_ID, dateComplete);
             AlertUtils.showInfo("Succès", "Demande envoyée !");
-            showConsultationsView();
+            showConsultationsView(); // Retour auto vers la liste des RDV
         } catch (SQLException e) {
             AlertUtils.showError("Erreur DB", e.getMessage());
+        }
+    }
+
+    @FXML
+    public void handleCancelConsultation() {
+        Object selectedItem = tableConsultations.getSelectionModel().getSelectedItem();
+
+        if (!(selectedItem instanceof Consultation selectedConsultation)) {
+            AlertUtils.showError("Sélection requise", "Veuillez sélectionner une consultation à annuler.");
+            return;
+        }
+
+        // ✅ Boîte de confirmation native
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmation");
+        confirm.setHeaderText("Annuler la consultation ?");
+        confirm.setContentText("Voulez-vous vraiment supprimer ce rendez-vous ?");
+
+        if (confirm.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            try {
+                consultationService.deleteConsultation(selectedConsultation.getId());
+                AlertUtils.showInfo("Succès", "Consultation annulée.");
+                loadConsultations(); // Rafraîchir la table
+            } catch (SQLException e) {
+                AlertUtils.showError("Erreur DB", e.getMessage());
+            }
         }
     }
 

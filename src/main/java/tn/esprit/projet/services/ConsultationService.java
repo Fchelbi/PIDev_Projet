@@ -98,4 +98,13 @@ public class ConsultationService {
         }
         return false;
     }
+
+    // ✅ Supprimer consultation
+    public void deleteConsultation(int consultationId) throws SQLException {
+        String req = "DELETE FROM consultation_en_ligne WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setInt(1, consultationId);
+            ps.executeUpdate();
+        }
+    }
 }

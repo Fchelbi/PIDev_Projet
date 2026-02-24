@@ -1,40 +1,94 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="750.0" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="tn.esprit.projet.gui.patient.PatientConsultationController">
-    <children>
-        <Label fx:id="labelTitre" layoutX="50.0" layoutY="20.0" text="Mes consultations" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+<BorderPane prefHeight="600.0" prefWidth="900.0"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.projet.gui.patient.PatientConsultationController"
+            style="-fx-background-color: #F8F9FC;">
 
-        <TableView fx:id="tableConsultations" layoutX="50.0" layoutY="70.0" prefWidth="650.0" prefHeight="300.0">
-            <columns>
-                <TableColumn fx:id="colId" text="ID" prefWidth="50.0"/>
-                <TableColumn fx:id="colPsy" text="Psychologue" prefWidth="200.0"/>
-                <TableColumn fx:id="colDate" text="Date" prefWidth="200.0"/>
-                <TableColumn fx:id="colStatut" text="Statut" prefWidth="180.0"/>
-            </columns>
-        </TableView>
-
-        <VBox fx:id="paneReservation" layoutX="50.0" layoutY="380.0" spacing="10.0" visible="false">
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15"
+              style="-fx-background-color: white; -fx-padding: 15; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 10, 0, 0, 3);">
             <children>
-                <Label text="Réserver avec le psy sélectionné :" style="-fx-font-weight: bold;" />
-                <HBox spacing="10.0">
-                    <DatePicker fx:id="dateRes" promptText="Date" />
-                    <TextField fx:id="heureRes" promptText="Heure (ex: 15:30)" />
-                    <Button text="Confirmer la réservation" onAction="#confirmBooking" style="-fx-background-color: #27ae60; -fx-text-fill: white;" />
-                </HBox>
-            </children>
-        </VBox>
-
-        <HBox layoutX="150.0" layoutY="520.0" spacing="30.0">
-            <children>
-                <Button text="Mes Consultations" onAction="#showConsultationsView" prefWidth="200.0"/>
-                <Button text="Liste des Psychologues" onAction="#showPsyView" prefWidth="200.0" style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+                <Label text="🧠 EchoHub - Espace Patient"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="⬅ Menu" onAction="#retourMenu"
+                        style="-fx-background-color: #607D8B; -fx-text-fill: white;"/>
             </children>
         </HBox>
-    </children>
-    <Button text="⬅ Retour au Menu" onAction="#retourMenu"
-            style="-fx-background-color: #607D8B; -fx-text-fill: white;"
-            AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0" />
-</AnchorPane>
+    </top>
+
+    <left>
+        <VBox spacing="15" prefWidth="220"
+              style="-fx-background-color: linear-gradient(to bottom, #E0A7B5, #D4C5A5); -fx-padding: 20;">
+            <children>
+                <Label text="Navigation"
+                       style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                <Button text="📋 Mes consultations"
+                        onAction="#showConsultationsView"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: white;"/>
+
+                <Button text="👨‍⚕️ Liste des psychologues"
+                        onAction="#showPsyView"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: white;"/>
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="15" style="-fx-padding: 25;">
+            <children>
+
+                <Label fx:id="labelTitre"
+                       text="Mes consultations"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+
+                <TableView fx:id="tableConsultations"
+                           prefHeight="350"
+                           style="-fx-background-color: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 10, 0, 0, 3);">
+                    <columns>
+                        <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                        <TableColumn fx:id="colPsy" text="Psychologue" prefWidth="220"/>
+                        <TableColumn fx:id="colDate" text="Date" prefWidth="220"/>
+                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="200"/>
+                    </columns>
+                </TableView>
+
+                <HBox fx:id="paneAnnuler" alignment="CENTER_RIGHT">
+                    <children>
+                        <Button text="❌ Annuler consultation"
+                                onAction="#handleCancelConsultation"
+                                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                    </children>
+                </HBox>
+
+                <VBox fx:id="paneReservation" spacing="10" visible="false"
+                      style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 10, 0, 0, 3);">
+                    <children>
+                        <Label text="Réserver avec le psy sélectionné :"
+                               style="-fx-font-weight: bold;"/>
+
+                        <HBox spacing="10">
+                            <children>
+                                <DatePicker fx:id="dateRes" promptText="Date"/>
+                                <TextField fx:id="heureRes" promptText="Heure (ex: 15:30)"/>
+                                <Button text="Confirmer"
+                                        onAction="#confirmBooking"
+                                        style="-fx-background-color: #27ae60; -fx-text-fill: white;"/>
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+
+            </children>
+        </VBox>
+    </center>
+
+</BorderPane>

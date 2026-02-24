@@ -1,41 +1,100 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
-<AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.projet.gui.patient.AdminPsyController">
-    <children>
-        <HBox spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+<BorderPane prefHeight="700.0" prefWidth="1100.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.projet.gui.patient.AdminPsyController"
+            style="-fx-background-color: #F8F9FC;">
+
+    <!-- 🔷 TOP NAVBAR -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15"
+              style="-fx-background-color: white; -fx-padding: 18;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
             <children>
-                <VBox spacing="10.0" prefWidth="250.0">
-                    <children>
-                        <Label text="Gestion des Psychologues" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-                        <TextField fx:id="txtNom" promptText="Nom" />
-                        <TextField fx:id="txtPrenom" promptText="Prénom" />
-                        <TextField fx:id="txtEmail" promptText="Email" />
-                        <TextField fx:id="txtSpecialite" promptText="Spécialité" />
-            <Button onAction="#handleAjouter" text="Ajouter" style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
-            <Button onAction="#handleModifier" text="Modifier" style="-fx-background-color: #2196F3; -fx-text-fill: white;" />
-            <Button onAction="#handleSupprimer" text="Supprimer" style="-fx-background-color: #f44336; -fx-text-fill: white;" />
-                    </children>
-                    <padding>
-                        <Insets top="20.0" />
-                    </padding>
-                </VBox>
-
-                <TableView fx:id="tablePsys" HBox.hgrow="ALWAYS">
-                    <columns>
-                        <TableColumn fx:id="colNom" prefWidth="100.0" text="Nom" />
-                        <TableColumn fx:id="colPrenom" prefWidth="100.0" text="Prénom" />
-                        <TableColumn fx:id="colEmail" prefWidth="150.0" text="Email" />
-                        <TableColumn fx:id="colSpecialite" prefWidth="100.0" text="Spécialité" />
-                    </columns>
-                </TableView>
+                <Label text="🧠 EchoHub — Gestion des Psychologues"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="⬅ Menu"
+                        onAction="#retourMenu"
+                        style="-fx-background-color: #607D8B; -fx-text-fill: white;"/>
             </children>
         </HBox>
-    </children>
-    <Button text="⬅ Retour au Menu" onAction="#retourMenu"
-            style="-fx-background-color: #607D8B; -fx-text-fill: white;"
-            AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0" />
-</AnchorPane>
+    </top>
+
+    <!-- 🔷 SIDEBAR -->
+    <left>
+        <VBox prefWidth="220" spacing="15"
+              style="-fx-background-color: linear-gradient(to bottom, #A7B5E0, #D4A5BD);
+                     -fx-padding: 20;">
+            <children>
+
+                <Label text="Navigation"
+                       style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                <Button text="👥 Psychologues"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: white;"/>
+
+            </children>
+        </VBox>
+    </left>
+
+    <!-- 🔷 CENTER CONTENT -->
+    <center>
+        <HBox spacing="25" style="-fx-padding: 25;">
+
+            <!-- 🔹 FORM CARD -->
+            <VBox spacing="12" prefWidth="280"
+                  style="-fx-background-color: white; -fx-padding: 20;
+                         -fx-background-radius: 12;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);">
+
+                <Label text="➕ Ajouter / Modifier"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                <TextField fx:id="txtNom" promptText="Nom"/>
+                <TextField fx:id="txtPrenom" promptText="Prénom"/>
+                <TextField fx:id="txtEmail" promptText="Email"/>
+                <TextField fx:id="txtSpecialite" promptText="Spécialité"/>
+
+                <Button text="Ajouter"
+                        onAction="#handleAjouter"
+                        style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
+
+                <Button text="Modifier"
+                        onAction="#handleModifier"
+                        style="-fx-background-color: #2196F3; -fx-text-fill: white;"/>
+
+                <Button text="Supprimer"
+                        onAction="#handleSupprimer"
+                        style="-fx-background-color: #f44336; -fx-text-fill: white;"/>
+
+            </VBox>
+
+            <!-- 🔹 TABLE CARD -->
+            <VBox HBox.hgrow="ALWAYS"
+                  style="-fx-background-color: white; -fx-padding: 20;
+                         -fx-background-radius: 12;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 3);">
+
+                <Label text="📋 Liste des Psychologues"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                <TableView fx:id="tablePsys" prefHeight="500">
+                    <columns>
+                        <TableColumn fx:id="colNom" text="Nom" prefWidth="120"/>
+                        <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="120"/>
+                        <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
+                        <TableColumn fx:id="colSpecialite" text="Spécialité" prefWidth="150"/>
+                    </columns>
+                </TableView>
+
+            </VBox>
+
+        </HBox>
+    </center>
+
+</BorderPane>
