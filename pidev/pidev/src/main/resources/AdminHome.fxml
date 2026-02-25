@@ -106,6 +106,24 @@
                        style="-fx-text-fill: #A0AEC0; -fx-font-size: 14px; -fx-font-weight: 500;"/>
             </HBox>
 
+            <!-- ✅ Carte Psychologues -->
+            <HBox spacing="12" alignment="CENTER_LEFT"
+                  onMouseClicked="#showMap"
+                  style="-fx-padding: 14 25; -fx-cursor: hand;">
+                <Label text="🗺️" style="-fx-font-size: 16px;"/>
+                <Label text="Carte Psychologues"
+                       style="-fx-text-fill: #A0AEC0; -fx-font-size: 14px; -fx-font-weight: 500;"/>
+            </HBox>
+
+            <!-- ✅ Générer Rapport -->
+            <HBox spacing="12" alignment="CENTER_LEFT"
+                  onMouseClicked="#showRapport"
+                  style="-fx-padding: 14 25; -fx-cursor: hand;">
+                <Label text="📄" style="-fx-font-size: 16px;"/>
+                <Label text="Rapport PDF"
+                       style="-fx-text-fill: #A0AEC0; -fx-font-size: 14px; -fx-font-weight: 500;"/>
+            </HBox>
+
             <!-- Statistiques -->
             <HBox spacing="12" alignment="CENTER_LEFT"
                   style="-fx-padding: 14 25; -fx-cursor: hand;">
@@ -233,14 +251,17 @@
                         </Label>
                         <VBox spacing="10">
                             <Button text="➕ Nouvel utilisateur" maxWidth="Infinity"
+                                    onAction="#showUtilisateurs"
                                     style="-fx-background-color: #A7B5E0; -fx-text-fill: white;
                                            -fx-padding: 14; -fx-font-size: 14px; -fx-font-weight: 600;
                                            -fx-cursor: hand; -fx-background-radius: 8;"/>
-                            <Button text="👁️ Voir utilisateurs" maxWidth="Infinity"
+                            <Button text="🗺️ Carte Psychologues" maxWidth="Infinity"
+                                    onAction="#showMap"
                                     style="-fx-background-color: #D4A5BD; -fx-text-fill: white;
                                            -fx-padding: 14; -fx-font-size: 14px; -fx-font-weight: 600;
                                            -fx-cursor: hand; -fx-background-radius: 8;"/>
-                            <Button text="📊 Exporter" maxWidth="Infinity"
+                            <Button text="📄 Générer Rapport" maxWidth="Infinity"
+                                    onAction="#showRapport"
                                     style="-fx-background-color: white; -fx-text-fill: #A0AEC0;
                                            -fx-padding: 14; -fx-font-size: 14px; -fx-font-weight: 600;
                                            -fx-cursor: hand; -fx-background-radius: 8;

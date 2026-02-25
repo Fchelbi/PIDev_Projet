@@ -99,6 +99,18 @@
                            -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
                            -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
 
+            <!-- ✅ Carte Psychologues -->
+            <Button text="🗺️  Carte Psychologues" maxWidth="Infinity" onAction="#showMap"
+                    style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
+                           -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
+                           -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
+
+            <!-- ✅ Générer Rapport -->
+            <Button text="📄  Générer Rapport" maxWidth="Infinity" onAction="#showRapport"
+                    style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
+                           -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
+                           -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
+
             <Region VBox.vgrow="ALWAYS"/>
 
             <Separator style="-fx-background-color: #EDF2F7; -fx-padding: 0 20;"/>

@@ -45,34 +45,22 @@ public class AdminHome {
         refreshStats(null);
     }
 
-    /**
-     * ✅ REFRESH COMPLET USER (photo + infos)
-     */
     public void refreshUserData() {
         try {
-            // Recharger depuis DB
             User updatedUser = us.getUserById(currentUser.getId_user());
-            if (updatedUser != null) {
-                this.currentUser = updatedUser;
-            }
+            if (updatedUser != null) this.currentUser = updatedUser;
         } catch (SQLException e) {
-            System.err.println("❌ Erreur refresh user: " + e.getMessage());
+            System.err.println("Erreur refresh user: " + e.getMessage());
         }
-
-        // Update UI
         lblWelcome.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         lblHeaderAvatar.setText(currentUser.getPrenom().substring(0, 1).toUpperCase());
-        updateHeaderPhoto();  // ← Nouvelle méthode
+        updateHeaderPhoto();
     }
 
-    /**
-     * ✅ UPDATE PHOTO HEADER (avec anti-cache)
-     */
     private void updateHeaderPhoto() {
         if (currentUser.getPhoto() != null && !currentUser.getPhoto().isEmpty()) {
             File f = new File(currentUser.getPhoto());
             if (f.exists()) {
-                // Timestamp pour éviter cache
                 String imageUrl = f.toURI().toString() + "?t=" + System.currentTimeMillis();
                 imgHeaderPhoto.setImage(new Image(imageUrl, 40, 40, false, true));
                 imgHeaderPhoto.setVisible(true);
@@ -80,14 +68,11 @@ public class AdminHome {
                 return;
             }
         }
-        // Fallback: initiale
         imgHeaderPhoto.setVisible(false);
         lblHeaderAvatar.setVisible(true);
     }
 
-    @FXML void initialize() {
-        System.out.println("✅ AdminHome initialized");
-    }
+    @FXML void initialize() {}
 
     @FXML void refreshStats(ActionEvent event) {
         try {
@@ -96,8 +81,8 @@ public class AdminHome {
             for (User u : users) {
                 switch (u.getRole().toUpperCase()) {
                     case "PATIENT": p++; break;
-                    case "COACH": c++; break;
-                    case "ADMIN": a++; break;
+                    case "COACH":   c++; break;
+                    case "ADMIN":   a++; break;
                 }
             }
             lblNbPatients.setText(String.valueOf(p));
@@ -105,7 +90,6 @@ public class AdminHome {
             lblNbAdmins.setText(String.valueOf(a));
             lblNbTotal.setText(String.valueOf(users.size()));
 
-            // ✅ COULEURS COHÉRENTES
             ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList(
                     new PieChart.Data("Patients (" + p + ")", p),
                     new PieChart.Data("Coaches (" + c + ")", c),
@@ -140,19 +124,18 @@ public class AdminHome {
         }
     }
 
+    // ✅ FIX: surcharge ActionEvent pour bouton Quick Actions
+    @FXML void showUtilisateurs(ActionEvent event) {
+        showUtilisateurs((MouseEvent) null);
+    }
+
     @FXML void showProfil(MouseEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
             ScrollPane page = loader.load();
             Profil profilController = loader.getController();
             profilController.setCurrentUser(currentUser);
-
-            // ✅ CALLBACK PHOTO CHANGED
-            profilController.setOnPhotoChanged(() -> {
-                System.out.println("🔄 Photo changed - refreshing...");
-                refreshUserData();
-            });
-
+            profilController.setOnPhotoChanged(() -> refreshUserData());
             contentArea.getChildren().clear();
             contentArea.getChildren().add(page);
         } catch (IOException e) {
@@ -161,10 +144,50 @@ public class AdminHome {
         }
     }
 
+    @FXML void showMap(MouseEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Map.fxml"));
+            VBox page = loader.load();
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger la carte.");
+        }
+    }
+
+    // ✅ FIX: surcharge ActionEvent pour bouton Quick Actions "Carte Psychologues"
+    @FXML void showMap(ActionEvent event) {
+        showMap((MouseEvent) null);
+    }
+
+    @FXML void showRapport(MouseEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GenerateRapport.fxml"));
+            VBox page = loader.load();
+            // ✅ FIX: setCoach manquait dans la version originale
+            RapportController ctrl = loader.getController();
+            ctrl.setCoach(currentUser);
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger le rapport.");
+        }
+    }
+
+    // ✅ FIX: surcharge ActionEvent pour bouton Quick Actions "Générer Rapport"
+    @FXML void showRapport(ActionEvent event) {
+        showRapport((MouseEvent) null);
+    }
+
     private void highlightButton(HBox active) {
+        if (active == null) return;
         String reset = "-fx-padding: 14 25; -fx-cursor: hand;";
-        String activeStyle = "-fx-padding: 14 25; -fx-background-color: linear-gradient(to right, rgba(167,181,224,0.12), transparent); " +
-                "-fx-border-color: transparent transparent transparent #A7B5E0; -fx-border-width: 0 0 0 3; -fx-cursor: hand;";
+        String activeStyle = "-fx-padding: 14 25; " +
+                "-fx-background-color: linear-gradient(to right, rgba(167,181,224,0.12), transparent); " +
+                "-fx-border-color: transparent transparent transparent #A7B5E0; " +
+                "-fx-border-width: 0 0 0 3; -fx-cursor: hand;";
         btnDashboard.setStyle(reset);
         btnUtilisateurs.setStyle(reset);
         active.setStyle(activeStyle);

@@ -114,4 +114,15 @@ public class PatientHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+    @FXML void showMap(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Map.fxml"));
+            VBox page = loader.load();
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger la carte.");
+        }
+    }
 }
