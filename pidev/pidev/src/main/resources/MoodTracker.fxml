@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<!--
+    MoodTracker — Journal de bien-être du patient
+    Permet d'enregistrer son humeur quotidienne avec emoji, score et note
+-->
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.MoodTrackerController"
+      spacing="0" style="-fx-background-color: #FDF5F0;">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15"
+          style="-fx-padding: 22 30; -fx-background-color: white;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+        <VBox spacing="3">
+            <Label text="💛 Journal de Bien-Être"
+                   style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #5A3578;"/>
+            <Label text="Suivez votre humeur quotidienne"
+                   style="-fx-font-size: 12px; -fx-text-fill: #E8956D;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblToday"
+               style="-fx-font-size: 13px; -fx-text-fill: #7B4F9E; -fx-font-weight: 600;
+                      -fx-background-color: #F5E8F8; -fx-background-radius: 20; -fx-padding: 8 16;"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
+                style="-fx-background: transparent; -fx-background-color: transparent;">
+        <VBox style="-fx-padding: 25 30;" spacing="20">
+
+            <!-- Enregistrer humeur du jour -->
+            <VBox spacing="16"
+                  style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 25;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="🌅" style="-fx-font-size: 20px;"/>
+                    <Label text="Comment vous sentez-vous aujourd'hui ?"
+                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #5A3578;"/>
+                </HBox>
+
+                <!-- Emoji buttons -->
+                <HBox spacing="12" alignment="CENTER">
+                    <VBox alignment="CENTER" spacing="5" style="-fx-cursor: hand;"
+                          onMouseClicked="#selectMood1">
+                        <Label fx:id="moodBtn1" text="😢"
+                               style="-fx-font-size: 36px; -fx-background-color: #F5F5F5;
+                                      -fx-background-radius: 50; -fx-padding: 12;"/>
+                        <Label text="Mal" style="-fx-font-size: 10px; -fx-text-fill: #A0B0D0;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="5" style="-fx-cursor: hand;"
+                          onMouseClicked="#selectMood2">
+                        <Label fx:id="moodBtn2" text="😔"
+                               style="-fx-font-size: 36px; -fx-background-color: #F5F5F5;
+                                      -fx-background-radius: 50; -fx-padding: 12;"/>
+                        <Label text="Pas bien" style="-fx-font-size: 10px; -fx-text-fill: #A0B0D0;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="5" style="-fx-cursor: hand;"
+                          onMouseClicked="#selectMood3">
+                        <Label fx:id="moodBtn3" text="😐"
+                               style="-fx-font-size: 36px; -fx-background-color: #F5F5F5;
+                                      -fx-background-radius: 50; -fx-padding: 12;"/>
+                        <Label text="Neutre" style="-fx-font-size: 10px; -fx-text-fill: #A0B0D0;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="5" style="-fx-cursor: hand;"
+                          onMouseClicked="#selectMood4">
+                        <Label fx:id="moodBtn4" text="😊"
+                               style="-fx-font-size: 36px; -fx-background-color: #F5F5F5;
+                                      -fx-background-radius: 50; -fx-padding: 12;"/>
+                        <Label text="Bien" style="-fx-font-size: 10px; -fx-text-fill: #A0B0D0;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="5" style="-fx-cursor: hand;"
+                          onMouseClicked="#selectMood5">
+                        <Label fx:id="moodBtn5" text="😄"
+                               style="-fx-font-size: 36px; -fx-background-color: #F5F5F5;
+                                      -fx-background-radius: 50; -fx-padding: 12;"/>
+                        <Label text="Excellent" style="-fx-font-size: 10px; -fx-text-fill: #A0B0D0;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Score sélectionné -->
+                <HBox alignment="CENTER">
+                    <Label fx:id="lblSelectedMood" text="Sélectionnez votre humeur"
+                           style="-fx-font-size: 15px; -fx-text-fill: #C0A8D8; -fx-font-style: italic;"/>
+                </HBox>
+
+                <!-- Note libre -->
+                <VBox spacing="8">
+                    <Label text="📝 Note du jour (optionnel)"
+                           style="-fx-font-size: 13px; -fx-text-fill: #5A3578; -fx-font-weight: 600;"/>
+                    <TextArea fx:id="taNoteJour" promptText="Comment s'est passée votre journée ? Qu'avez-vous ressenti ?"
+                              prefHeight="90" wrapText="true"
+                              style="-fx-background-color: #FDF5F0; -fx-border-color: #F5E8F8;
+                                     -fx-border-radius: 10; -fx-background-radius: 10;
+                                     -fx-border-width: 1.5; -fx-padding: 12;
+                                     -fx-font-size: 13px; -fx-text-fill: #5A3578;
+                                     -fx-prompt-text-fill: #C8A8D8;"/>
+                </VBox>
+
+                <Button text="💾  Enregistrer mon humeur" onAction="#saveMood"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: linear-gradient(to right, #7B4F9E, #E8956D);
+                               -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: 700;
+                               -fx-padding: 14; -fx-background-radius: 10; -fx-cursor: hand;"/>
+            </VBox>
+
+            <!-- Historique humeur -->
+            <VBox spacing="14"
+                  style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 25;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="📊" style="-fx-font-size: 18px;"/>
+                    <Label text="Historique récent"
+                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #5A3578;"/>
+                </HBox>
+                <ListView fx:id="listHistorique" prefHeight="220"
+                          style="-fx-background-color: transparent; -fx-border-color: #F5E8F8;
+                                 -fx-border-radius: 10; -fx-background-radius: 10;"/>
+            </VBox>
+
+            <!-- Stats mini -->
+            <HBox spacing="15">
+                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="6"
+                      style="-fx-background-color: linear-gradient(to bottom right, #7B4F9E, #9B6FC0);
+                             -fx-background-radius: 14; -fx-padding: 20;">
+                    <Label fx:id="lblAvgMood" text="—"
+                           style="-fx-font-size: 28px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                    <Label text="Humeur moyenne" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.75);"/>
+                </VBox>
+                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="6"
+                      style="-fx-background-color: linear-gradient(to bottom right, #E8956D, #F5C87A);
+                             -fx-background-radius: 14; -fx-padding: 20;">
+                    <Label fx:id="lblTotalEntries" text="0"
+                           style="-fx-font-size: 28px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                    <Label text="Entrées totales" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.75);"/>
+                </VBox>
+                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="6"
+                      style="-fx-background-color: white; -fx-background-radius: 14; -fx-padding: 20;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+                    <Label fx:id="lblStreak" text="🔥 0"
+                           style="-fx-font-size: 24px; -fx-font-weight: 700; -fx-text-fill: #E8956D;"/>
+                    <Label text="Jours consécutifs" style="-fx-font-size: 11px; -fx-text-fill: #C8A8D8;"/>
+                </VBox>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>

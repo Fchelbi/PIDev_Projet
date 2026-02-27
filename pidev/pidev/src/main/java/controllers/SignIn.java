@@ -50,11 +50,17 @@ public class SignIn {
                 if (emailSent) {
                     VerificationCodeManager.storeCode(email, code, user);
                     LightDialog.showSuccess("Code envoyé", "Vérifiez votre email: " + email);
-                    navigateToVerifyCode(email);
                 } else {
-                    LightDialog.showError("Erreur",
-                            "Impossible d'envoyer le code.\nVérifiez la configuration email.");
+                    // ✅ FIX: Si email échoue, affiche le code en console (mode dev)
+                    // et continue quand même la navigation vers VerifyCode
+                    VerificationCodeManager.storeCode(email, code, user);
+                    System.out.println("⚠️ Email non envoyé. Code de test: " + code);
+                    LightDialog.showInfo("Mode développement",
+                            "Email non configuré.\nCode de vérification: " + code +
+                                    "\n(Visible aussi dans la console)");
                 }
+                // ✅ Navigation vers VerifyCode dans tous les cas
+                navigateToVerifyCode(email);
 
             } else {
                 LightDialog.showError("Erreur", "Email ou mot de passe incorrect!");

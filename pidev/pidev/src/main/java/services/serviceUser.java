@@ -57,7 +57,16 @@ public class serviceUser implements CRUD<User> {
         Statement st = cnx.createStatement();
         ResultSet rs = st.executeQuery(req);
         while (rs.next()) {
-            userList.add(mapResultSetToUser(rs));
+            User u = new User();
+            u.setId_user(rs.getInt("id_user"));
+            u.setNom(rs.getString("nom"));
+            u.setPrenom(rs.getString("prenom"));
+            u.setEmail(rs.getString("email"));
+            u.setMdp(rs.getString("mdp"));
+            u.setRole(rs.getString("role"));
+            u.setNum_tel(rs.getString("num_tel"));
+            u.setPhoto(rs.getString("photo"));
+            userList.add(u);
         }
         return userList;
     }
@@ -70,7 +79,16 @@ public class serviceUser implements CRUD<User> {
             ps.setString(2, mdp);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return mapResultSetToUser(rs);
+                User u = new User();
+                u.setId_user(rs.getInt("id_user"));
+                u.setNom(rs.getString("nom"));
+                u.setPrenom(rs.getString("prenom"));
+                u.setEmail(rs.getString("email"));
+                u.setMdp(rs.getString("mdp"));
+                u.setRole(rs.getString("role"));
+                u.setNum_tel(rs.getString("num_tel"));
+                u.setPhoto(rs.getString("photo"));
+                return u;
             }
         } catch (SQLException e) {
             System.err.println(e.getMessage());
@@ -79,7 +97,7 @@ public class serviceUser implements CRUD<User> {
     }
 
     public boolean emailExists(String email) {
-        String req = "SELECT id_user FROM `user` WHERE email = ?";
+        String req = "SELECT * FROM `user` WHERE email = ?";
         try {
             PreparedStatement ps = cnx.prepareStatement(req);
             ps.setString(1, email);
@@ -97,57 +115,117 @@ public class serviceUser implements CRUD<User> {
         }
         insertOne(user);
     }
+    // ✅ AJOUTER CES MÉTHODES À serviceUser.java
 
+    /**
+     * Récupérer user par ID
+     */
     public User getUserById(int userId) throws SQLException {
         String req = "SELECT * FROM user WHERE id_user = ?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setInt(1, userId);
         ResultSet rs = ps.executeQuery();
+
         if (rs.next()) {
-            return mapResultSetToUser(rs);
+            User u = new User();
+            u.setId_user(rs.getInt("id_user"));
+            u.setNom(rs.getString("nom"));
+            u.setPrenom(rs.getString("prenom"));
+            u.setEmail(rs.getString("email"));
+            u.setMdp(rs.getString("mdp"));
+            u.setRole(rs.getString("role"));
+            u.setNum_tel(rs.getString("num_tel"));
+            u.setPhoto(rs.getString("photo"));
+            return u;
         }
         return null;
     }
 
+    /**
+     * Récupérer user par email
+     */
     public User getUserByEmail(String email) throws SQLException {
         String req = "SELECT * FROM user WHERE email = ?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setString(1, email);
         ResultSet rs = ps.executeQuery();
+
         if (rs.next()) {
-            return mapResultSetToUser(rs);
+            User u = new User();
+            u.setId_user(rs.getInt("id_user"));
+            u.setNom(rs.getString("nom"));
+            u.setPrenom(rs.getString("prenom"));
+            u.setEmail(rs.getString("email"));
+            u.setMdp(rs.getString("mdp"));
+            u.setRole(rs.getString("role"));
+            u.setNum_tel(rs.getString("num_tel"));
+            u.setPhoto(rs.getString("photo"));
+            return u;
         }
         return null;
     }
 
+    /**
+     * Mettre à jour mot de passe
+     */
     public void updatePassword(String email, String newPassword) throws SQLException {
-        // ✅ FIX: Vérifie que le nouveau mot de passe n'est pas vide
-        if (newPassword == null || newPassword.trim().isEmpty()) {
-            throw new SQLException("Le nouveau mot de passe ne peut pas être vide !");
-        }
         String req = "UPDATE user SET mdp = ? WHERE email = ?";
         PreparedStatement ps = cnx.prepareStatement(req);
         ps.setString(1, newPassword);
         ps.setString(2, email);
         int rows = ps.executeUpdate();
+
         if (rows > 0) {
             System.out.println("✅ Mot de passe mis à jour pour: " + email);
         } else {
-            throw new SQLException("Aucun utilisateur trouvé avec l'email: " + email);
+            System.out.println("❌ Aucun user trouvé avec email: " + email);
         }
     }
 
-    // ✅ FIX: Méthode utilitaire pour éviter la duplication de code (DRY principle)
-    private User mapResultSetToUser(ResultSet rs) throws SQLException {
-        User u = new User();
-        u.setId_user(rs.getInt("id_user"));
-        u.setNom(rs.getString("nom"));
-        u.setPrenom(rs.getString("prenom"));
-        u.setEmail(rs.getString("email"));
-        u.setMdp(rs.getString("mdp"));
-        u.setRole(rs.getString("role"));
-        u.setNum_tel(rs.getString("num_tel"));
-        u.setPhoto(rs.getString("photo"));
-        return u;
+    /**
+     * Vérifie si un email est déjà utilisé par un AUTRE utilisateur (pour mise à jour profil)
+     */
+    public boolean emailExistsForOther(String email, int excludeUserId) {
+        String req = "SELECT id_user FROM user WHERE email = ? AND id_user != ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setString(1, email);
+            ps.setInt(2, excludeUserId);
+            return ps.executeQuery().next();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Vérifie si un mot de passe est déjà utilisé par un AUTRE utilisateur (pour mise à jour profil)
+     */
+    public boolean passwordExistsForOther(String mdp, int excludeUserId) {
+        String req = "SELECT id_user FROM user WHERE mdp = ? AND id_user != ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setString(1, mdp);
+            ps.setInt(2, excludeUserId);
+            return ps.executeQuery().next();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Vérifie si un mot de passe est déjà utilisé (pour inscription)
+     */
+    public boolean passwordExists(String mdp) {
+        String req = "SELECT id_user FROM user WHERE mdp = ?";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(req);
+            ps.setString(1, mdp);
+            return ps.executeQuery().next();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+        }
+        return false;
     }
 }
