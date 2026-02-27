@@ -45,8 +45,8 @@ public class VideoPlayerUtil {
     }
 
     /**
-     * YouTube Player - Shows ONLY the video (no YouTube page)
-     * Uses embed URL with black background to hide loading flashes
+     * YouTube Player — loads full watch page with CSS injection
+     * to hide everything except the video player
      */
     public static VBox createYouTubePlayer(String url) {
         VBox container = new VBox(0);
@@ -58,6 +58,8 @@ public class VideoPlayerUtil {
             return createErrorMessage("URL YouTube invalide", url);
         }
 
+        String watchUrl = "https://www.youtube.com/watch?v=" + videoId;
+
         try {
             WebView webView = new WebView();
             webView.setPrefHeight(500);
@@ -67,24 +69,55 @@ public class VideoPlayerUtil {
             WebEngine engine = webView.getEngine();
             engine.setJavaScriptEnabled(true);
 
-            // Real browser user-agent so YouTube doesn't block embed
+            // Chrome user-agent so YouTube serves modern page
             engine.setUserAgent(
                     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
                             "AppleWebKit/537.36 (KHTML, like Gecko) " +
                             "Chrome/120.0.0.0 Safari/537.36"
             );
 
-            // ═══ EMBED ONLY - just the video player, nothing else ═══
-            String embedUrl = "https://www.youtube.com/embed/" + videoId
-                    + "?autoplay=0&rel=0&modestbranding=1&showinfo=0&fs=1"
-                    + "&cc_load_policy=0&iv_load_policy=3&disablekb=0";
-
-            // Load embed URL directly (not loadContent)
-            engine.load(embedUrl);
-
-            // Fallback if embed fails
+            // After page loads, inject CSS to hide everything except video
             engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-                if (newState == javafx.concurrent.Worker.State.FAILED) {
+                if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                    // Hide comments, sidebar, header, etc — keep only the player
+                    engine.executeScript(
+                            "try {" +
+                                    "  var style = document.createElement('style');" +
+                                    "  style.textContent = '" +
+                                    "    #masthead-container, #header, ytd-masthead," +
+                                    "    #related, #comments, #meta, #info," +
+                                    "    #secondary, #below, #bottom-grid," +
+                                    "    ytd-comments, #subscribe-button," +
+                                    "    .ytp-chrome-top, #owner," +
+                                    "    ytd-merch-shelf-renderer," +
+                                    "    #description, #actions," +
+                                    "    tp-yt-app-header-layout," +
+                                    "    #chips-wrapper, #header-bar," +
+                                    "    #guide-button, #buttons," +
+                                    "    ytd-mini-guide-renderer," +
+                                    "    #guide-content, #page-header," +
+                                    "    ytd-engagement-panel-section-list-renderer," +
+                                    "    #cinematics, #clarify-box," +
+                                    "    .ytd-watch-flexy #panels," +
+                                    "    #chat, #ticket-shelf," +
+                                    "    ytd-watch-metadata," +
+                                    "    #above-the-fold, #top-row" +
+                                    "    { display: none !important; }" +
+                                    "    body { background: #000 !important; overflow: hidden !important; }" +
+                                    "    ytd-page-manager { margin-top: 0 !important; }" +
+                                    "    #page-manager { margin-top: 0 !important; }" +
+                                    "    #primary { max-width: 100% !important; }" +
+                                    "    .html5-video-player { width: 100% !important; height: 100vh !important; }" +
+                                    "    video { width: 100% !important; height: 100% !important; object-fit: contain !important; }" +
+                                    "    #movie_player { width: 100% !important; height: 100vh !important; }" +
+                                    "    .ytd-watch-flexy[flexy] #primary.ytd-watch-flexy { max-width: 100% !important; }" +
+                                    "    ytd-watch-flexy { --ytd-watch-flexy-panel-max-height: 100vh !important; }" +
+                                    "  ';" +
+                                    "  document.head.appendChild(style);" +
+                                    "  window.scrollTo(0, 0);" +
+                                    "} catch(e) {}"
+                    );
+                } else if (newState == javafx.concurrent.Worker.State.FAILED) {
                     javafx.application.Platform.runLater(() -> {
                         container.getChildren().clear();
                         container.getChildren().add(createYouTubeFallback(videoId, url));
@@ -92,13 +125,16 @@ public class VideoPlayerUtil {
                 }
             });
 
+            // Load the watch page
+            engine.load(watchUrl);
+
             engine.setOnError(event ->
                     System.err.println("WebView error: " + event.getMessage()));
 
             VBox.setVgrow(webView, Priority.ALWAYS);
 
             // Controls bar
-            HBox controlsBar = new HBox(15);
+            HBox controlsBar = new HBox(12);
             controlsBar.setAlignment(Pos.CENTER);
             controlsBar.setPadding(new Insets(8, 15, 8, 15));
             controlsBar.setStyle("-fx-background-color: #2d3436;");
@@ -116,8 +152,7 @@ public class VideoPlayerUtil {
                             "-fx-font-weight: bold; -fx-cursor: hand; " +
                             "-fx-background-radius: 5; -fx-padding: 8 15;"
             );
-            btnBrowser.setOnAction(e -> openInBrowser(
-                    "https://www.youtube.com/watch?v=" + videoId));
+            btnBrowser.setOnAction(e -> openInBrowser(watchUrl));
 
             HBox spacer = new HBox();
             HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -139,7 +174,7 @@ public class VideoPlayerUtil {
     }
 
     /**
-     * Fallback when embed cannot load
+     * Fallback when WebView cannot load YouTube
      */
     private static VBox createYouTubeFallback(String videoId, String originalUrl) {
         VBox fallback = new VBox(15);
@@ -190,11 +225,12 @@ public class VideoPlayerUtil {
             try {
                 String os = System.getProperty("os.name").toLowerCase();
                 if (os.contains("win")) {
-                    Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+                    Runtime.getRuntime().exec(
+                            "rundll32 url.dll,FileProtocolHandler " + url);
                 } else if (os.contains("mac")) {
-                    Runtime.getRuntime().exec("open " + url);
+                    Runtime.getRuntime().exec(new String[]{"open", url});
                 } else {
-                    Runtime.getRuntime().exec("xdg-open " + url);
+                    Runtime.getRuntime().exec(new String[]{"xdg-open", url});
                 }
             } catch (Exception ex) {
                 System.err.println("Cannot open browser: " + ex.getMessage());
