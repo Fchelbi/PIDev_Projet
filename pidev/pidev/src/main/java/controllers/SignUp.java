@@ -2,6 +2,7 @@ package controllers;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import entities.User;
@@ -32,6 +34,17 @@ public class SignUp {
     @FXML private ImageView imgSignUpPhoto;
     @FXML private Label lblPhotoPlaceholder;
     @FXML private StackPane photoContainer;
+
+    // ✅ FIX: Fields présents dans le FXML mais manquants dans le controller
+    @FXML private Label errNom;
+    @FXML private Label errPrenom;
+    @FXML private Label errEmail;
+    @FXML private Label errTel;
+    @FXML private Label errMdp;
+    @FXML private Label errConfirm;
+    @FXML private Label lblPhotoPath;
+    @FXML private Button btnPhoto;
+    @FXML private PasswordField pfConfirm;
 
     private final serviceUser us = new serviceUser();
     private String selectedPhotoPath = null;
@@ -95,30 +108,53 @@ public class SignUp {
         }
     }
 
-    @FXML
-    void handleSignUp(ActionEvent event) {
+    @FXML void handleSignUp(ActionEvent event) {
+        // Reset error labels
+        if (errNom != null) errNom.setText("");
+        if (errPrenom != null) errPrenom.setText("");
+        if (errEmail != null) errEmail.setText("");
+        if (errTel != null) errTel.setText("");
+        if (errMdp != null) errMdp.setText("");
+        if (errConfirm != null) errConfirm.setText("");
+
         String nom = tfNom.getText().trim(), prenom = tfPrenom.getText().trim(),
                 email = tfEmail.getText().trim(), mdp = pfMdp.getText(),
                 tel = tfTel.getText().trim(), role = cbRole.getValue();
 
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || mdp.isEmpty()) {
-            LightDialog.showError("Erreur", "Remplissez les champs obligatoires!"); return;
+        // ✅ Validation avec affichage inline des erreurs
+        boolean hasError = false;
+        if (nom.isEmpty() || !NAME_P.matcher(nom).matches() || nom.length() < 2) {
+            if (errNom != null) errNom.setText("Nom invalide (min 2 lettres)");
+            else { LightDialog.showError("Nom invalide", "Min 2 lettres!"); }
+            hasError = true;
         }
-        if (!NAME_P.matcher(nom).matches() || nom.length() < 2) {
-            LightDialog.showError("Nom invalide", "Min 2 lettres!"); return;
+        if (prenom.isEmpty() || !NAME_P.matcher(prenom).matches() || prenom.length() < 2) {
+            if (errPrenom != null) errPrenom.setText("Prénom invalide (min 2 lettres)");
+            else { LightDialog.showError("Prénom invalide", "Min 2 lettres!"); }
+            hasError = true;
         }
-        if (!NAME_P.matcher(prenom).matches() || prenom.length() < 2) {
-            LightDialog.showError("Prénom invalide", "Min 2 lettres!"); return;
-        }
-        if (!EMAIL_P.matcher(email).matches()) {
-            LightDialog.showError("Email invalide", "Email non valide!"); return;
+        if (email.isEmpty() || !EMAIL_P.matcher(email).matches()) {
+            if (errEmail != null) errEmail.setText("Email non valide");
+            else { LightDialog.showError("Email invalide", "Email non valide!"); }
+            hasError = true;
         }
         if (mdp.length() < 6) {
-            LightDialog.showError("Mot de passe", "Min 6 caractères!"); return;
+            if (errMdp != null) errMdp.setText("Min 6 caractères");
+            else { LightDialog.showError("Mot de passe", "Min 6 caractères!"); }
+            hasError = true;
+        }
+        // ✅ FIX: Vérification confirmation mot de passe
+        if (pfConfirm != null && !pfConfirm.getText().equals(mdp)) {
+            if (errConfirm != null) errConfirm.setText("Mots de passe différents");
+            else { LightDialog.showError("Mot de passe", "Ne correspondent pas!"); }
+            hasError = true;
         }
         if (!tel.isEmpty() && !PHONE_P.matcher(tel).matches()) {
-            LightDialog.showError("Téléphone", "8 chiffres!"); return;
+            if (errTel != null) errTel.setText("8 chiffres requis");
+            else { LightDialog.showError("Téléphone", "8 chiffres!"); }
+            hasError = true;
         }
+        if (hasError) return;
 
         try {
             User newUser = new User(0, nom, prenom, email, mdp, role, tel);
@@ -134,7 +170,7 @@ public class SignUp {
 
             us.signUp(newUser);
             LightDialog.showSuccess("Succès", "Compte créé avec succès!");
-            switchToLogin(null);
+            goToLogin(null);
 
         } catch (SQLException e) {
             LightDialog.showError("Erreur", e.getMessage());
@@ -145,7 +181,13 @@ public class SignUp {
     }
 
     @FXML
-    void switchToLogin(ActionEvent event) {
+    void switchToLogin(MouseEvent event) {
+        goToLogin(null);
+    }
+
+    // ✅ FIX: goToLogin — méthode appelée depuis le FXML (onAction="#goToLogin")
+    @FXML
+    void goToLogin(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
             ((Stage) tfNom.getScene().getWindow()).setScene(new Scene(root));

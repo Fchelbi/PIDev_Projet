@@ -23,6 +23,7 @@ import java.sql.SQLException;
 public class PatientHome {
     @FXML private Label lblWelcome, lblNbRdv, lblNbSeances;
     @FXML private Label lblNom, lblEmail, lblTel, lblAvatarHeader;
+    @FXML private Label lblWelcomeMain; // ✅ Bannière de bienvenue
     @FXML private StackPane contentArea;
     @FXML private VBox accueilPane;
     @FXML private ImageView imgHeaderPhoto;
@@ -50,6 +51,8 @@ public class PatientHome {
         }
 
         lblWelcome.setText(currentUser.getPrenom() + " " + currentUser.getNom());
+        if (lblWelcomeMain != null)
+            lblWelcomeMain.setText("Bonjour, " + currentUser.getPrenom() + " 🌸");
         lblAvatarHeader.setText(currentUser.getPrenom().substring(0, 1).toUpperCase());
         lblNom.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         lblEmail.setText(currentUser.getEmail());
@@ -81,10 +84,12 @@ public class PatientHome {
         System.out.println("✅ PatientHome initialized");
     }
 
+    // ✅ Supporte ActionEvent (Button onAction) ET MouseEvent (VBox onMouseClicked)
     @FXML void showAccueil(ActionEvent event) {
         contentArea.getChildren().clear();
         contentArea.getChildren().add(accueilPane);
     }
+    @FXML void showAccueil(javafx.scene.input.MouseEvent event) { showAccueil((ActionEvent)null); }
 
     @FXML void showProfil(ActionEvent event) {
         try {
@@ -92,12 +97,7 @@ public class PatientHome {
             ScrollPane page = loader.load();
             Profil profilController = loader.getController();
             profilController.setCurrentUser(currentUser);
-
-            // ✅ CALLBACK
-            profilController.setOnPhotoChanged(() -> {
-                refreshUserData();
-            });
-
+            profilController.setOnPhotoChanged(() -> { refreshUserData(); });
             contentArea.getChildren().clear();
             contentArea.getChildren().add(page);
         } catch (IOException e) {
@@ -105,6 +105,7 @@ public class PatientHome {
             LightDialog.showError("Erreur", "Impossible de charger le profil.");
         }
     }
+    @FXML void showProfil(javafx.scene.input.MouseEvent e) { showProfil((ActionEvent)null); }
 
     @FXML void handleLogout(ActionEvent event) {
         if (LightDialog.showConfirmation("Déconnexion", "Êtes-vous sûr ?", "👋")) {
@@ -114,6 +115,8 @@ public class PatientHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+    @FXML void handleLogout(javafx.scene.input.MouseEvent e) { handleLogout((ActionEvent)null); }
+
     @FXML void showMap(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Map.fxml"));
@@ -125,4 +128,5 @@ public class PatientHome {
             LightDialog.showError("Erreur", "Impossible de charger la carte.");
         }
     }
+    @FXML void showMap(javafx.scene.input.MouseEvent e) { showMap((ActionEvent)null); }
 }

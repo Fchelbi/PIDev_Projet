@@ -2,131 +2,125 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.shape.*?>
-<?import javafx.scene.web.*?>
+<?import javafx.geometry.*?>
 
-<VBox spacing="0" style="-fx-background-color: #FAF7F5;"
+<VBox spacing="0" style="-fx-background-color: #F2EDE8;"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.Map">
 
     <!-- Header -->
     <HBox spacing="15" alignment="CENTER_LEFT"
-          style="-fx-background-color: WHITE;
-                 -fx-padding: 18 25;
-                 -fx-effect: dropshadow(gaussian, rgba(124,107,196,0.08), 12, 0, 0, 3);">
-        <Label text="🗺️" style="-fx-font-size: 22px;"/>
+          style="-fx-background-color: white; -fx-padding: 18 25;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 2);">
+        <StackPane prefWidth="40" prefHeight="40">
+            <Circle radius="20" fill="#FFF0E0"/>
+            <Label text="🗺️" style="-fx-font-size: 18px;"/>
+        </StackPane>
         <VBox spacing="2">
-            <Label text="Trouver un Psychologue"
-                   style="-fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: #4A3B6B;">
-                <font><Font name="System Bold" size="20"/></font>
-            </Label>
-            <Label text="Trouvez un professionnel près de chez vous"
-                   style="-fx-font-size: 12px; -fx-text-fill: #A99BBE;"/>
+            <Label text="Carte des Psychologues"
+                   style="-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: #3D5A8A;"/>
+            <Label text="Trouvez un psychologue proche de vous — Tunisie"
+                   style="-fx-font-size: 11px; -fx-text-fill: #7B9ED9;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="lblResultCount" text="0 résultat(s)"
-               style="-fx-font-size: 13px; -fx-text-fill: #8B7FA3; -fx-font-weight: 600;
-                      -fx-background-color: #F5F0FA; -fx-padding: 8 18; -fx-background-radius: 20;"/>
+        <Label fx:id="lblResultCount" text=""
+               style="-fx-font-size: 11px; -fx-text-fill: #E8956D; -fx-font-weight: 600;"/>
     </HBox>
 
-    <HBox spacing="0" VBox.vgrow="ALWAYS">
+    <!-- Search bar -->
+    <HBox spacing="12" alignment="CENTER_LEFT"
+          style="-fx-padding: 15 25; -fx-background-color: white;
+                 -fx-border-color: transparent transparent #F0EDE8 transparent; -fx-border-width: 1;">
+        <Label text="🔍" style="-fx-font-size: 14px;"/>
+        <TextField fx:id="tfSearch"
+                   promptText="Rechercher un psychologue, spécialité, ville..."
+                   style="-fx-background-color: #F7F5F2; -fx-border-color: #E2DDD8;
+                          -fx-border-radius: 8; -fx-background-radius: 8;
+                          -fx-padding: 9 14; -fx-font-size: 13px;"
+                   HBox.hgrow="ALWAYS"/>
+        <Button text="Rechercher" onAction="#handleSearch"
+                style="-fx-background-color: #E8956D; -fx-text-fill: white;
+                       -fx-font-size: 12px; -fx-font-weight: 600;
+                       -fx-padding: 9 20; -fx-background-radius: 8; -fx-cursor: hand;"/>
+        <Button text="Tout afficher" onAction="#resetFilters"
+                style="-fx-background-color: #4A6FA5; -fx-text-fill: white;
+                       -fx-font-size: 12px; -fx-padding: 9 16;
+                       -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
 
-        <!-- Left Panel - Search & List -->
-        <VBox spacing="0" prefWidth="340"
-              style="-fx-background-color: WHITE;
-                     -fx-effect: dropshadow(gaussian, rgba(124,107,196,0.05), 10, 0, 3, 0);">
+    <!-- Content: List + Detail -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
 
-            <!-- Search -->
-            <VBox spacing="10" style="-fx-padding: 18;">
-                <HBox spacing="8">
-                    <TextField fx:id="tfSearch" promptText="Ville ou adresse..."
-                               HBox.hgrow="ALWAYS"
-                               style="-fx-background-color: #F8F5FC;
-                                      -fx-border-color: #E8DFF5;
-                                      -fx-border-radius: 10;
-                                      -fx-background-radius: 10;
-                                      -fx-border-width: 1.5;
-                                      -fx-padding: 10 14;
-                                      -fx-font-size: 13px;
-                                      -fx-prompt-text-fill: #CBBFE0;"/>
-                    <Button text="🔍" onAction="#handleSearch"
-                            style="-fx-background-color: linear-gradient(to right, #7C6BC4, #9B8DD4);
-                                   -fx-text-fill: white;
-                                   -fx-font-size: 14px;
-                                   -fx-padding: 10 14;
-                                   -fx-background-radius: 10;
-                                   -fx-cursor: hand;"/>
-                </HBox>
-
-                <!-- Filter Buttons -->
-                <HBox spacing="6">
-                    <Button text="✅ Ouverts" onAction="#filterOpen"
-                            style="-fx-background-color: #F0FAF4;
-                                   -fx-text-fill: #5FAD6F;
-                                   -fx-font-size: 11px;
-                                   -fx-font-weight: 600;
-                                   -fx-padding: 6 12;
-                                   -fx-background-radius: 15;
-                                   -fx-cursor: hand;"/>
-                    <Button text="⭐ Mieux notés" onAction="#filterTopRated"
-                            style="-fx-background-color: #FFF5F7;
-                                   -fx-text-fill: #E8B4C8;
-                                   -fx-font-size: 11px;
-                                   -fx-font-weight: 600;
-                                   -fx-padding: 6 12;
-                                   -fx-background-radius: 15;
-                                   -fx-cursor: hand;"/>
-                    <Button text="🔄 Tous" onAction="#resetFilters"
-                            style="-fx-background-color: #F5F0FA;
-                                   -fx-text-fill: #8B7FA3;
-                                   -fx-font-size: 11px;
-                                   -fx-font-weight: 600;
-                                   -fx-padding: 6 12;
-                                   -fx-background-radius: 15;
-                                   -fx-cursor: hand;"/>
-                </HBox>
-            </VBox>
-
-            <Separator style="-fx-background-color: #E8DFF5;"/>
-
-            <!-- Places List -->
+        <!-- Left: ListView -->
+        <VBox prefWidth="380" minWidth="320"
+              style="-fx-background-color: #F7F5F2;
+                     -fx-border-color: transparent #E2DDD8 transparent transparent;
+                     -fx-border-width: 1;">
+            <Label text="RÉSULTATS"
+                   style="-fx-padding: 12 20 8 20; -fx-font-size: 10px;
+                          -fx-font-weight: 600; -fx-letter-spacing: 2;
+                          -fx-text-fill: #7B9ED9;"/>
             <ListView fx:id="listPlaces" VBox.vgrow="ALWAYS"
-                      style="-fx-background-color: WHITE;
-                             -fx-border-color: transparent;"/>
-
-            <!-- Detail Card -->
-            <VBox fx:id="detailCard" spacing="8" visible="false" managed="false"
-                  style="-fx-background-color: linear-gradient(to bottom right, #F5F0FA, #FFF5F7);
-                         -fx-padding: 18;
-                         -fx-border-color: #E8DFF5;
-                         -fx-border-width: 1 0 0 0;">
-                <Label fx:id="lblSelectedName" text=""
-                       style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #4A3B6B;"/>
-                <Label fx:id="lblSelectedAddress" text=""
-                       style="-fx-font-size: 12px; -fx-text-fill: #8B7FA3;"/>
-                <HBox spacing="15">
-                    <Label fx:id="lblSelectedRating" text=""
-                           style="-fx-font-size: 13px; -fx-text-fill: #E8B4C8; -fx-font-weight: 600;"/>
-                    <Label fx:id="lblSelectedStatus" text=""
-                           style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
-                </HBox>
-                <Button text="📅 Prendre Rendez-vous"
-                        maxWidth="Infinity"
-                        style="-fx-background-color: linear-gradient(to right, #7C6BC4, #C4A8E0);
-                               -fx-text-fill: white;
-                               -fx-font-size: 13px;
-                               -fx-font-weight: 600;
-                               -fx-padding: 10;
-                               -fx-background-radius: 10;
-                               -fx-cursor: hand;"/>
-            </VBox>
+                      style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
         </VBox>
 
-        <!-- Right - Map -->
-        <StackPane HBox.hgrow="ALWAYS" style="-fx-padding: 0;">
-            <WebView fx:id="mapWebView"/>
-        </StackPane>
+        <!-- Right: Detail Card -->
+        <VBox fx:id="detailCard" HBox.hgrow="ALWAYS" spacing="20"
+              style="-fx-background-color: #FDFAF6; -fx-padding: 40;"
+              alignment="TOP_LEFT">
 
+            <!-- Placeholder quand rien sélectionné -->
+            <VBox alignment="CENTER" spacing="15" VBox.vgrow="ALWAYS">
+                <Label text="🗺️" style="-fx-font-size: 52px;"/>
+                <Label text="Sélectionnez un psychologue"
+                       style="-fx-font-size: 16px; -fx-font-weight: 600; -fx-text-fill: #3D5A8A;"/>
+                <Label text="Cliquez sur un nom — Google Maps s'ouvre automatiquement 🗺️"
+                       wrapText="true" textAlignment="CENTER"
+                       style="-fx-font-size: 12px; -fx-text-fill: #7B9ED9;"/>
+            </VBox>
+
+            <!-- ✅ Detail card avec bouton Google Maps -->
+            <VBox spacing="16" visible="false" managed="false"
+                  style="-fx-background-color: #FDFAF6; -fx-background-radius: 14;
+                         -fx-border-color: #D5E3F5; -fx-border-radius: 14; -fx-border-width: 1.5;
+                         -fx-padding: 25;">
+
+                <Label fx:id="lblSelectedName"
+                       style="-fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: #3D5A8A;"/>
+
+                <VBox spacing="10">
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="📍" style="-fx-font-size: 14px;"/>
+                        <Label fx:id="lblSelectedAddress"
+                               style="-fx-font-size: 13px; -fx-text-fill: #5A6A8A;" wrapText="true"/>
+                    </HBox>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="⭐" style="-fx-font-size: 14px;"/>
+                        <Label fx:id="lblSelectedRating"
+                               style="-fx-font-size: 13px; -fx-text-fill: #E8956D; -fx-font-weight: 600;"/>
+                    </HBox>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="🕐" style="-fx-font-size: 14px;"/>
+                        <Label fx:id="lblSelectedStatus"
+                               style="-fx-font-size: 13px; -fx-font-weight: 600;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- ✅ Bouton Google Maps -->
+                <Button text="🗺️  Ouvrir dans Google Maps" onAction="#openInGoogleMaps"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: #E8956D; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-font-weight: 700;
+                               -fx-padding: 12 20; -fx-background-radius: 10;
+                               -fx-cursor: hand;"/>
+
+                <Label text="💡 Cliquer sur un nom dans la liste ouvre aussi Maps directement"
+                       wrapText="true"
+                       style="-fx-font-size: 11px; -fx-text-fill: #BDD0EE; -fx-font-style: italic;"/>
+            </VBox>
+
+        </VBox>
     </HBox>
+
 </VBox>

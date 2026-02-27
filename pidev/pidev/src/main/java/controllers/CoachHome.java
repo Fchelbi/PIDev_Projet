@@ -85,6 +85,7 @@ public class CoachHome {
         contentArea.getChildren().clear();
         contentArea.getChildren().add(accueilPane);
     }
+    @FXML void showAccueil(javafx.scene.input.MouseEvent e) { showAccueil((ActionEvent)null); }
 
     @FXML void showProfil(ActionEvent event) {
         try {
@@ -92,12 +93,7 @@ public class CoachHome {
             ScrollPane page = loader.load();
             Profil profilController = loader.getController();
             profilController.setCurrentUser(currentUser);
-
-            // ✅ CALLBACK
-            profilController.setOnPhotoChanged(() -> {
-                refreshUserData();
-            });
-
+            profilController.setOnPhotoChanged(() -> { refreshUserData(); });
             contentArea.getChildren().clear();
             contentArea.getChildren().add(page);
         } catch (IOException e) {
@@ -105,6 +101,7 @@ public class CoachHome {
             LightDialog.showError("Erreur", "Impossible de charger le profil.");
         }
     }
+    @FXML void showProfil(javafx.scene.input.MouseEvent e) { showProfil((ActionEvent)null); }
 
     @FXML void handleLogout(ActionEvent event) {
         if (LightDialog.showConfirmation("Déconnexion", "Êtes-vous sûr ?", "👋")) {
@@ -114,6 +111,8 @@ public class CoachHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+    @FXML void handleLogout(javafx.scene.input.MouseEvent e) { handleLogout((ActionEvent)null); }
+
     @FXML void showMap(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Map.fxml"));
@@ -125,6 +124,7 @@ public class CoachHome {
             LightDialog.showError("Erreur", "Impossible de charger la carte.");
         }
     }
+    @FXML void showMap(javafx.scene.input.MouseEvent e) { showMap((ActionEvent)null); }
 
     @FXML void showRapport(ActionEvent event) {
         try {
@@ -139,4 +139,5 @@ public class CoachHome {
             LightDialog.showError("Erreur", "Impossible de charger la page.");
         }
     }
+    @FXML void showRapport(javafx.scene.input.MouseEvent e) { showRapport((ActionEvent)null); }
 }

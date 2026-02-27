@@ -5,265 +5,302 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
 
-<BorderPane prefHeight="750.0" prefWidth="1300.0"
-            xmlns="http://javafx.com/javafx/21"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="controllers.CoachHome"
-            style="-fx-background-color: #F8F9FC;">
+<!--
+    CoachHome — Palette "Forêt Apaisante"
+    🟢 Sidebar: #2D6A4F (vert forêt profond)
+    🌿 Accent: #52B788 / #74C69D
+    🟡 Highlight: #F5C87A
+    ⬜ Cards: #FDFAF6
+-->
+<HBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.CoachHome"
+      prefWidth="1200" prefHeight="780"
+      style="-fx-background-color: #F0F7F4;">
 
-    <!-- HEADER -->
-    <top>
-        <HBox style="-fx-background-color: white; -fx-padding: 18 30;
-                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 12, 0, 0, 2);"
-              spacing="25" alignment="CENTER_LEFT">
-            <HBox spacing="15" alignment="CENTER">
-                <StackPane>
-                    <Circle radius="22"
-                            fill="linear-gradient(to bottom right, #81C995, #A7D8B0)"/>
-                    <Label text="💪" style="-fx-font-size: 18px;"/>
-                </StackPane>
-                <Label text="Espace Coach"
-                       style="-fx-font-size: 20px; -fx-font-weight: 600; -fx-text-fill: #4A5568;">
-                    <font><Font name="System Bold" size="20"/></font>
-                </Label>
-            </HBox>
+    <!-- ══════════════════════════════════════════
+         SIDEBAR VERTE FORÊT
+    ══════════════════════════════════════════ -->
+    <VBox prefWidth="235" minWidth="235"
+          style="-fx-background-color: linear-gradient(to bottom, #2D6A4F, #1B4332);
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 3, 0);">
 
-            <Region HBox.hgrow="ALWAYS"/>
-
-            <HBox spacing="15" alignment="CENTER">
-                <Label fx:id="lblWelcome" text="Coach"
-                       style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #4A5568;"/>
-
-                <StackPane>
-                    <Circle fx:id="headerAvatarCircle" radius="20"
-                            fill="linear-gradient(to bottom right, #81C995, #A7D8B0)"/>
-                    <ImageView fx:id="imgHeaderPhoto" fitWidth="40" fitHeight="40"
-                               preserveRatio="false" smooth="true" visible="false">
-                        <clip>
-                            <Circle radius="20" centerX="20" centerY="20"/>
-                        </clip>
-                    </ImageView>
-                    <Label fx:id="lblAvatarHeader" text="C" textFill="WHITE"
-                           style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
-                </StackPane>
-
-                <Button text="🚪" onAction="#handleLogout"
-                        style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
-                               -fx-font-size: 18px; -fx-padding: 5 10; -fx-cursor: hand;"/>
-            </HBox>
-        </HBox>
-    </top>
-
-    <!-- SIDEBAR -->
-    <left>
-        <VBox style="-fx-background-color: white; -fx-padding: 25 0;
-                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 12, 0, 2, 0);"
-              spacing="8" prefWidth="250">
-
-            <VBox spacing="6" style="-fx-padding: 0 20 20 20;">
-                <Label text="NAVIGATION"
-                       style="-fx-text-fill: #CBD5E0; -fx-font-size: 11px;
-                              -fx-font-weight: 600; -fx-padding: 0 10;"/>
-            </VBox>
-
-            <!-- Accueil -->
-            <Button text="🏠  Accueil" maxWidth="Infinity" onAction="#showAccueil"
-                    style="-fx-background-color: linear-gradient(to right, rgba(129,201,149,0.15), transparent);
-                           -fx-text-fill: #5FAD6F; -fx-padding: 14 25; -fx-alignment: CENTER_LEFT;
-                           -fx-font-size: 14px; -fx-font-weight: 600; -fx-background-radius: 0;
-                           -fx-border-color: transparent transparent transparent #81C995;
-                           -fx-border-width: 0 0 0 3; -fx-cursor: hand;"/>
-
-            <!-- Mon Profil -->
-            <Button text="👤  Mon Profil" maxWidth="Infinity" onAction="#showProfil"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
-                           -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
-                           -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
-
-            <!-- Mes Patients -->
-            <Button text="👥  Mes Patients" maxWidth="Infinity"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
-                           -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
-                           -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
-
-            <!-- Mon Calendrier -->
-            <Button text="📅  Mon Calendrier" maxWidth="Infinity"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
-                           -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
-                           -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
-
-            <!-- Mes Séances -->
-            <Button text="🏋️  Mes Séances" maxWidth="Infinity"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
-                           -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
-                           -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
-
-            <!-- ✅ Carte Psychologues -->
-            <Button text="🗺️  Carte Psychologues" maxWidth="Infinity" onAction="#showMap"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
-                           -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
-                           -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
-
-            <!-- ✅ Générer Rapport -->
-            <Button text="📄  Générer Rapport" maxWidth="Infinity" onAction="#showRapport"
-                    style="-fx-background-color: transparent; -fx-text-fill: #A0AEC0;
-                           -fx-padding: 14 25; -fx-alignment: CENTER_LEFT; -fx-font-size: 14px;
-                           -fx-font-weight: 500; -fx-background-radius: 0; -fx-cursor: hand;"/>
-
-            <Region VBox.vgrow="ALWAYS"/>
-
-            <Separator style="-fx-background-color: #EDF2F7; -fx-padding: 0 20;"/>
-
-            <VBox alignment="CENTER" spacing="8"
-                  style="-fx-background-color: linear-gradient(to bottom, #D4EDDA, #A7D8B0);
-                         -fx-background-radius: 15; -fx-padding: 20;">
-                <Label text="💪" style="-fx-font-size: 28px;"/>
-                <Label text="Coach actif"
-                       style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #4A5568;"/>
-            </VBox>
+        <!-- Logo -->
+        <VBox alignment="CENTER" spacing="6"
+              style="-fx-padding: 28 20 20 20;
+                     -fx-border-color: transparent transparent rgba(255,255,255,0.1) transparent;
+                     -fx-border-width: 1;">
+            <StackPane prefWidth="56" prefHeight="56" alignment="CENTER">
+                <Circle radius="28" fill="#52B788" opacity="0.3"/>
+                <Circle radius="20" fill="#52B788"/>
+                <Label text="💪" style="-fx-font-size: 20px;"/>
+            </StackPane>
+            <Label text="EchoCare"
+                   style="-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+            <Label text="COACH"
+                   style="-fx-font-size: 10px; -fx-font-weight: 600; -fx-text-fill: #74C69D;
+                          -fx-letter-spacing: 2;"/>
         </VBox>
-    </left>
 
-    <!-- MAIN CONTENT -->
-    <center>
-        <StackPane fx:id="contentArea" style="-fx-padding: 30;">
+        <!-- Avatar -->
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-padding: 14 16; -fx-background-color: rgba(255,255,255,0.08);
+                     -fx-background-radius: 12; -fx-margin: 12;">
+            <VBox.margin><Insets top="12" left="12" right="12" bottom="5"/></VBox.margin>
+            <StackPane prefWidth="40" prefHeight="40">
+                <Circle radius="20" fill="#52B788"/>
+                <Label fx:id="lblAvatarHeader"
+                       style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 700;"/>
+                <ImageView fx:id="imgHeaderPhoto" fitWidth="40" fitHeight="40"
+                           preserveRatio="false" visible="false">
+                    <clip><Circle radius="20" centerX="20" centerY="20"/></clip>
+                </ImageView>
+            </StackPane>
+            <VBox spacing="2">
+                <Label fx:id="lblWelcome"
+                       style="-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: 600;"/>
+                <Label text="Psychologue"
+                       style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 10px;"/>
+            </VBox>
+        </HBox>
 
-            <VBox fx:id="accueilPane" spacing="25">
+        <Label text="NAVIGATION"
+               style="-fx-text-fill: rgba(255,255,255,0.35); -fx-font-size: 9px;
+                      -fx-letter-spacing: 2; -fx-padding: 18 20 8 22; -fx-font-weight: 600;"/>
 
-                <!-- Header -->
-                <HBox alignment="CENTER_LEFT" spacing="15">
-                    <VBox>
-                        <Label text="Bienvenue dans votre espace Coach"
-                               style="-fx-font-size: 28px; -fx-font-weight: 600; -fx-text-fill: #4A5568;">
-                            <font><Font name="System Bold" size="28"/></font>
-                        </Label>
-                        <Label text="Gérez vos patients et planifiez vos séances"
-                               style="-fx-font-size: 14px; -fx-text-fill: #A0AEC0; -fx-padding: 4 0 0 0;"/>
-                    </VBox>
+        <!-- Nav items -->
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <HBox prefWidth="4" prefHeight="44"
+                  style="-fx-min-width:4; -fx-max-width:4;
+                         -fx-background-color: #F5C87A; -fx-background-radius: 0 2 2 0;"/>
+            <VBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS"
+                  style="-fx-padding: 12 18 12 14; -fx-cursor: hand;
+                         -fx-background-color: rgba(255,255,255,0.12); -fx-background-radius: 0 10 10 0;"
+                  onMouseClicked="#showAccueil">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="⊞" style="-fx-font-size: 15px; -fx-text-fill: #F5C87A;"/>
+                    <Label text="Tableau de bord"
+                           style="-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: 500;"/>
                 </HBox>
+            </VBox>
+        </HBox>
 
-                <!-- Stats Cards -->
-                <HBox spacing="20" alignment="CENTER">
+        <VBox alignment="CENTER_LEFT"
+              style="-fx-padding: 12 18 12 18; -fx-cursor: hand; -fx-background-radius: 0 10 10 0;"
+              onMouseClicked="#showProfil">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="👤" style="-fx-font-size: 15px;"/>
+                <Label text="Mon Profil"
+                       style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13px;"/>
+            </HBox>
+        </VBox>
 
-                    <!-- Mes Patients -->
-                    <VBox style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 28;
-                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 12, 0, 0, 3);"
-                          alignment="CENTER" spacing="12" HBox.hgrow="ALWAYS">
-                        <StackPane>
-                            <Circle radius="30" fill="#81C995" opacity="0.3"/>
-                            <Label text="👥" style="-fx-font-size: 30px;"/>
-                        </StackPane>
-                        <Label fx:id="lblNbPatients" text="0"
-                               style="-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: #4A5568;"/>
-                        <Label text="Mes Patients"
-                               style="-fx-text-fill: #A0AEC0; -fx-font-size: 14px; -fx-font-weight: 500;"/>
+        <VBox alignment="CENTER_LEFT"
+              style="-fx-padding: 12 18 12 18; -fx-cursor: hand; -fx-background-radius: 0 10 10 0;"
+              onMouseClicked="#showMap">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="🗺️" style="-fx-font-size: 15px;"/>
+                <Label text="Carte Psychologues"
+                       style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13px;"/>
+            </HBox>
+        </VBox>
+
+        <VBox alignment="CENTER_LEFT"
+              style="-fx-padding: 12 18 12 18; -fx-cursor: hand; -fx-background-radius: 0 10 10 0;"
+              onMouseClicked="#showRapport">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="📄" style="-fx-font-size: 15px;"/>
+                <Label text="Générer Rapport"
+                       style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13px;"/>
+            </HBox>
+        </VBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <!-- Status + logout -->
+        <VBox style="-fx-padding: 15;
+                     -fx-border-color: rgba(255,255,255,0.1) transparent transparent transparent;
+                     -fx-border-width: 1;" spacing="10">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Circle radius="5" fill="#74C69D"/>
+                <Label text="Session active"
+                       style="-fx-text-fill: rgba(255,255,255,0.45); -fx-font-size: 10px;"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-cursor: hand;"
+                  onMouseClicked="#handleLogout">
+                <Label text="⎋" style="-fx-font-size: 14px; -fx-text-fill: #F5C87A;"/>
+                <Label text="Déconnexion"
+                       style="-fx-text-fill: rgba(255,255,255,0.55); -fx-font-size: 12px;"/>
+            </HBox>
+        </VBox>
+    </VBox>
+
+    <!-- ══════════════════════════════════════════
+         MAIN CONTENT
+    ══════════════════════════════════════════ -->
+    <StackPane fx:id="contentArea" HBox.hgrow="ALWAYS"
+               style="-fx-background-color: #F0F7F4;">
+
+        <VBox fx:id="accueilPane" spacing="0">
+
+            <!-- Topbar -->
+            <HBox alignment="CENTER_LEFT" spacing="15"
+                  style="-fx-padding: 22 30; -fx-background-color: white;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+                <VBox spacing="3">
+                    <Label text="Tableau de bord Coach"
+                           style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #1B4332;"/>
+                    <Label text="Suivez vos patients et gérez vos séances"
+                           style="-fx-font-size: 12px; -fx-text-fill: #52B788;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="👤 Mon Profil" onAction="#showProfil"
+                        style="-fx-background-color: #2D6A4F; -fx-text-fill: white;
+                               -fx-font-size: 12px; -fx-padding: 9 18; -fx-background-radius: 8;
+                               -fx-cursor: hand;"/>
+            </HBox>
+
+            <VBox style="-fx-padding: 28 30 20 30;" spacing="22">
+
+                <!-- Stat cards -->
+                <HBox spacing="18">
+
+                    <!-- Patients -->
+                    <VBox HBox.hgrow="ALWAYS" spacing="10"
+                          style="-fx-background-color: white; -fx-padding: 24;
+                                 -fx-background-radius: 16;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 2);">
+                        <HBox alignment="CENTER_LEFT" spacing="14">
+                            <StackPane prefWidth="48" prefHeight="48">
+                                <Circle radius="24" fill="#EAF7EF"/>
+                                <Label text="👥" style="-fx-font-size: 22px;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label text="MES PATIENTS"
+                                       style="-fx-font-size: 10px; -fx-letter-spacing: 1;
+                                              -fx-text-fill: #74C69D; -fx-font-weight: 600;"/>
+                                <Label fx:id="lblNbPatients" text="0"
+                                       style="-fx-font-size: 32px; -fx-font-weight: 700;
+                                              -fx-text-fill: #2D6A4F;"/>
+                            </VBox>
+                        </HBox>
+                        <Label text="patients assignés"
+                               style="-fx-font-size: 11px; -fx-text-fill: #A8C8B8;"/>
                     </VBox>
 
                     <!-- Séances -->
-                    <VBox style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 28;
-                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 12, 0, 0, 3);"
-                          alignment="CENTER" spacing="12" HBox.hgrow="ALWAYS">
-                        <StackPane>
-                            <Circle radius="30" fill="#A7B5E0" opacity="0.3"/>
-                            <Label text="📅" style="-fx-font-size: 30px;"/>
-                        </StackPane>
-                        <Label fx:id="lblNbSeances" text="0"
-                               style="-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: #4A5568;"/>
-                        <Label text="Séances aujourd'hui"
-                               style="-fx-text-fill: #A0AEC0; -fx-font-size: 14px; -fx-font-weight: 500;"/>
+                    <VBox HBox.hgrow="ALWAYS" spacing="10"
+                          style="-fx-background-color: white; -fx-padding: 24;
+                                 -fx-background-radius: 16;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0, 0, 2);">
+                        <HBox alignment="CENTER_LEFT" spacing="14">
+                            <StackPane prefWidth="48" prefHeight="48">
+                                <Circle radius="24" fill="#FFF8EC"/>
+                                <Label text="📅" style="-fx-font-size: 22px;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label text="SÉANCES"
+                                       style="-fx-font-size: 10px; -fx-letter-spacing: 1;
+                                              -fx-text-fill: #F5C87A; -fx-font-weight: 600;"/>
+                                <Label fx:id="lblNbSeances" text="0"
+                                       style="-fx-font-size: 32px; -fx-font-weight: 700;
+                                              -fx-text-fill: #2D6A4F;"/>
+                            </VBox>
+                        </HBox>
+                        <Label text="séances effectuées"
+                               style="-fx-font-size: 11px; -fx-text-fill: #A8C8B8;"/>
                     </VBox>
 
-                    <!-- Espace Coach -->
-                    <VBox style="-fx-background-color: linear-gradient(to bottom right, #81C995, #A7D8B0);
-                                 -fx-background-radius: 16; -fx-padding: 28;
-                                 -fx-effect: dropshadow(gaussian, rgba(129,201,149,0.25), 12, 0, 0, 3);"
-                          alignment="CENTER" spacing="12" HBox.hgrow="ALWAYS">
-                        <Label text="🏋️" style="-fx-font-size: 30px;"/>
-                        <Label text="Mon Espace"
-                               style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #4A5568;"/>
-                        <Label text="Gérer mes séances"
-                               style="-fx-font-size: 13px; -fx-text-fill: #5A6578; -fx-opacity: 0.9;"/>
+                    <!-- Carte coach verte gradient -->
+                    <VBox HBox.hgrow="ALWAYS" spacing="8"
+                          style="-fx-background-color: linear-gradient(to bottom right, #2D6A4F, #52B788);
+                                 -fx-padding: 24; -fx-background-radius: 16;
+                                 -fx-effect: dropshadow(gaussian, rgba(45,106,79,0.35), 12, 0, 0, 4);">
+                        <Label text="🌿" style="-fx-font-size: 28px;"/>
+                        <Label text="Espace Coach"
+                               style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                        <Label text="Vous faites une différence chaque jour 💚"
+                               style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.75);"
+                               wrapText="true"/>
                     </VBox>
                 </HBox>
 
                 <!-- Actions + Infos -->
-                <HBox spacing="20">
+                <HBox spacing="18">
 
                     <!-- Actions rapides -->
-                    <VBox spacing="15" HBox.hgrow="ALWAYS"
-                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 25;
-                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 12, 0, 0, 3);">
-                        <Label text="⚡ Actions rapides"
-                               style="-fx-font-size: 18px; -fx-font-weight: 600; -fx-text-fill: #4A5568;">
-                            <font><Font name="System Bold" size="18"/></font>
-                        </Label>
+                    <VBox spacing="14" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 24;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="⚡" style="-fx-font-size: 18px;"/>
+                            <Label text="Actions rapides"
+                                   style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #1B4332;"/>
+                        </HBox>
                         <VBox spacing="10">
-                            <Button text="➕  Nouvelle séance" maxWidth="Infinity"
-                                    style="-fx-background-color: #81C995; -fx-text-fill: white;
-                                           -fx-padding: 14; -fx-font-size: 14px; -fx-font-weight: 600;
-                                           -fx-cursor: hand; -fx-background-radius: 8;"/>
-                            <Button text="👥  Voir mes patients" maxWidth="Infinity"
-                                    style="-fx-background-color: #A7B5E0; -fx-text-fill: white;
-                                           -fx-padding: 14; -fx-font-size: 14px; -fx-font-weight: 600;
-                                           -fx-cursor: hand; -fx-background-radius: 8;"/>
-                            <Button text="👤  Mon Profil" maxWidth="Infinity" onAction="#showProfil"
-                                    style="-fx-background-color: #A7D8B0; -fx-text-fill: white;
-                                           -fx-padding: 14; -fx-font-size: 14px; -fx-font-weight: 600;
-                                           -fx-cursor: hand; -fx-background-radius: 8;"/>
+                            <Button text="🗺️  Carte des psychologues" maxWidth="Infinity" onAction="#showMap"
+                                    style="-fx-background-color: #2D6A4F; -fx-text-fill: white;
+                                           -fx-padding: 13; -fx-font-size: 13px; -fx-font-weight: 600;
+                                           -fx-cursor: hand; -fx-background-radius: 10;"/>
+                            <Button text="📄  Générer un rapport PDF" maxWidth="Infinity" onAction="#showRapport"
+                                    style="-fx-background-color: #52B788; -fx-text-fill: white;
+                                           -fx-padding: 13; -fx-font-size: 13px; -fx-font-weight: 600;
+                                           -fx-cursor: hand; -fx-background-radius: 10;"/>
+                            <Button text="👤  Modifier mon profil" maxWidth="Infinity" onAction="#showProfil"
+                                    style="-fx-background-color: #F5C87A; -fx-text-fill: #1B4332;
+                                           -fx-padding: 13; -fx-font-size: 13px; -fx-font-weight: 600;
+                                           -fx-cursor: hand; -fx-background-radius: 10;"/>
                         </VBox>
                     </VBox>
 
                     <!-- Mes Informations -->
-                    <VBox spacing="15" prefWidth="350"
-                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 25;
-                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 12, 0, 0, 3);">
-                        <Label text="📋 Mes Informations"
-                               style="-fx-font-size: 18px; -fx-font-weight: 600; -fx-text-fill: #4A5568;">
-                            <font><Font name="System Bold" size="18"/></font>
-                        </Label>
-                        <Separator style="-fx-background-color: #EDF2F7;"/>
+                    <VBox spacing="14" prefWidth="320"
+                          style="-fx-background-color: white; -fx-background-radius: 16; -fx-padding: 24;
+                                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="📋" style="-fx-font-size: 18px;"/>
+                            <Label text="Mes Informations"
+                                   style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #1B4332;"/>
+                        </HBox>
+                        <Separator style="-fx-background-color: #EAF7EF;"/>
                         <VBox spacing="12">
-                            <HBox spacing="10">
-                                <Label text="Nom:"
-                                       style="-fx-font-weight: 600; -fx-text-fill: #718096; -fx-font-size: 13px;"/>
-                                <Label fx:id="lblNom" text="-"
-                                       style="-fx-text-fill: #4A5568; -fx-font-size: 13px;"/>
+                            <HBox spacing="8">
+                                <Label text="Nom :" style="-fx-font-weight: 600; -fx-text-fill: #52B788; -fx-font-size: 13px;"/>
+                                <Label fx:id="lblNom" text="—" style="-fx-text-fill: #2D6A4F; -fx-font-size: 13px;"/>
                             </HBox>
-                            <HBox spacing="10">
-                                <Label text="Email:"
-                                       style="-fx-font-weight: 600; -fx-text-fill: #718096; -fx-font-size: 13px;"/>
-                                <Label fx:id="lblEmail" text="-"
-                                       style="-fx-text-fill: #4A5568; -fx-font-size: 13px;"/>
+                            <HBox spacing="8">
+                                <Label text="Email :" style="-fx-font-weight: 600; -fx-text-fill: #52B788; -fx-font-size: 13px;"/>
+                                <Label fx:id="lblEmail" text="—" style="-fx-text-fill: #2D6A4F; -fx-font-size: 13px;"/>
                             </HBox>
-                            <HBox spacing="10">
-                                <Label text="Tél:"
-                                       style="-fx-font-weight: 600; -fx-text-fill: #718096; -fx-font-size: 13px;"/>
-                                <Label fx:id="lblTel" text="-"
-                                       style="-fx-text-fill: #4A5568; -fx-font-size: 13px;"/>
+                            <HBox spacing="8">
+                                <Label text="Tél :" style="-fx-font-weight: 600; -fx-text-fill: #52B788; -fx-font-size: 13px;"/>
+                                <Label fx:id="lblTel" text="—" style="-fx-text-fill: #2D6A4F; -fx-font-size: 13px;"/>
                             </HBox>
                         </VBox>
-                        <Button text="Voir profil complet →" onAction="#showProfil"
-                                style="-fx-background-color: transparent; -fx-text-fill: #5FAD6F;
-                                       -fx-font-size: 13px; -fx-font-weight: 600;
-                                       -fx-cursor: hand; -fx-padding: 5 0;"/>
+                        <Region VBox.vgrow="ALWAYS"/>
+                        <HBox alignment="CENTER">
+                            <Button text="Voir profil complet →" onAction="#showProfil"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #52B788;
+                                           -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;"/>
+                        </HBox>
                     </VBox>
                 </HBox>
 
-                <!-- Notification -->
-                <HBox style="-fx-background-color: #E8F5E9; -fx-background-radius: 12; -fx-padding: 18;"
-                      spacing="12" alignment="CENTER_LEFT">
-                    <Label text="💡" style="-fx-font-size: 22px;"/>
+                <!-- Banner -->
+                <HBox style="-fx-background-color: linear-gradient(to right, #EAF7EF, #D0F0E0);
+                             -fx-background-radius: 14; -fx-padding: 18;"
+                      spacing="14" alignment="CENTER_LEFT">
+                    <Label text="🌿" style="-fx-font-size: 28px;"/>
                     <VBox spacing="4">
-                        <Label text="Bienvenue sur votre espace coach !"
-                               style="-fx-font-weight: 600; -fx-text-fill: #5FAD6F; -fx-font-size: 14px;"/>
-                        <Label text="Planifiez vos séances, suivez vos patients et gérez votre calendrier."
-                               style="-fx-text-fill: #718096; -fx-font-size: 13px;" wrapText="true"/>
+                        <Label text="Bienvenue dans votre espace coach !"
+                               style="-fx-font-weight: 700; -fx-text-fill: #2D6A4F; -fx-font-size: 14px;"/>
+                        <Label text="Planifiez vos séances, suivez vos patients et contribuez à leur bien-être mental."
+                               style="-fx-text-fill: #52B788; -fx-font-size: 12px;" wrapText="true"/>
                     </VBox>
                 </HBox>
-
             </VBox>
-        </StackPane>
-    </center>
-
-</BorderPane>
+        </VBox>
+    </StackPane>
+</HBox>
