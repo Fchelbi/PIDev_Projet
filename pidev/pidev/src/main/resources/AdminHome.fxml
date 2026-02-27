@@ -122,8 +122,26 @@
                            style="-fx-text-fill: rgba(255,255,255,0.75); -fx-font-size: 13px;"/>
                 </HBox>
             </VBox>
-        </HBox>
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <!-- This is the small vertical indicator bar on the left -->
+            <HBox fx:id="indicFormations" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width: 4; -fx-max-width: 4; -fx-background-color: transparent; -fx-background-radius: 0 2 2 0;"/>
 
+            <!-- The actual clickable VBox -->
+            <VBox fx:id="navFormations" alignment="CENTER_LEFT"
+                  style="-fx-padding: 12 20 12 16; -fx-cursor: hand; -fx-background-color: transparent; -fx-background-radius: 0 10 10 0;"
+                  onMouseClicked="#showFormations"
+                  onMouseEntered="#onNavFormationsEnter"
+                  onMouseExited="#onNavFormationsExit"
+                  HBox.hgrow="ALWAYS">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <!-- UPDATED SYMBOL HERE -->
+                    <Label text="📚" style="-fx-font-size: 16px;"/>
+                    <Label text="Formations"
+                           style="-fx-text-fill: rgba(255,255,255,0.75); -fx-font-size: 13px; -fx-font-weight: bold;"/>
+                </HBox>
+            </VBox>
+        </HBox>
         <Region VBox.vgrow="ALWAYS"/>
 
         <!-- Status + Logout -->
