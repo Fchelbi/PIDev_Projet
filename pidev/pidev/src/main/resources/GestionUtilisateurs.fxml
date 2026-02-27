@@ -4,69 +4,138 @@
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox spacing="20" style="-fx-background-color: #F2EDE8; -fx-padding: 30;"
+<!--
+    GestionUtilisateurs — Palette EchoCare
+    Bleu: #4A6FA5 | Coral: #E8956D | Warm bg: #FDFAF6
+-->
+<VBox spacing="0" style="-fx-background-color: #F2EDE8;"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.GestionUtilisateurs">
 
-    <HBox alignment="CENTER_LEFT" spacing="20">
-        <Label text="👥 Gestion des Utilisateurs" style="-fx-font-size: 28px; -fx-font-weight: 600; -fx-text-fill: #3D5A8A;">
-            <font><Font name="System Bold" size="28"/></font></Label>
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="18"
+          style="-fx-padding: 22 30; -fx-background-color: white;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+        <VBox spacing="3">
+            <Label text="👥 Gestion des Utilisateurs"
+                   style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #3D5A8A;"/>
+            <Label text="Gérez tous les comptes de la plateforme EchoCare"
+                   style="-fx-font-size: 12px; -fx-text-fill: #7B9ED9;"/>
+        </VBox>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="🔄 Actualiser" onAction="#refreshTable"
-                style="-fx-background-color: white; -fx-text-fill: #7B9ED9; -fx-padding: 10 18;
-                       -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand; -fx-background-radius: 8;
-                       -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1.5;"/>
-        <Button text="➕ Ajouter" onAction="#showAjouterDialog"
-                style="-fx-background-color: linear-gradient(to right, #E8956D, #F5C87A); -fx-text-fill: white;
-                       -fx-padding: 10 18; -fx-font-size: 14px; -fx-font-weight: 600; -fx-cursor: hand; -fx-background-radius: 8;"/>
+        <Button text="🔄  Actualiser" onAction="#refreshTable"
+                style="-fx-background-color: #F6F3F0; -fx-text-fill: #5A6A8A; -fx-padding: 10 18;
+                       -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand;
+                       -fx-background-radius: 9; -fx-border-color: #D5E3F5;
+                       -fx-border-radius: 9; -fx-border-width: 1.5;"/>
+        <Button text="➕  Ajouter un utilisateur" onAction="#showAjouterDialog"
+                style="-fx-background-color: #E8956D; -fx-text-fill: white;
+                       -fx-padding: 10 20; -fx-font-size: 13px; -fx-font-weight: 700;
+                       -fx-cursor: hand; -fx-background-radius: 9;
+                       -fx-effect: dropshadow(gaussian, rgba(232,149,109,0.3), 8, 0, 0, 3);"/>
     </HBox>
 
-    <HBox spacing="15" alignment="CENTER_LEFT"
-          style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 12;
-                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 12, 0, 0, 3);">
-        <Label text="🔍" style="-fx-font-size: 16px;"/>
-        <TextField fx:id="tfSearch" promptText="Rechercher..." prefWidth="300"
-                   style="-fx-background-color: #F6F3F0; -fx-border-color: #E2E8F0; -fx-border-radius: 8;
-                          -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 10; -fx-font-size: 13px;
-                          -fx-prompt-text-fill: #CBD5E0;"/>
-        <ComboBox fx:id="cbFilterRole" prefWidth="160"
-                  style="-fx-background-color: #F6F3F0; -fx-border-color: #E2E8F0; -fx-border-radius: 8;
-                         -fx-background-radius: 8; -fx-font-size: 13px;"/>
-        <Button text="Rechercher" onAction="#handleSearch"
-                style="-fx-background-color: #7B9ED9; -fx-text-fill: white; -fx-padding: 8 16;
-                       -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 8;"/>
-        <Button text="Réinitialiser" onAction="#resetFilters"
-                style="-fx-background-color: #F0EBE5; -fx-text-fill: #5A6A8A; -fx-padding: 8 16;
-                       -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 8;"/>
-    </HBox>
+    <VBox style="-fx-padding: 22 28;" spacing="18" VBox.vgrow="ALWAYS">
 
-    <TableView fx:id="tableUsers" style="-fx-background-color: white; -fx-background-radius: 12;" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn text="Nom" prefWidth="160">
-                <cellValueFactory><PropertyValueFactory property="nom"/></cellValueFactory></TableColumn>
-            <TableColumn text="Prénom" prefWidth="160">
-                <cellValueFactory><PropertyValueFactory property="prenom"/></cellValueFactory></TableColumn>
-            <TableColumn text="Email" prefWidth="220">
-                <cellValueFactory><PropertyValueFactory property="email"/></cellValueFactory></TableColumn>
-            <TableColumn text="Téléphone" prefWidth="120" style="-fx-alignment: CENTER;">
-                <cellValueFactory><PropertyValueFactory property="num_tel"/></cellValueFactory></TableColumn>
-            <TableColumn text="Rôle" prefWidth="100" style="-fx-alignment: CENTER;">
-                <cellValueFactory><PropertyValueFactory property="role"/></cellValueFactory></TableColumn>
-            <TableColumn fx:id="colActions" text="Actions" prefWidth="200" style="-fx-alignment: CENTER;" sortable="false"/>
-        </columns>
-        <placeholder>
-            <VBox alignment="CENTER" spacing="10" style="-fx-padding: 40;">
-                <Label text="📋" style="-fx-font-size: 48px;"/>
-                <Label text="Aucun utilisateur trouvé" style="-fx-font-size: 16px; -fx-text-fill: #7B9ED9;"/>
-            </VBox>
-        </placeholder>
-    </TableView>
+        <!-- Stats rapides -->
+        <HBox spacing="14">
+            <HBox HBox.hgrow="ALWAYS" spacing="12" alignment="CENTER_LEFT"
+                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 16 20;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);">
+                <StackPane prefWidth="36" prefHeight="36">
+                    <Circle radius="18" fill="#EEF4FF"/>
+                    <Label text="👥" style="-fx-font-size: 16px;"/>
+                </StackPane>
+                <VBox spacing="1">
+                    <Label fx:id="lblTotalUsers" text="0"
+                           style="-fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: #3D5A8A;"/>
+                    <Label text="Total utilisateurs"
+                           style="-fx-font-size: 10px; -fx-text-fill: #7B9ED9;"/>
+                </VBox>
+            </HBox>
+            <HBox HBox.hgrow="ALWAYS" spacing="12" alignment="CENTER_LEFT"
+                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 16 20;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);">
+                <StackPane prefWidth="36" prefHeight="36">
+                    <Circle radius="18" fill="#FFF3EC"/>
+                    <Label text="👤" style="-fx-font-size: 16px;"/>
+                </StackPane>
+                <VBox spacing="1">
+                    <Label fx:id="lblFilteredCount" text="0"
+                           style="-fx-font-size: 20px; -fx-font-weight: 700; -fx-text-fill: #E8956D;"/>
+                    <Label text="Affichés"
+                           style="-fx-font-size: 10px; -fx-text-fill: #F5C87A;"/>
+                </VBox>
+            </HBox>
+        </HBox>
 
-    <HBox spacing="20" alignment="CENTER_LEFT"
-          style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 12;">
-        <Label fx:id="lblTotalUsers" text="Total: 0" style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #3D5A8A;"/>
-        <Separator orientation="VERTICAL"/>
-        <Label fx:id="lblFilteredCount" text="Affichés: 0" style="-fx-font-size: 13px; -fx-text-fill: #7B9ED9;"/>
-    </HBox>
+        <!-- Search bar -->
+        <HBox spacing="12" alignment="CENTER_LEFT"
+              style="-fx-background-color: white; -fx-padding: 14 18; -fx-background-radius: 12;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);">
+            <Label text="🔍" style="-fx-font-size: 16px;"/>
+            <TextField fx:id="tfSearch" promptText="Rechercher par nom, email, rôle..."
+                       prefWidth="280" HBox.hgrow="ALWAYS"
+                       style="-fx-background-color: #F6F3F0; -fx-border-color: #D5E3F5;
+                              -fx-border-radius: 9; -fx-background-radius: 9; -fx-border-width: 1.5;
+                              -fx-padding: 10 14; -fx-font-size: 13px; -fx-text-fill: #3D5A8A;
+                              -fx-prompt-text-fill: #C0D3EB;"/>
+            <ComboBox fx:id="cbFilterRole" prefWidth="150" promptText="Tous les rôles"
+                      style="-fx-background-color: #F6F3F0; -fx-border-color: #D5E3F5;
+                             -fx-border-radius: 9; -fx-background-radius: 9;
+                             -fx-font-size: 13px; -fx-border-width: 1.5;"/>
+            <Button text="Rechercher" onAction="#handleSearch"
+                    style="-fx-background-color: #4A6FA5; -fx-text-fill: white; -fx-padding: 9 18;
+                           -fx-font-size: 13px; -fx-font-weight: 600; -fx-cursor: hand; -fx-background-radius: 9;"/>
+            <Button text="Réinitialiser" onAction="#resetFilters"
+                    style="-fx-background-color: #F6F3F0; -fx-text-fill: #5A6A8A; -fx-padding: 9 14;
+                           -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 9;
+                           -fx-border-color: #D5E3F5; -fx-border-radius: 9; -fx-border-width: 1;"/>
+        </HBox>
+
+        <!-- Table -->
+        <TableView fx:id="tableUsers" VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: white; -fx-background-radius: 14;
+                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);
+                          -fx-border-color: transparent; -fx-table-cell-border-color: #F2EDE8;">
+            <columns>
+                <TableColumn text="Nom" prefWidth="145"
+                             style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #3D5A8A;">
+                    <cellValueFactory><PropertyValueFactory property="nom"/></cellValueFactory>
+                </TableColumn>
+                <TableColumn text="Prénom" prefWidth="145"
+                             style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #3D5A8A;">
+                    <cellValueFactory><PropertyValueFactory property="prenom"/></cellValueFactory>
+                </TableColumn>
+                <TableColumn text="Email" prefWidth="220"
+                             style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #3D5A8A;">
+                    <cellValueFactory><PropertyValueFactory property="email"/></cellValueFactory>
+                </TableColumn>
+                <TableColumn text="Téléphone" prefWidth="120" style="-fx-alignment: CENTER;
+                             -fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #3D5A8A;">
+                    <cellValueFactory><PropertyValueFactory property="num_tel"/></cellValueFactory>
+                </TableColumn>
+                <TableColumn text="Rôle" prefWidth="100" style="-fx-alignment: CENTER;
+                             -fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #3D5A8A;">
+                    <cellValueFactory><PropertyValueFactory property="role"/></cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="200"
+                             style="-fx-alignment: CENTER; -fx-font-size: 13px;
+                                    -fx-font-weight: 600; -fx-text-fill: #3D5A8A;"
+                             sortable="false"/>
+            </columns>
+            <placeholder>
+                <VBox alignment="CENTER" spacing="12" style="-fx-padding: 50;">
+                    <Label text="📋" style="-fx-font-size: 52px;"/>
+                    <Label text="Aucun utilisateur trouvé"
+                           style="-fx-font-size: 16px; -fx-text-fill: #7B9ED9; -fx-font-weight: 600;"/>
+                    <Label text="Utilisez le bouton ➕ pour en ajouter"
+                           style="-fx-font-size: 12px; -fx-text-fill: #C0D3EB;"/>
+                </VBox>
+            </placeholder>
+        </TableView>
+
+    </VBox>
 </VBox>

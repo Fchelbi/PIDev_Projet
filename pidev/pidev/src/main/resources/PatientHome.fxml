@@ -107,6 +107,19 @@
             </HBox>
         </VBox>
 
+        <!-- ✅ FEATURE 1: Journal de bien-être -->
+        <VBox alignment="CENTER_LEFT"
+              style="-fx-padding: 12 18 12 18; -fx-cursor: hand;"
+              onMouseClicked="#showMoodTracker">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="💛" style="-fx-font-size: 15px;"/>
+                <Label text="Journal de bien-être"
+                       style="-fx-text-fill: rgba(255,255,255,0.7); -fx-font-size: 13px;"/>
+                <Label text="NEW" style="-fx-font-size: 8px; -fx-text-fill: #5A3578; -fx-font-weight: 700;
+                               -fx-background-color: #F5C87A; -fx-background-radius: 6; -fx-padding: 2 5;"/>
+            </HBox>
+        </VBox>
+
         <Region VBox.vgrow="ALWAYS"/>
 
         <!-- Motivation quote mini -->
@@ -261,6 +274,7 @@
                                                -fx-padding: 13; -fx-font-size: 13px; -fx-font-weight: 600;
                                                -fx-cursor: hand; -fx-background-radius: 10;"/>
                                 <Button text="💛  Journal de bien-être" maxWidth="Infinity"
+                                        onAction="#showMoodTracker"
                                         style="-fx-background-color: #F5C87A; -fx-text-fill: #5A3578;
                                                -fx-padding: 13; -fx-font-size: 13px; -fx-font-weight: 600;
                                                -fx-cursor: hand; -fx-background-radius: 10;"/>

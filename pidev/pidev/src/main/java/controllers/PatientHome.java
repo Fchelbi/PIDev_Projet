@@ -23,7 +23,6 @@ import java.sql.SQLException;
 public class PatientHome {
     @FXML private Label lblWelcome, lblNbRdv, lblNbSeances;
     @FXML private Label lblNom, lblEmail, lblTel, lblAvatarHeader;
-    @FXML private Label lblWelcomeMain; // ✅ Bannière de bienvenue
     @FXML private StackPane contentArea;
     @FXML private VBox accueilPane;
     @FXML private ImageView imgHeaderPhoto;
@@ -51,8 +50,6 @@ public class PatientHome {
         }
 
         lblWelcome.setText(currentUser.getPrenom() + " " + currentUser.getNom());
-        if (lblWelcomeMain != null)
-            lblWelcomeMain.setText("Bonjour, " + currentUser.getPrenom() + " 🌸");
         lblAvatarHeader.setText(currentUser.getPrenom().substring(0, 1).toUpperCase());
         lblNom.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         lblEmail.setText(currentUser.getEmail());
@@ -84,12 +81,10 @@ public class PatientHome {
         System.out.println("✅ PatientHome initialized");
     }
 
-    // ✅ Supporte ActionEvent (Button onAction) ET MouseEvent (VBox onMouseClicked)
     @FXML void showAccueil(ActionEvent event) {
         contentArea.getChildren().clear();
         contentArea.getChildren().add(accueilPane);
     }
-    @FXML void showAccueil(javafx.scene.input.MouseEvent event) { showAccueil((ActionEvent)null); }
 
     @FXML void showProfil(ActionEvent event) {
         try {
@@ -97,7 +92,12 @@ public class PatientHome {
             ScrollPane page = loader.load();
             Profil profilController = loader.getController();
             profilController.setCurrentUser(currentUser);
-            profilController.setOnPhotoChanged(() -> { refreshUserData(); });
+
+            // ✅ CALLBACK
+            profilController.setOnPhotoChanged(() -> {
+                refreshUserData();
+            });
+
             contentArea.getChildren().clear();
             contentArea.getChildren().add(page);
         } catch (IOException e) {
@@ -105,18 +105,19 @@ public class PatientHome {
             LightDialog.showError("Erreur", "Impossible de charger le profil.");
         }
     }
-    @FXML void showProfil(javafx.scene.input.MouseEvent e) { showProfil((ActionEvent)null); }
 
     @FXML void handleLogout(ActionEvent event) {
         if (LightDialog.showConfirmation("Déconnexion", "Êtes-vous sûr ?", "👋")) {
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
-                ((Stage) lblWelcome.getScene().getWindow()).setScene(new Scene(root));
+                // ✅ FIX: utilise contentArea (toujours visible) au lieu de lblWelcome
+                Stage stage = (Stage) contentArea.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("EchoCare - Connexion");
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
     @FXML void handleLogout(javafx.scene.input.MouseEvent e) { handleLogout((ActionEvent)null); }
-
     @FXML void showMap(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Map.fxml"));
@@ -129,4 +130,20 @@ public class PatientHome {
         }
     }
     @FXML void showMap(javafx.scene.input.MouseEvent e) { showMap((ActionEvent)null); }
+
+    // ✅ FEATURE 1: Journal de bien-être / Mood Tracker
+    @FXML void showMoodTracker(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/MoodTracker.fxml"));
+            VBox page = loader.load();
+            MoodTrackerController ctrl = loader.getController();
+            ctrl.setUser(currentUser);
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger le journal.");
+        }
+    }
+    @FXML void showMoodTracker(javafx.scene.input.MouseEvent e) { showMoodTracker((ActionEvent)null); }
 }

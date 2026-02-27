@@ -166,19 +166,16 @@ public class Profil {
 
         switch (role) {
             case "COACH":
-                // 🟢 Coach: Vert naturel apaisant
-                c1 = "#3DAA6E"; c2 = "#6BC492"; badge = "#2D9A5E"; bg = "#EAF7EF";
+                c1 = "#81C995"; c2 = "#A7D8B0"; badge = "#5FAD6F"; bg = "#E8F5E9";
                 sTitle = "💪 Espace Coach"; sInfo = "Gérez vos patients et séances.";
-                lblSubtitle.setText("Bienvenue dans votre espace coach"); break;
+                lblSubtitle.setText("Gérez votre profil coach"); break;
             case "PATIENT":
-                // 🩷 Patient: Rose doux et chaleureux
-                c1 = "#E8956D"; c2 = "#F5C87A"; badge = "#D4784A"; bg = "#FFF3EC";
-                sTitle = "🌿 Mon Suivi Santé"; sInfo = "Consultez vos séances et rendez-vous.";
-                lblSubtitle.setText("Prenez soin de votre bien-être"); break;
+                c1 = "#E0A7B5"; c2 = "#D4C5A5"; badge = "#D4889A"; bg = "#FDF2F8";
+                sTitle = "🏥 Mon suivi"; sInfo = "Consultez vos rendez-vous.";
+                lblSubtitle.setText("Gérez votre profil patient"); break;
             default:
-                // 🔵 Admin: Bleu professionnel et sérieux
-                c1 = "#4A6FA5"; c2 = "#7B9ED9"; badge = "#3A5A90"; bg = "#EEF4FF";
-                sTitle = "👑 Privilèges Admin"; sInfo = "Gestion complète du système EchoCare.";
+                c1 = "#A7B5E0"; c2 = "#D4A5BD"; badge = "#9FAEE0"; bg = "#EDF0FA";
+                sTitle = "👑 Privilèges Admin"; sInfo = "Gestion complète du système.";
                 lblSubtitle.setText("Gérez votre compte administrateur"); break;
         }
 

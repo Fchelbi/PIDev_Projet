@@ -103,16 +103,6 @@ public class CoachHome {
     }
     @FXML void showProfil(javafx.scene.input.MouseEvent e) { showProfil((ActionEvent)null); }
 
-    @FXML void handleLogout(ActionEvent event) {
-        if (LightDialog.showConfirmation("Déconnexion", "Êtes-vous sûr ?", "👋")) {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
-                ((Stage) lblWelcome.getScene().getWindow()).setScene(new Scene(root));
-            } catch (IOException e) { e.printStackTrace(); }
-        }
-    }
-    @FXML void handleLogout(javafx.scene.input.MouseEvent e) { handleLogout((ActionEvent)null); }
-
     @FXML void showMap(ActionEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Map.fxml"));
@@ -140,4 +130,32 @@ public class CoachHome {
         }
     }
     @FXML void showRapport(javafx.scene.input.MouseEvent e) { showRapport((ActionEvent)null); }
+
+    @FXML void handleLogout(ActionEvent event) {
+        if (LightDialog.showConfirmation("Déconnexion", "Êtes-vous sûr de vouloir quitter ?", "👋")) {
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
+                Stage stage = (Stage) contentArea.getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setTitle("EchoCare - Connexion");
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+    }
+    @FXML void handleLogout(javafx.scene.input.MouseEvent e) { handleLogout((ActionEvent)null); }
+
+    // ✅ FEATURE 2: Notes rapides du coach
+    @FXML void showNotes(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/QuickNotes.fxml"));
+            VBox page = loader.load();
+            QuickNotesController ctrl = loader.getController();
+            ctrl.setCoach(currentUser);
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger les notes.");
+        }
+    }
+    @FXML void showNotes(javafx.scene.input.MouseEvent e) { showNotes((ActionEvent)null); }
 }

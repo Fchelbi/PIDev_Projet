@@ -13,17 +13,42 @@ import utils.PasswordResetManager;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 public class ResetPassword {
 
+    // ✅ Mot de passe fort: 8+ chars, 1 majuscule, 1 chiffre, 1 spécial
+    private static final Pattern PASS_P = Pattern.compile(
+            "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{8,}$"
+    );
+
     @FXML private TextField tfCode;
     @FXML private PasswordField pfNewPassword, pfConfirm;
+    @FXML private Label lblPassStrength; // peut être null si pas dans le FXML
 
     private String userEmail;
     private final serviceUser us = new serviceUser();
 
-    public void setEmail(String email) {
-        this.userEmail = email;
+    public void setEmail(String email) { this.userEmail = email; }
+
+    @FXML
+    void initialize() {
+        // ✅ Indicateur de force en temps réel
+        if (pfNewPassword != null) {
+            pfNewPassword.textProperty().addListener((o, ov, nv) -> {
+                if (lblPassStrength == null || nv.isEmpty()) return;
+                if (nv.length() < 8) setStrength("Trop court (min 8 chars)", "#C07050");
+                else if (!nv.matches(".*[A-Z].*")) setStrength("Ajoutez 1 majuscule (A-Z)", "#C07050");
+                else if (!nv.matches(".*[0-9].*")) setStrength("Ajoutez 1 chiffre (0-9)", "#C07050");
+                else if (!PASS_P.matcher(nv).matches()) setStrength("Ajoutez 1 caractère spécial", "#C07050");
+                else setStrength("✓ Mot de passe fort", "#4A8A5A");
+            });
+        }
+    }
+
+    private void setStrength(String msg, String color) {
+        lblPassStrength.setText(msg);
+        lblPassStrength.setStyle("-fx-font-size: 11px; -fx-text-fill: " + color + ";");
     }
 
     @FXML
@@ -37,8 +62,12 @@ public class ResetPassword {
             return;
         }
 
-        if (newPass.length() < 6) {
-            LightDialog.showError("Erreur", "Min 6 caractères!");
+        if (!PASS_P.matcher(newPass).matches()) {
+            String hint = newPass.length() < 8 ? "Min 8 caractères requis" :
+                    !newPass.matches(".*[A-Z].*") ? "Ajoutez au moins 1 majuscule" :
+                            !newPass.matches(".*[0-9].*") ? "Ajoutez au moins 1 chiffre" :
+                                    "Ajoutez 1 caractère spécial (!@#$%...)";
+            LightDialog.showError("Mot de passe faible", hint);
             return;
         }
 

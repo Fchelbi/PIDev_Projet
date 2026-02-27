@@ -2,63 +2,79 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
 
-<VBox spacing="0" style="-fx-background-color: #F8F9FC; -fx-padding: 0;" prefWidth="500"
+<VBox spacing="0" prefWidth="480"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.ModifierUtilisateur">
 
-    <HBox style="-fx-background-color: linear-gradient(to right, #D4A5BD, #A7B5E0);
-                 -fx-padding: 20;" alignment="CENTER">
-        <Label text="✏️ Modifier l'Utilisateur" textFill="WHITE">
-            <font><Font name="System Bold" size="20"/></font></Label>
+    <!-- Header -->
+    <HBox style="-fx-background-color: linear-gradient(to right, #3A5A90, #4A6FA5);
+                 -fx-padding: 22 28;" alignment="CENTER_LEFT" spacing="12">
+        <StackPane prefWidth="40" prefHeight="40">
+            <Circle radius="20" fill="rgba(255,255,255,0.15)"/>
+            <Label text="✏️" style="-fx-font-size: 18px;"/>
+        </StackPane>
+        <VBox spacing="2">
+            <Label text="Modifier l'utilisateur" textFill="WHITE"
+                   style="-fx-font-size: 18px; -fx-font-weight: 700;"/>
+            <Label text="Modifiez les informations du compte" textFill="rgba(255,255,255,0.7)"
+                   style="-fx-font-size: 11px;"/>
+        </VBox>
     </HBox>
 
-    <VBox spacing="15" style="-fx-background-color: white; -fx-padding: 30;">
-        <VBox spacing="6"><Label text="ID" style="-fx-font-size: 13px; -fx-text-fill: #A0AEC0; -fx-font-weight: 500;"/>
-            <TextField fx:id="tfId" editable="false"
-                       style="-fx-background-color: #EDF0FA; -fx-border-color: #D6DDEF; -fx-border-radius: 8;
-                              -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 12; -fx-font-size: 14px;
-                              -fx-text-fill: #9FAEE0;"/></VBox>
+    <VBox spacing="14" style="-fx-background-color: #FDFAF6; -fx-padding: 26 28;">
 
-        <VBox spacing="6"><Label text="Nom *" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
-            <TextField fx:id="tfNom"
-                       style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8;
-                              -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 12; -fx-font-size: 14px;"/></VBox>
+        <HBox spacing="14">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Nom *" style="-fx-font-size: 12px; -fx-text-fill: #5A6A8A; -fx-font-weight: 600;"/>
+                <TextField fx:id="tfNom" style="-fx-background-color: #F6F3F0; -fx-border-color: #D5E3F5;
+                           -fx-border-radius: 9; -fx-background-radius: 9; -fx-border-width: 1.5;
+                           -fx-padding: 11 14; -fx-font-size: 13px; -fx-text-fill: #3D5A8A;"/>
+            </VBox>
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Prénom *" style="-fx-font-size: 12px; -fx-text-fill: #5A6A8A; -fx-font-weight: 600;"/>
+                <TextField fx:id="tfPrenom" style="-fx-background-color: #F6F3F0; -fx-border-color: #D5E3F5;
+                           -fx-border-radius: 9; -fx-background-radius: 9; -fx-border-width: 1.5;
+                           -fx-padding: 11 14; -fx-font-size: 13px; -fx-text-fill: #3D5A8A;"/>
+            </VBox>
+        </HBox>
 
-        <VBox spacing="6"><Label text="Prénom *" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
-            <TextField fx:id="tfPrenom"
-                       style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8;
-                              -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 12; -fx-font-size: 14px;"/></VBox>
+        <VBox spacing="6">
+            <Label text="Email *" style="-fx-font-size: 12px; -fx-text-fill: #5A6A8A; -fx-font-weight: 600;"/>
+            <TextField fx:id="tfEmail" style="-fx-background-color: #F6F3F0; -fx-border-color: #D5E3F5;
+                       -fx-border-radius: 9; -fx-background-radius: 9; -fx-border-width: 1.5;
+                       -fx-padding: 11 14; -fx-font-size: 13px; -fx-text-fill: #3D5A8A;"/>
+        </VBox>
 
-        <VBox spacing="6"><Label text="Email *" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
-            <TextField fx:id="tfEmail"
-                       style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8;
-                              -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 12; -fx-font-size: 14px;"/></VBox>
+        <HBox spacing="14">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Téléphone" style="-fx-font-size: 12px; -fx-text-fill: #5A6A8A; -fx-font-weight: 600;"/>
+                <TextField fx:id="tfTel" style="-fx-background-color: #F6F3F0; -fx-border-color: #D5E3F5;
+                           -fx-border-radius: 9; -fx-background-radius: 9; -fx-border-width: 1.5;
+                           -fx-padding: 11 14; -fx-font-size: 13px; -fx-text-fill: #3D5A8A;"/>
+            </VBox>
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Rôle" style="-fx-font-size: 12px; -fx-text-fill: #5A6A8A; -fx-font-weight: 600;"/>
+                <ComboBox fx:id="cbRole" maxWidth="Infinity"
+                          style="-fx-background-color: #F6F3F0; -fx-border-color: #D5E3F5;
+                                 -fx-border-radius: 9; -fx-background-radius: 9;
+                                 -fx-border-width: 1.5; -fx-font-size: 13px;"/>
+            </VBox>
+        </HBox>
 
-        <VBox spacing="6"><Label text="Nouveau mot de passe" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
-            <PasswordField fx:id="pfMdp" promptText="Laisser vide pour garder l'ancien"
-                           style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8;
-                                  -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 12; -fx-font-size: 14px;
-                                  -fx-prompt-text-fill: #CBD5E0;"/></VBox>
+        <Separator style="-fx-background-color: #E8E0D8;"/>
 
-        <VBox spacing="6"><Label text="Téléphone" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
-            <TextField fx:id="tfTel"
-                       style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8;
-                              -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 12; -fx-font-size: 14px;"/></VBox>
-
-        <VBox spacing="6"><Label text="Rôle *" style="-fx-font-size: 13px; -fx-text-fill: #718096; -fx-font-weight: 500;"/>
-            <ComboBox fx:id="cbRole" maxWidth="Infinity"
-                      style="-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8;
-                             -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 8; -fx-font-size: 14px;"/></VBox>
-
-        <HBox spacing="15" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
-            <Button text="💾 Enregistrer" onAction="#handleModifier" prefWidth="150"
-                    style="-fx-background-color: linear-gradient(to right, #A7B5E0, #D4A5BD); -fx-text-fill: white;
-                           -fx-padding: 12; -fx-font-size: 14px; -fx-font-weight: 600; -fx-cursor: hand; -fx-background-radius: 8;"/>
-            <Button text="❌ Annuler" onAction="#handleAnnuler" prefWidth="150"
-                    style="-fx-background-color: #F0F3F8; -fx-text-fill: #718096; -fx-padding: 12;
-                           -fx-font-size: 14px; -fx-font-weight: 600; -fx-cursor: hand; -fx-background-radius: 8;"/>
+        <HBox spacing="12" alignment="CENTER">
+            <Button text="✓  Sauvegarder" onAction="#handleModifier"
+                    style="-fx-background-color: #4A6FA5; -fx-text-fill: white; -fx-padding: 13 28;
+                           -fx-font-size: 14px; -fx-font-weight: 700; -fx-cursor: hand;
+                           -fx-background-radius: 10;
+                           -fx-effect: dropshadow(gaussian, rgba(74,111,165,0.3), 8, 0, 0, 3);"/>
+            <Button text="Annuler" onAction="#handleAnnuler"
+                    style="-fx-background-color: #F6F3F0; -fx-text-fill: #5A6A8A; -fx-padding: 13 22;
+                           -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 10;
+                           -fx-border-color: #D5E3F5; -fx-border-radius: 10; -fx-border-width: 1;"/>
         </HBox>
     </VBox>
 </VBox>

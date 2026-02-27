@@ -46,7 +46,7 @@ public class AdminHome {
 
     @FXML private PieChart pieChartRoles;
     @FXML private StackPane contentArea;
-    @FXML private ScrollPane dashboardPane;
+    @FXML private VBox dashboardPane;
     @FXML private ImageView imgHeaderPhoto;
 
     // Sidebar nav items
@@ -208,7 +208,6 @@ public class AdminHome {
         setActiveNav(navDashboard, indicDashboard);
         contentArea.getChildren().setAll(dashboardPane);
         refreshStats(null);
-        loadQuoteOfDay(); // ✅ Nouvelle citation à chaque retour sur le dashboard
     }
 
     @FXML
