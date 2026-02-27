@@ -21,6 +21,11 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
 
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.List;
+import javafx.scene.control.ToggleGroup;
 public class PatientController implements Initializable {
 
     @FXML private StackPane contentArea;
@@ -616,7 +621,7 @@ public class PatientController implements Initializable {
 
             // ── Questions ──
             VBox questionsBox = new VBox(15);
-            Map<Integer, ToggleGroup> answerGroups = new HashMap<>();
+            java.util.Map<Integer, ToggleGroup> answerGroups = new java.util.HashMap<>();
 
             int num = 1;
             for (Question q : questions) {
@@ -742,7 +747,7 @@ public class PatientController implements Initializable {
     //  SUBMIT QUIZ
     // ═══════════════════════════════
     private void submitQuiz(Formation f, Quiz quiz, List<Question> questions,
-                            Map<Integer, ToggleGroup> answerGroups) {
+                            java.util.Map<Integer, ToggleGroup> answerGroups) {
         stopQuizTimer();
 
         // Check all answered (allow unanswered if timer expired)
@@ -837,7 +842,7 @@ public class PatientController implements Initializable {
     //  QUIZ RESULT PAGE
     // ═══════════════════════════════
     private void showQuizResult(Formation f, Quiz quiz, List<Question> questions,
-                                Map<Integer, ToggleGroup> answerGroups,
+                                java.util.Map<Integer, ToggleGroup> answerGroups,
                                 int earned, int total, double percentage, boolean passed) {
         VBox page = new VBox(20);
         page.setPadding(new Insets(30));

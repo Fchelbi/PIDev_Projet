@@ -366,7 +366,7 @@ public class CoachController implements Initializable {
             List<QuizResult> allResults = quizResultService.selectALL();
             List<Participant> allPartic = participantService.selectALL();
 
-            Map<Integer, List<QuizResult>> byPatient = new LinkedHashMap<>();
+            java.util.Map<Integer, List<QuizResult>> byPatient = new java.util.LinkedHashMap<>();
             for (QuizResult r : allResults)
                 byPatient.computeIfAbsent(r.getUserId(), k -> new ArrayList<>()).add(r);
 
@@ -376,8 +376,7 @@ public class CoachController implements Initializable {
                 setContent(page);
                 return;
             }
-
-            for (Map.Entry<Integer, List<QuizResult>> entry : byPatient.entrySet()) {
+            for (java.util.Map.Entry<Integer, List<QuizResult>> entry : byPatient.entrySet()) {
                 int pid = entry.getKey();
                 List<QuizResult> results = entry.getValue();
                 long passedC = results.stream().filter(QuizResult::isPassed).count();
@@ -385,7 +384,6 @@ public class CoachController implements Initializable {
                         .mapToDouble(QuizResult::getPercentage).average().orElse(0);
                 long inscrits = allPartic.stream()
                         .filter(p -> p.getUserId() == pid).count();
-
                 HBox c = new HBox(15);
                 c.setPadding(new Insets(14));
                 c.setAlignment(Pos.CENTER_LEFT);
