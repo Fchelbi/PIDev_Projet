@@ -269,6 +269,11 @@ public class Profil {
             LightDialog.showError("Email invalide", "Email non valide.");
             return;
         }
+        // Unicité email (hors utilisateur actuel)
+        if (us.emailExistsForOther(email, currentUser.getId_user())) {
+            LightDialog.showError("Email déjà utilisé", "Cet email est déjà utilisé par un autre compte.");
+            return;
+        }
         if (!tel.isEmpty() && !tel.matches("\\d{8}")) {
             LightDialog.showError("Téléphone", "8 chiffres requis.");
             return;
@@ -280,6 +285,11 @@ public class Profil {
             }
             if (!np.equals(cp)) {
                 LightDialog.showError("Mot de passe", "Ne correspondent pas.");
+                return;
+            }
+            // Unicité mot de passe (hors utilisateur actuel)
+            if (us.passwordExistsForOther(np, currentUser.getId_user())) {
+                LightDialog.showError("Mot de passe déjà utilisé", "Ce mot de passe est déjà utilisé par un autre compte.");
                 return;
             }
         }

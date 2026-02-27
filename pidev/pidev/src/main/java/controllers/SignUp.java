@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import entities.User;
@@ -28,12 +27,11 @@ import java.util.regex.Pattern;
 
 public class SignUp {
     @FXML private TextField tfNom, tfPrenom, tfEmail, tfTel;
-    @FXML private PasswordField pfMdp;
+    @FXML private PasswordField pfMdp, pfConfirm;
     @FXML private ComboBox<String> cbRole;
     @FXML private ImageView imgSignUpPhoto;
     @FXML private Label lblPhotoPlaceholder;
     @FXML private StackPane photoContainer;
-    @FXML private Label errMdp; // indicateur de force du mdp — peut être null si absent du FXML
 
     private final serviceUser us = new serviceUser();
     private String selectedPhotoPath = null;
@@ -42,72 +40,27 @@ public class SignUp {
     private static final Pattern EMAIL_P = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     private static final Pattern PHONE_P = Pattern.compile("^[0-9]{8}$");
     private static final Pattern NAME_P  = Pattern.compile("^[a-zA-ZÀ-ÿ\\s'-]+$");
-    // ✅ Mot de passe fort: min 8 chars, 1 majuscule, 1 chiffre, 1 caractère spécial
-    private static final Pattern PASS_P  = Pattern.compile(
-            "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?]).{8,}$"
-    );
-
-    private static final String S_N = "-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 13; -fx-font-size: 14px;";
-    private static final String S_E = "-fx-background-color: #FFF5F5; -fx-border-color: #E57373; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 13; -fx-font-size: 14px;";
-    private static final String S_S = "-fx-background-color: #F0FFF4; -fx-border-color: #81C995; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 13; -fx-font-size: 14px;";
 
     @FXML
     void initialize() {
         cbRole.setItems(FXCollections.observableArrayList("PATIENT", "COACH", "ADMIN"));
         cbRole.setValue("PATIENT");
-
-        // Créer dossier photos
-        File dir = new File(PHOTOS_DIR);
-        if (!dir.exists()) dir.mkdirs();
-
-        setupValidation();
+        new File(PHOTOS_DIR).mkdirs();
     }
 
-    private void setupValidation() {
-        tfNom.textProperty().addListener((o, ov, nv) -> tfNom.setStyle(nv.isEmpty() ? S_N : NAME_P.matcher(nv).matches() && nv.length() >= 2 ? S_S : S_E));
-        tfPrenom.textProperty().addListener((o, ov, nv) -> tfPrenom.setStyle(nv.isEmpty() ? S_N : NAME_P.matcher(nv).matches() && nv.length() >= 2 ? S_S : S_E));
-        tfEmail.textProperty().addListener((o, ov, nv) -> tfEmail.setStyle(nv.isEmpty() ? S_N : EMAIL_P.matcher(nv).matches() ? S_S : S_E));
-        pfMdp.textProperty().addListener((o, ov, nv) -> {
-            if (nv.isEmpty()) { pfMdp.setStyle(S_N); return; }
-            boolean strong = PASS_P.matcher(nv).matches();
-            pfMdp.setStyle(strong ? S_S : S_E);
-            // Indicateur de force en temps réel
-            if (errMdp != null) {
-                if (nv.length() < 8) errMdp.setText("Min 8 caractères");
-                else if (!nv.matches(".*[A-Z].*")) errMdp.setText("Ajoutez 1 majuscule");
-                else if (!nv.matches(".*[0-9].*")) errMdp.setText("Ajoutez 1 chiffre");
-                else if (!nv.matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*")) errMdp.setText("Ajoutez 1 caractère spécial (!@#...)");
-                else { errMdp.setText("✓ Mot de passe fort"); errMdp.setStyle("-fx-text-fill: #4A8A5A; -fx-font-size: 11px;"); return; }
-                errMdp.setStyle("-fx-text-fill: #C07050; -fx-font-size: 11px;");
-            }
-        });
-        tfTel.textProperty().addListener((o, ov, nv) -> tfTel.setStyle(nv.isEmpty() ? S_N : PHONE_P.matcher(nv).matches() ? S_S : S_E));
-    }
-
-    /**
-     * Choisir photo de profil
-     */
     @FXML
-    void handleChoosePhoto() {
+    void handleChoosePhoto(ActionEvent event) {
         FileChooser fc = new FileChooser();
         fc.setTitle("Choisir une photo de profil");
-        fc.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
-        );
-
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif"));
         File file = fc.showOpenDialog(tfNom.getScene().getWindow());
         if (file != null) {
             try {
-                // Fichier temporaire, sera copié après inscription
                 selectedPhotoPath = file.getAbsolutePath();
-
-                // Preview
                 Image img = new Image(file.toURI().toString(), 100, 100, false, true);
                 imgSignUpPhoto.setImage(img);
                 imgSignUpPhoto.setVisible(true);
-                lblPhotoPlaceholder.setVisible(false);
-
-                System.out.println("📷 Photo sélectionnée: " + selectedPhotoPath);
+                if (lblPhotoPlaceholder != null) lblPhotoPlaceholder.setVisible(false);
             } catch (Exception e) {
                 LightDialog.showError("Erreur", "Impossible de charger la photo.");
             }
@@ -116,38 +69,48 @@ public class SignUp {
 
     @FXML
     void handleSignUp(ActionEvent event) {
-        String nom = tfNom.getText().trim(), prenom = tfPrenom.getText().trim(),
-                email = tfEmail.getText().trim(), mdp = pfMdp.getText(),
-                tel = tfTel.getText().trim(), role = cbRole.getValue();
+        String nom    = tfNom.getText().trim(),
+                prenom = tfPrenom.getText().trim(),
+                email  = tfEmail.getText().trim(),
+                mdp    = pfMdp.getText(),
+                mdp2   = pfConfirm.getText(),
+                tel    = tfTel.getText().trim(),
+                role   = cbRole.getValue();
 
+        // ── Validations ──
         if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || mdp.isEmpty()) {
-            LightDialog.showError("Erreur", "Remplissez les champs obligatoires!"); return;
+            LightDialog.showError("Champs requis", "Remplissez tous les champs obligatoires !"); return;
         }
         if (!NAME_P.matcher(nom).matches() || nom.length() < 2) {
-            LightDialog.showError("Nom invalide", "Min 2 lettres!"); return;
+            LightDialog.showError("Nom invalide", "Min 2 lettres alphabétiques."); return;
         }
         if (!NAME_P.matcher(prenom).matches() || prenom.length() < 2) {
-            LightDialog.showError("Prénom invalide", "Min 2 lettres!"); return;
+            LightDialog.showError("Prénom invalide", "Min 2 lettres alphabétiques."); return;
         }
         if (!EMAIL_P.matcher(email).matches()) {
-            LightDialog.showError("Email invalide", "Email non valide!"); return;
+            LightDialog.showError("Email invalide", "Format email non valide."); return;
         }
-        if (!PASS_P.matcher(mdp).matches()) {
-            String hint = mdp.length() < 8 ? "Min 8 caractères requis" :
-                    !mdp.matches(".*[A-Z].*") ? "Ajoutez au moins 1 majuscule (A-Z)" :
-                            !mdp.matches(".*[0-9].*") ? "Ajoutez au moins 1 chiffre (0-9)" :
-                                    "Ajoutez 1 caractère spécial (!@#$%...)";
-            LightDialog.showError("Mot de passe faible", hint);
-            return;
+        if (mdp.length() < 6) {
+            LightDialog.showError("Mot de passe", "Minimum 6 caractères."); return;
+        }
+        if (!mdp.equals(mdp2)) {
+            LightDialog.showError("Confirmation", "Les mots de passe ne correspondent pas."); return;
         }
         if (!tel.isEmpty() && !PHONE_P.matcher(tel).matches()) {
-            LightDialog.showError("Téléphone", "8 chiffres!"); return;
+            LightDialog.showError("Téléphone", "8 chiffres requis."); return;
+        }
+        // ── Unicité email ──
+        if (us.emailExists(email)) {
+            LightDialog.showError("Email déjà utilisé", "Un compte existe déjà avec cet email."); return;
+        }
+        // ── Unicité mot de passe ──
+        if (us.passwordExists(mdp)) {
+            LightDialog.showError("Mot de passe déjà utilisé", "Ce mot de passe est déjà utilisé par un autre compte. Choisissez-en un autre."); return;
         }
 
         try {
             User newUser = new User(0, nom, prenom, email, mdp, role, tel);
 
-            // Copier la photo si sélectionnée
             if (selectedPhotoPath != null) {
                 String ext = selectedPhotoPath.substring(selectedPhotoPath.lastIndexOf('.'));
                 String fileName = "user_" + System.currentTimeMillis() + ext;
@@ -157,22 +120,22 @@ public class SignUp {
             }
 
             us.signUp(newUser);
-            LightDialog.showSuccess("Succès", "Compte créé avec succès!");
-            switchToLogin(null);
+            LightDialog.showSuccess("Compte créé !", "Bienvenue sur EchoCare. Connectez-vous !");
+            goToLogin(null);
 
         } catch (SQLException e) {
-            LightDialog.showError("Erreur", e.getMessage());
+            LightDialog.showError("Erreur base de données", e.getMessage());
         } catch (IOException e) {
-            LightDialog.showError("Erreur", "Problème avec la photo.");
-            e.printStackTrace();
+            LightDialog.showError("Erreur photo", "Impossible de sauvegarder la photo.");
         }
     }
 
     @FXML
-    void switchToLogin(MouseEvent event) {
+    void goToLogin(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
-            ((Stage) tfNom.getScene().getWindow()).setScene(new Scene(root));
+            Stage stage = (Stage) tfNom.getScene().getWindow();
+            stage.setScene(new Scene(root));
         } catch (IOException e) { e.printStackTrace(); }
     }
 }
