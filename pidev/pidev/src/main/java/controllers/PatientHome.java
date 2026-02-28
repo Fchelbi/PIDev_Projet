@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,27 +20,33 @@ import utils.LightDialog;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.sql.SQLException;
+import java.time.Duration;
 
 public class PatientHome {
 
     @FXML private Label lblWelcome, lblAvatarHeader;
     @FXML private Label lblNbRdv, lblNbSeances;
     @FXML private Label lblNom, lblEmail, lblTel;
+    @FXML private Label lblAffirmation, lblAffirmStatus;
+    @FXML private Label lblAdvice, lblAdviceStatus;
     @FXML private ImageView imgHeaderPhoto;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane accueilPane;
-
-    // Sidebar — only accueil now
     @FXML private VBox navAccueil;
     @FXML private HBox indicAccueil;
 
     private User currentUser;
     private final serviceUser us = new serviceUser();
+    private VBox currentActiveNav;
 
-    private static final String NAV_NORMAL =
+    private static final String NAV_NORMAL  =
             "-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;";
-    private static final String NAV_ACTIVE =
+    private static final String NAV_ACTIVE  =
             "-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:rgba(255,255,255,0.13);-fx-background-radius:0 10 10 0;";
     private static final String INDIC_HIDDEN  =
             "-fx-min-width:4;-fx-max-width:4;-fx-min-height:30;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;";
@@ -49,18 +56,18 @@ public class PatientHome {
     private static final String CARD_NORMAL =
             "-fx-background-color:white;-fx-padding:24;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);";
     private static final String CARD_HOVER  =
-            "-fx-background-color:#F7F5FF;-fx-padding:24;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(74,111,165,0.15),14,0,0,4);";
+            "-fx-background-color:#FFF8F0;-fx-padding:24;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(232,149,109,0.18),14,0,0,4);";
 
-    @FXML
-    void initialize() { System.out.println("✅ PatientHome initialized"); }
+    @FXML void initialize() { System.out.println("✅ PatientHome initialized"); }
 
     public void setUser(User user) {
         this.currentUser = user;
         refreshUserData();
-        // Set accueil active
+        loadAffirmation();
+        loadAdvice();
         if (navAccueil   != null) navAccueil.setStyle(NAV_ACTIVE);
         if (indicAccueil != null) indicAccueil.setStyle(INDIC_VISIBLE);
-        contentArea.getChildren().setAll(accueilPane);
+        currentActiveNav = navAccueil;
     }
 
     public void refreshUserData() {
@@ -71,9 +78,9 @@ public class PatientHome {
 
         lblWelcome.setText("Bonjour, " + currentUser.getPrenom() + " 👋");
         lblAvatarHeader.setText(currentUser.getPrenom().substring(0, 1).toUpperCase());
-        if (lblNom    != null) lblNom.setText(currentUser.getPrenom() + " " + currentUser.getNom());
-        if (lblEmail  != null) lblEmail.setText(currentUser.getEmail());
-        if (lblTel    != null) lblTel.setText(currentUser.getNum_tel() != null ? currentUser.getNum_tel() : "—");
+        if (lblNom   != null) lblNom.setText(currentUser.getPrenom() + " " + currentUser.getNom());
+        if (lblEmail != null) lblEmail.setText(currentUser.getEmail());
+        if (lblTel   != null) lblTel.setText(currentUser.getNum_tel() != null ? currentUser.getNum_tel() : "—");
         if (lblNbRdv     != null) lblNbRdv.setText("0");
         if (lblNbSeances != null) lblNbSeances.setText("0");
         updateHeaderPhoto();
@@ -93,22 +100,92 @@ public class PatientHome {
         lblAvatarHeader.setVisible(true);
     }
 
-    // ─── Accueil nav ─────────────────────────────────────────
-    @FXML
-    void showAccueil(MouseEvent event) {
+    // ─── API 1: Affirmations.dev ──────────────────────────────
+    private void loadAffirmation() {
+        if (lblAffirmation == null) return;
+        Platform.runLater(() -> {
+            if (lblAffirmStatus != null) lblAffirmStatus.setText("⏳ Chargement...");
+            lblAffirmation.setText("");
+        });
+        Thread t = new Thread(() -> {
+            try {
+                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
+                HttpRequest req = HttpRequest.newBuilder()
+                        .uri(URI.create("https://www.affirmations.dev/"))
+                        .timeout(Duration.ofSeconds(8))
+                        .header("User-Agent", "EchoCare/1.0").GET().build();
+                HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+                String text = extractValue(resp.body(), "affirmation");
+                Platform.runLater(() -> {
+                    if (lblAffirmStatus != null) lblAffirmStatus.setText("✨ Affirmation du jour");
+                    lblAffirmation.setText("❝  " + text + "  ❞");
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    if (lblAffirmStatus != null) lblAffirmStatus.setText("✨ Affirmation");
+                    lblAffirmation.setText("❝  Vous avez la force de surmonter tous les défis d'aujourd'hui.  ❞");
+                });
+            }
+        });
+        t.setDaemon(true);
+        t.start();
+    }
+
+    // ─── API 2: Advice Slip ───────────────────────────────────
+    private void loadAdvice() {
+        if (lblAdvice == null) return;
+        Platform.runLater(() -> {
+            if (lblAdviceStatus != null) lblAdviceStatus.setText("⏳ Chargement...");
+            lblAdvice.setText("");
+        });
+        Thread t = new Thread(() -> {
+            try {
+                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
+                HttpRequest req = HttpRequest.newBuilder()
+                        .uri(URI.create("https://api.adviceslip.com/advice"))
+                        .timeout(Duration.ofSeconds(8))
+                        .header("User-Agent", "EchoCare/1.0").GET().build();
+                HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+                String text = extractValue(resp.body(), "advice");
+                Platform.runLater(() -> {
+                    if (lblAdviceStatus != null) lblAdviceStatus.setText("🌿 Conseil bien-être");
+                    lblAdvice.setText("💡  " + text);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    if (lblAdviceStatus != null) lblAdviceStatus.setText("🌿 Conseil");
+                    lblAdvice.setText("💡  Prenez soin de votre santé mentale chaque jour.");
+                });
+            }
+        });
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private String extractValue(String json, String key) {
+        String s = "\"" + key + "\":\"";
+        int i = json.indexOf(s);
+        if (i < 0) return "";
+        i += s.length();
+        int end = json.indexOf("\"", i);
+        return end < 0 ? "" : json.substring(i, end).replace("\\n"," ").replace("\\'","'");
+    }
+
+    @FXML void refreshAffirmation(MouseEvent e) { loadAffirmation(); }
+    @FXML void refreshAdvice(MouseEvent e)      { loadAdvice(); }
+
+    // ─── Navigation ───────────────────────────────────────────
+    @FXML void showAccueil(MouseEvent event) {
         if (navAccueil   != null) navAccueil.setStyle(NAV_ACTIVE);
         if (indicAccueil != null) indicAccueil.setStyle(INDIC_VISIBLE);
+        currentActiveNav = navAccueil;
         contentArea.getChildren().setAll(accueilPane);
     }
 
-    @FXML void onNavAccueilEnter(MouseEvent e) { if (navAccueil != null) navAccueil.setStyle(NAV_ACTIVE); }
-    @FXML void onNavAccueilExit(MouseEvent e)  {
-        // Keep active style if on accueil - just leave it
-    }
+    @FXML void onNavAccueilEnter(MouseEvent e) { if(navAccueil!=currentActiveNav) navAccueil.setStyle(NAV_ACTIVE); }
+    @FXML void onNavAccueilExit(MouseEvent e)  { if(navAccueil!=currentActiveNav) navAccueil.setStyle(NAV_NORMAL); }
 
-    // ─── Profil (from quick-access card in content) ──────────
-    @FXML
-    void showProfil(MouseEvent event) {
+    @FXML void showProfil(MouseEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
             ScrollPane page = loader.load();
@@ -122,13 +199,10 @@ public class PatientHome {
         }
     }
 
-    // Card hover effects
     @FXML void onCardProfilEnter(MouseEvent e) { ((VBox) e.getSource()).setStyle(CARD_HOVER); }
     @FXML void onCardProfilExit(MouseEvent e)  { ((VBox) e.getSource()).setStyle(CARD_NORMAL); }
 
-    // ─── Logout ───────────────────────────────────────────────
-    @FXML
-    void handleLogout(MouseEvent event) {
+    @FXML void handleLogout(MouseEvent event) {
         if (LightDialog.showConfirmation("Déconnexion", "Voulez-vous vraiment quitter ?", "👋")) {
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
