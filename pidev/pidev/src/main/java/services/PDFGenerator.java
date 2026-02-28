@@ -2,8 +2,6 @@ package services;
 
 import com.itextpdf.kernel.colors.ColorConstants;
 import com.itextpdf.kernel.colors.DeviceRgb;
-import com.itextpdf.kernel.font.PdfFont;
-import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -21,419 +19,287 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class PDFGenerator {
 
-    // Couleurs EchoCare
-    private static final DeviceRgb PURPLE_PRIMARY = new DeviceRgb(124, 107, 196);
-    private static final DeviceRgb PURPLE_LIGHT = new DeviceRgb(212, 197, 226);
-    private static final DeviceRgb PURPLE_BG = new DeviceRgb(245, 240, 250);
-    private static final DeviceRgb PINK_ACCENT = new DeviceRgb(232, 180, 200);
-    private static final DeviceRgb GREEN_ACCENT = new DeviceRgb(168, 213, 186);
-    private static final DeviceRgb TEXT_DARK = new DeviceRgb(74, 59, 107);
-    private static final DeviceRgb TEXT_LIGHT = new DeviceRgb(139, 127, 163);
-    private static final DeviceRgb WHITE = new DeviceRgb(255, 255, 255);
+    // ── Palette EchoCare App ──────────────────────────────────
+    private static final DeviceRgb BLUE        = new DeviceRgb(74,  111, 165);   // #4A6FA5
+    private static final DeviceRgb BLUE_DARK   = new DeviceRgb(58,   90, 144);   // #3A5A90
+    private static final DeviceRgb BLUE_LIGHT  = new DeviceRgb(235, 244, 255);   // #EBF4FF
+    private static final DeviceRgb CORAL       = new DeviceRgb(232, 149, 109);   // #E8956D
+    private static final DeviceRgb CORAL_LIGHT = new DeviceRgb(255, 240, 232);   // #FFF0E8
+    private static final DeviceRgb AMBER       = new DeviceRgb(245, 200, 122);   // #F5C87A
+    private static final DeviceRgb AMBER_LIGHT = new DeviceRgb(255, 252, 232);   // #FFFCE8
+    private static final DeviceRgb GREEN       = new DeviceRgb(82,  183, 136);   // #52B788
+    private static final DeviceRgb GREEN_LIGHT = new DeviceRgb(208, 240, 224);   // #D0F0E0
+    private static final DeviceRgb CREAM       = new DeviceRgb(250, 248, 244);   // #FAF8F4
+    private static final DeviceRgb TEXT_DARK   = new DeviceRgb(45,  55,  72);    // #2D3748
+    private static final DeviceRgb TEXT_MID    = new DeviceRgb(113, 128, 150);   // #718096
+    private static final DeviceRgb TEXT_LIGHT  = new DeviceRgb(160, 174, 192);   // #A0AEC0
+    private static final DeviceRgb WHITE       = new DeviceRgb(255, 255, 255);
+    private static final DeviceRgb BORDER_SOFT = new DeviceRgb(232, 228, 223);   // #E8E4DF
 
     private static final String RAPPORTS_DIR = "rapports_pdf";
 
-    /**
-     * Générer rapport PDF complet
-     */
     public static String generateRapport(User patient, User coach, Rapport rapport) throws IOException {
-        // Créer dossier
         File dir = new File(RAPPORTS_DIR);
         if (!dir.exists()) dir.mkdirs();
 
-        // Nom fichier
-        String fileName = "EchoCare_Rapport_" + patient.getNom() + "_" +
-                patient.getPrenom() + "_" +
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) +
-                ".pdf";
+        String fileName = "EchoCare_Rapport_"
+                + patient.getNom().replaceAll("\\s+","_") + "_"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"))
+                + ".pdf";
         String filePath = RAPPORTS_DIR + File.separator + fileName;
 
-        // Créer PDF
-        PdfWriter writer = new PdfWriter(filePath);
-        PdfDocument pdf = new PdfDocument(writer);
-        Document doc = new Document(pdf, PageSize.A4);
-        doc.setMargins(40, 40, 40, 40);
+        PdfWriter writer   = new PdfWriter(filePath);
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document doc       = new Document(pdfDoc, PageSize.A4);
+        doc.setMargins(0, 0, 36, 0);
 
-        // ═══ HEADER ═══
-        addHeader(doc);
-
-        // ═══ PATIENT INFO ═══
-        addPatientInfo(doc, patient, coach, rapport);
-
-        // ═══ RÉSUMÉ STATS ═══
-        addStatsSection(doc, rapport);
-
-        // ═══ CONTENU ═══
-        addContentSection(doc, rapport);
-
-        // ═══ RECOMMANDATIONS ═══
+        addHeader(doc, coach);
+        doc.setLeftMargin(40);
+        doc.setRightMargin(40);
+        addInfoSection(doc, patient, coach, rapport);
+        addDivider(doc);
+        addStatsRow(doc, rapport);
+        addDivider(doc);
+        addTextSection(doc, "📝  Observations et notes de suivi", rapport.getContenu(), BLUE_LIGHT, BLUE);
+        addDivider(doc);
         addRecommandations(doc, rapport);
-
-        // ═══ HUMEUR VISUELLE ═══
-        addMoodSection(doc, rapport);
-
-        // ═══ SIGNATURE ═══
+        addDivider(doc);
+        addMoodBar(doc, rapport);
         addSignature(doc, coach);
-
-        // ═══ FOOTER ═══
         addFooter(doc);
 
         doc.close();
-        System.out.println("✅ PDF généré: " + filePath);
+        System.out.println("✅ PDF: " + filePath);
         return filePath;
     }
 
-    /**
-     * Header avec logo EchoCare
-     */
-    private static void addHeader(Document doc) {
-        // Bande de couleur top
-        Table headerBand = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-        Cell bandCell = new Cell()
-                .setBackgroundColor(PURPLE_PRIMARY)
-                .setPadding(3)
-                .setBorder(Border.NO_BORDER);
-        bandCell.add(new Paragraph(""));
-        headerBand.addCell(bandCell);
-        doc.add(headerBand);
+    // ── Header bandeau bleu ───────────────────────────────────
+    private static void addHeader(Document doc, User coach) {
+        // Bandeau top bleu dégradé (simulé avec une table pleine largeur)
+        Table band = new Table(UnitValue.createPercentArray(new float[]{55, 45}))
+                .useAllAvailableWidth()
+                .setMarginBottom(0);
 
-        // Logo section
-        Table header = new Table(UnitValue.createPercentArray(new float[]{70, 30})).useAllAvailableWidth();
-        header.setMarginTop(15);
+        // Left: Logo + title
+        Cell left = new Cell().setBorder(Border.NO_BORDER)
+                .setBackgroundColor(BLUE_DARK)
+                .setPadding(30)
+                .setPaddingLeft(42);
 
-        // Left - Brand
-        Cell leftCell = new Cell().setBorder(Border.NO_BORDER);
-        leftCell.add(new Paragraph("EchoCare")
-                .setFontSize(28)
-                .setFontColor(PURPLE_PRIMARY)
-                .setBold()
-                .setMarginBottom(2));
-        leftCell.add(new Paragraph("Écouter · Comprendre · Accompagner")
-                .setFontSize(9)
-                .setFontColor(TEXT_LIGHT)
-                .setItalic());
-        header.addCell(leftCell);
+        left.add(new Paragraph("EchoCare")
+                .setFontSize(30).setFontColor(WHITE).setBold().setMarginBottom(4));
+        left.add(new Paragraph("Écouter · Comprendre · Accompagner")
+                .setFontSize(10).setFontColor(new DeviceRgb(200,215,235)).setItalic());
 
-        // Right - Rapport type
-        Cell rightCell = new Cell().setBorder(Border.NO_BORDER)
+        // Right: report type + date
+        Cell right = new Cell().setBorder(Border.NO_BORDER)
+                .setBackgroundColor(BLUE)
+                .setPadding(30)
+                .setPaddingRight(42)
                 .setTextAlignment(TextAlignment.RIGHT);
-        rightCell.add(new Paragraph("RAPPORT DE SUIVI")
-                .setFontSize(11)
-                .setFontColor(PURPLE_PRIMARY)
-                .setBold());
-        rightCell.add(new Paragraph("Confidentiel")
-                .setFontSize(9)
-                .setFontColor(PINK_ACCENT)
-                .setItalic());
-        rightCell.add(new Paragraph(LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy à HH:mm")))
-                .setFontSize(9)
-                .setFontColor(TEXT_LIGHT));
-        header.addCell(rightCell);
 
-        doc.add(header);
+        right.add(new Paragraph("RAPPORT DE SUIVI")
+                .setFontSize(13).setFontColor(WHITE).setBold().setMarginBottom(4));
+        right.add(new Paragraph("Document confidentiel")
+                .setFontSize(9).setFontColor(AMBER).setItalic().setMarginBottom(6));
+        right.add(new Paragraph(LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("dd/MM/yyyy 'à' HH:mm")))
+                .setFontSize(9).setFontColor(new DeviceRgb(200,215,235)));
 
-        // Ligne de séparation
-        Table line = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-        Cell lineCell = new Cell()
-                .setBackgroundColor(PURPLE_LIGHT)
-                .setPadding(1.5f)
-                .setBorder(Border.NO_BORDER)
-                .setMarginTop(10);
-        lineCell.add(new Paragraph(""));
-        line.addCell(lineCell);
-        doc.add(line);
+        band.addCell(left);
+        band.addCell(right);
+        doc.add(band);
+
+        // Orange accent bar
+        Table bar = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+        bar.addCell(new Cell().setBorder(Border.NO_BORDER)
+                .setBackgroundColor(CORAL).setPadding(3)
+                .add(new Paragraph("")));
+        doc.add(bar);
     }
 
-    /**
-     * Informations patient & coach
-     */
-    private static void addPatientInfo(Document doc, User patient, User coach, Rapport rapport) {
-        doc.add(new Paragraph("\n"));
+    // ── Patient + Coach info ──────────────────────────────────
+    private static void addInfoSection(Document doc, User patient, User coach, Rapport rapport) {
+        doc.add(new Paragraph("").setMarginTop(24));
 
-        Table infoTable = new Table(UnitValue.createPercentArray(new float[]{50, 50}))
+        Table t = new Table(UnitValue.createPercentArray(new float[]{50, 50}))
                 .useAllAvailableWidth();
 
-        // Patient Card
-        Cell patientCell = new Cell()
-                .setBackgroundColor(PURPLE_BG)
-                .setPadding(18)
-                .setBorderRadius(new com.itextpdf.layout.properties.BorderRadius(8))
-                .setBorder(new SolidBorder(PURPLE_LIGHT, 1));
+        // Patient card
+        Cell pc = new Cell().setBorder(new SolidBorder(BLUE_LIGHT, 1.5f))
+                .setBackgroundColor(BLUE_LIGHT).setPadding(18);
+        pc.add(new Paragraph("PATIENT").setFontSize(9).setFontColor(BLUE).setBold());
+        pc.add(new Paragraph(patient.getPrenom() + " " + patient.getNom())
+                .setFontSize(15).setFontColor(TEXT_DARK).setBold().setMarginBottom(6));
+        addInfoLine(pc, "✉  ", patient.getEmail());
+        addInfoLine(pc, "☎  ", patient.getNum_tel() != null ? patient.getNum_tel() : "—");
+        addInfoLine(pc, "📅  ", "Période: " + rapport.getPeriode());
+        t.addCell(pc);
 
-        patientCell.add(new Paragraph("PATIENT")
-                .setFontSize(9)
-                .setFontColor(PURPLE_PRIMARY)
-                .setBold());
-        patientCell.add(new Paragraph(patient.getPrenom() + " " + patient.getNom())
-                .setFontSize(14)
-                .setFontColor(TEXT_DARK)
-                .setBold());
-        patientCell.add(new Paragraph("Email: " + patient.getEmail())
-                .setFontSize(10)
-                .setFontColor(TEXT_LIGHT));
-        patientCell.add(new Paragraph("Tél: " + (patient.getNum_tel() != null ? patient.getNum_tel() : "Non renseigné"))
-                .setFontSize(10)
-                .setFontColor(TEXT_LIGHT));
-        patientCell.add(new Paragraph("Période: " + rapport.getPeriode())
-                .setFontSize(10)
-                .setFontColor(TEXT_LIGHT));
-        infoTable.addCell(patientCell);
+        // Coach card
+        Cell cc = new Cell().setBorder(new SolidBorder(AMBER_LIGHT, 1.5f))
+                .setBackgroundColor(AMBER_LIGHT).setPadding(18);
+        cc.add(new Paragraph("COACH / THÉRAPEUTE").setFontSize(9).setFontColor(new DeviceRgb(160,120,10)).setBold());
+        cc.add(new Paragraph(coach.getPrenom() + " " + coach.getNom())
+                .setFontSize(15).setFontColor(TEXT_DARK).setBold().setMarginBottom(6));
+        addInfoLine(cc, "✉  ", coach.getEmail());
+        addInfoLine(cc, "☎  ", coach.getNum_tel() != null ? coach.getNum_tel() : "—");
+        addInfoLine(cc, "🎓  ", "Coach bien-être EchoCare");
+        t.addCell(cc);
 
-        // Coach Card
-        Cell coachCell = new Cell()
-                .setBackgroundColor(new DeviceRgb(240, 250, 244))
-                .setPadding(18)
-                .setBorder(new SolidBorder(GREEN_ACCENT, 1));
-
-        coachCell.add(new Paragraph("COACH / THÉRAPEUTE")
-                .setFontSize(9)
-                .setFontColor(new DeviceRgb(95, 173, 111))
-                .setBold());
-        coachCell.add(new Paragraph(coach.getPrenom() + " " + coach.getNom())
-                .setFontSize(14)
-                .setFontColor(TEXT_DARK)
-                .setBold());
-        coachCell.add(new Paragraph("Email: " + coach.getEmail())
-                .setFontSize(10)
-                .setFontColor(TEXT_LIGHT));
-        coachCell.add(new Paragraph("Tél: " + (coach.getNum_tel() != null ? coach.getNum_tel() : "Non renseigné"))
-                .setFontSize(10)
-                .setFontColor(TEXT_LIGHT));
-        coachCell.add(new Paragraph("Rôle: Coach bien-être")
-                .setFontSize(10)
-                .setFontColor(TEXT_LIGHT));
-        infoTable.addCell(coachCell);
-
-        doc.add(infoTable);
+        doc.add(t);
     }
 
-    /**
-     * Section statistiques visuelles
-     */
-    private static void addStatsSection(Document doc, Rapport rapport) {
-        doc.add(new Paragraph("\n"));
+    private static void addInfoLine(Cell cell, String icon, String text) {
+        cell.add(new Paragraph(icon + text)
+                .setFontSize(10).setFontColor(TEXT_MID).setMarginBottom(3));
+    }
+
+    // ── Stat cards row ────────────────────────────────────────
+    private static void addStatsRow(Document doc, Rapport rapport) {
         doc.add(new Paragraph("Résumé du suivi")
-                .setFontSize(16)
-                .setFontColor(PURPLE_PRIMARY)
-                .setBold());
+                .setFontSize(15).setFontColor(BLUE).setBold().setMarginBottom(12));
 
-        Table statsTable = new Table(UnitValue.createPercentArray(new float[]{33, 34, 33}))
-                .useAllAvailableWidth()
-                .setMarginTop(10);
+        Table t = new Table(UnitValue.createPercentArray(new float[]{33,34,33}))
+                .useAllAvailableWidth();
 
-        // Séances
-        Cell seancesCell = createStatCard(
-                String.valueOf(rapport.getNb_seances()),
-                "Séances effectuées",
-                PURPLE_PRIMARY, PURPLE_BG);
-        statsTable.addCell(seancesCell);
-
-        // Score humeur
-        String humeurEmoji = getHumeurEmoji(rapport.getScore_humeur());
-        Cell humeurCell = createStatCard(
+        t.addCell(buildStatCard(String.valueOf(rapport.getNb_seances()), "Séances effectuées", CORAL, CORAL_LIGHT));
+        t.addCell(buildStatCard(
                 String.format("%.1f/10", rapport.getScore_humeur()),
-                "Score humeur moyen " + humeurEmoji,
-                PINK_ACCENT, new DeviceRgb(255, 240, 245));
-        statsTable.addCell(humeurCell);
+                "Score d'humeur moyen",
+                AMBER, AMBER_LIGHT));
 
-        // Progression
-        String progression = rapport.getScore_humeur() >= 7 ? "+Excellent" :
-                rapport.getScore_humeur() >= 5 ? "+Bon" : "En cours";
-        Cell progressionCell = createStatCard(
-                progression,
-                "Niveau de progression",
-                GREEN_ACCENT, new DeviceRgb(240, 250, 244));
-        statsTable.addCell(progressionCell);
+        String prog = rapport.getScore_humeur() >= 7 ? "Excellent ✨"
+                : rapport.getScore_humeur() >= 5 ? "En progrès 📈"
+                : "En cours 🔄";
+        t.addCell(buildStatCard(prog, "Niveau de progression", GREEN, GREEN_LIGHT));
 
-        doc.add(statsTable);
+        doc.add(t);
     }
 
-    /**
-     * Créer une carte stat
-     */
-    private static Cell createStatCard(String value, String label,
-                                       DeviceRgb accentColor, DeviceRgb bgColor) {
-        Cell cell = new Cell()
-                .setBackgroundColor(bgColor)
-                .setPadding(18)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setBorder(new SolidBorder(accentColor, 1));
-
-        cell.add(new Paragraph(value)
-                .setFontSize(22)
-                .setFontColor(accentColor)
-                .setBold()
+    private static Cell buildStatCard(String val, String label, DeviceRgb accent, DeviceRgb bg) {
+        Cell c = new Cell().setBackgroundColor(bg)
+                .setBorder(new SolidBorder(accent, 2f))
+                .setPadding(18).setTextAlignment(TextAlignment.CENTER);
+        c.add(new Paragraph(val).setFontSize(20).setFontColor(accent).setBold()
                 .setTextAlignment(TextAlignment.CENTER));
-        cell.add(new Paragraph(label)
-                .setFontSize(9)
-                .setFontColor(TEXT_LIGHT)
+        c.add(new Paragraph(label).setFontSize(9).setFontColor(TEXT_MID)
                 .setTextAlignment(TextAlignment.CENTER));
-        return cell;
+        return c;
     }
 
-    /**
-     * Section contenu / observations
-     */
-    private static void addContentSection(Document doc, Rapport rapport) {
-        doc.add(new Paragraph("\n"));
-        doc.add(new Paragraph("Observations et notes de suivi")
-                .setFontSize(16)
-                .setFontColor(PURPLE_PRIMARY)
-                .setBold());
-
-        Table contentBox = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-        Cell contentCell = new Cell()
-                .setBackgroundColor(new DeviceRgb(252, 250, 255))
-                .setPadding(20)
-                .setBorder(new SolidBorder(PURPLE_LIGHT, 1))
-                .setMarginTop(8);
-
-        contentCell.add(new Paragraph(rapport.getContenu())
-                .setFontSize(11)
-                .setFontColor(TEXT_DARK)
-                .setFixedLeading(18));
-        contentBox.addCell(contentCell);
-        doc.add(contentBox);
+    // ── Text section (observations / contenu) ─────────────────
+    private static void addTextSection(Document doc, String title, String content,
+                                       DeviceRgb bgColor, DeviceRgb borderColor) {
+        doc.add(new Paragraph(title).setFontSize(14).setFontColor(borderColor).setBold().setMarginBottom(10));
+        Table box = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+        Cell cell = new Cell().setBackgroundColor(bgColor)
+                .setBorder(new SolidBorder(borderColor, 1.5f))
+                .setPadding(18);
+        cell.add(new Paragraph(content).setFontSize(11).setFontColor(TEXT_DARK)
+                .setFixedLeading(17f));
+        box.addCell(cell);
+        doc.add(box);
     }
 
-    /**
-     * Section recommandations
-     */
+    // ── Recommandations ───────────────────────────────────────
     private static void addRecommandations(Document doc, Rapport rapport) {
-        doc.add(new Paragraph("\n"));
-        doc.add(new Paragraph("Recommandations")
-                .setFontSize(16)
-                .setFontColor(new DeviceRgb(95, 173, 111))
-                .setBold());
+        doc.add(new Paragraph("🌿  Recommandations")
+                .setFontSize(14).setFontColor(GREEN).setBold().setMarginBottom(10));
 
-        Table recoBox = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-        Cell recoCell = new Cell()
-                .setBackgroundColor(new DeviceRgb(240, 250, 244))
-                .setPadding(20)
-                .setBorder(new SolidBorder(GREEN_ACCENT, 1))
-                .setMarginTop(8);
+        Table box = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+        Cell cell = new Cell().setBackgroundColor(GREEN_LIGHT)
+                .setBorder(new SolidBorder(GREEN, 1.5f))
+                .setPadding(18);
 
-        String[] recos = rapport.getRecommandations().split("\n");
-        for (String reco : recos) {
-            if (!reco.trim().isEmpty()) {
-                recoCell.add(new Paragraph("  ✦  " + reco.trim())
-                        .setFontSize(11)
-                        .setFontColor(TEXT_DARK)
-                        .setMarginBottom(5));
+        for (String line : rapport.getRecommandations().split("\n")) {
+            if (!line.trim().isEmpty()) {
+                cell.add(new Paragraph("  ✦  " + line.trim())
+                        .setFontSize(11).setFontColor(TEXT_DARK).setMarginBottom(5));
             }
         }
-        recoBox.addCell(recoCell);
-        doc.add(recoBox);
+        box.addCell(cell);
+        doc.add(box);
     }
 
-    /**
-     * Section humeur visuelle
-     */
-    private static void addMoodSection(Document doc, Rapport rapport) {
-        doc.add(new Paragraph("\n"));
-        doc.add(new Paragraph("Évaluation de l'humeur")
-                .setFontSize(16)
-                .setFontColor(PINK_ACCENT)
-                .setBold());
-
-        Table moodTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-        Cell moodCell = new Cell()
-                .setBackgroundColor(new DeviceRgb(255, 245, 247))
-                .setPadding(20)
-                .setBorder(new SolidBorder(PINK_ACCENT, 1))
-                .setMarginTop(8);
-
-        // Barre de progression visuelle
+    // ── Visual mood bar ───────────────────────────────────────
+    private static void addMoodBar(Document doc, Rapport rapport) {
         double score = rapport.getScore_humeur();
-        String bar = createMoodBar(score);
-        String emoji = getHumeurEmoji(score);
+        doc.add(new Paragraph("😊  Évaluation de l'humeur")
+                .setFontSize(14).setFontColor(CORAL).setBold().setMarginBottom(10));
 
-        moodCell.add(new Paragraph("Score: " + String.format("%.1f", score) + " / 10  " + emoji)
-                .setFontSize(14)
-                .setFontColor(TEXT_DARK)
-                .setBold()
+        Table box = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+        Cell cell = new Cell().setBackgroundColor(CORAL_LIGHT)
+                .setBorder(new SolidBorder(CORAL, 1.5f))
+                .setPadding(18);
+
+        cell.add(new Paragraph(getHumeurEmoji(score) + "  Score: "
+                + String.format("%.1f", score) + " / 10")
+                .setFontSize(16).setFontColor(CORAL).setBold()
                 .setTextAlignment(TextAlignment.CENTER));
-        moodCell.add(new Paragraph(bar)
-                .setFontSize(12)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setMarginTop(8));
-        moodCell.add(new Paragraph(getMoodDescription(score))
-                .setFontSize(10)
-                .setFontColor(TEXT_LIGHT)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setItalic()
-                .setMarginTop(5));
-        moodTable.addCell(moodCell);
-        doc.add(moodTable);
+
+        // Barre visuelle ASCII
+        int filled = (int) score;
+        String bar = "▮".repeat(filled) + "▯".repeat(10 - filled);
+        cell.add(new Paragraph(bar).setFontSize(16)
+                .setFontColor(CORAL).setTextAlignment(TextAlignment.CENTER).setMarginTop(6));
+
+        cell.add(new Paragraph(getMoodDescription(score))
+                .setFontSize(10).setFontColor(TEXT_MID).setItalic()
+                .setTextAlignment(TextAlignment.CENTER).setMarginTop(8));
+
+        box.addCell(cell);
+        doc.add(box);
     }
 
-    /**
-     * Signature du coach
-     */
+    // ── Signature ─────────────────────────────────────────────
     private static void addSignature(Document doc, User coach) {
-        doc.add(new Paragraph("\n\n"));
-
-        Table sigTable = new Table(UnitValue.createPercentArray(new float[]{60, 40}))
+        doc.add(new Paragraph("\n"));
+        Table t = new Table(UnitValue.createPercentArray(new float[]{55, 45}))
                 .useAllAvailableWidth();
 
-        Cell emptyCell = new Cell().setBorder(Border.NO_BORDER);
-        emptyCell.add(new Paragraph(""));
-        sigTable.addCell(emptyCell);
+        t.addCell(new Cell().setBorder(Border.NO_BORDER)
+                .add(new Paragraph("")));
 
-        Cell sigCell = new Cell()
-                .setBorder(Border.NO_BORDER)
+        Cell sig = new Cell().setBorder(Border.NO_BORDER)
                 .setTextAlignment(TextAlignment.CENTER);
-
-        sigCell.add(new Paragraph("_________________________")
-                .setFontSize(11)
-                .setFontColor(TEXT_LIGHT));
-        sigCell.add(new Paragraph(coach.getPrenom() + " " + coach.getNom())
-                .setFontSize(12)
-                .setFontColor(TEXT_DARK)
-                .setBold()
-                .setMarginTop(5));
-        sigCell.add(new Paragraph("Coach / Thérapeute EchoCare")
-                .setFontSize(9)
-                .setFontColor(TEXT_LIGHT)
-                .setItalic());
-        sigCell.add(new Paragraph("Le " + LocalDateTime.now()
-                .format(DateTimeFormatter.ofPattern("dd MMMM yyyy")))
-                .setFontSize(9)
-                .setFontColor(TEXT_LIGHT));
-        sigTable.addCell(sigCell);
-
-        doc.add(sigTable);
+        sig.add(new Paragraph("_________________________")
+                .setFontSize(10).setFontColor(TEXT_LIGHT));
+        sig.add(new Paragraph(coach.getPrenom() + " " + coach.getNom())
+                .setFontSize(12).setFontColor(TEXT_DARK).setBold().setMarginTop(5));
+        sig.add(new Paragraph("Coach / Thérapeute EchoCare")
+                .setFontSize(9).setFontColor(TEXT_MID).setItalic());
+        sig.add(new Paragraph(LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.FRENCH)))
+                .setFontSize(9).setFontColor(TEXT_LIGHT));
+        t.addCell(sig);
+        doc.add(t);
     }
 
-    /**
-     * Footer
-     */
+    // ── Footer ────────────────────────────────────────────────
     private static void addFooter(Document doc) {
-        doc.add(new Paragraph("\n"));
+        doc.setLeftMargin(0);
+        doc.setRightMargin(0);
 
-        Table footerLine = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-        Cell lineCell = new Cell()
-                .setBackgroundColor(PURPLE_LIGHT)
-                .setPadding(1)
-                .setBorder(Border.NO_BORDER);
-        lineCell.add(new Paragraph(""));
-        footerLine.addCell(lineCell);
-        doc.add(footerLine);
-
-        doc.add(new Paragraph("EchoCare © 2025 - Document confidentiel - Écouter · Comprendre · Accompagner")
-                .setFontSize(8)
-                .setFontColor(TEXT_LIGHT)
-                .setTextAlignment(TextAlignment.CENTER)
-                .setItalic()
-                .setMarginTop(8));
+        Table band = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+        band.addCell(new Cell().setBorder(Border.NO_BORDER)
+                .setBackgroundColor(BLUE_DARK).setPadding(14)
+                .add(new Paragraph("EchoCare © 2025  ·  Document confidentiel  ·  Écouter · Comprendre · Accompagner")
+                        .setFontSize(8).setFontColor(new DeviceRgb(200,215,235))
+                        .setTextAlignment(TextAlignment.CENTER).setItalic()));
+        doc.add(band);
     }
 
-    // ═══ UTILITAIRES ═══
+    // ── Divider ───────────────────────────────────────────────
+    private static void addDivider(Document doc) {
+        doc.add(new Paragraph("").setMarginTop(16).setMarginBottom(16));
+    }
 
+    // ── Helpers ───────────────────────────────────────────────
     private static String getHumeurEmoji(double score) {
         if (score >= 8) return "😄";
         if (score >= 6) return "😊";
@@ -442,17 +308,11 @@ public class PDFGenerator {
         return "😢";
     }
 
-    private static String createMoodBar(double score) {
-        int filled = (int) score;
-        int empty = 10 - filled;
-        return "█".repeat(filled) + "░".repeat(empty);
-    }
-
     private static String getMoodDescription(double score) {
-        if (score >= 8) return "Excellent état émotionnel - Progression remarquable";
-        if (score >= 6) return "Bon état général - Évolution positive";
-        if (score >= 4) return "État modéré - Suivi recommandé";
-        if (score >= 2) return "État fragile - Accompagnement renforcé nécessaire";
-        return "État critique - Prise en charge prioritaire";
+        if (score >= 8) return "Excellent état émotionnel — Progression remarquable";
+        if (score >= 6) return "Bon état général — Évolution positive";
+        if (score >= 4) return "État modéré — Suivi recommandé";
+        if (score >= 2) return "État fragile — Accompagnement renforcé nécessaire";
+        return "État critique — Prise en charge prioritaire";
     }
 }
