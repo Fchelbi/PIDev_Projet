@@ -8,7 +8,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -44,7 +47,7 @@ public class AdminHome {
     @FXML private Label lblQuoteAuthor;
     @FXML private Label lblQuoteStatus;
 
-    @FXML private PieChart pieChartRoles;
+    @FXML private BarChart<String, Number> barChartRoles;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane dashboardPane;
     @FXML private ImageView imgHeaderPhoto;
@@ -132,16 +135,18 @@ public class AdminHome {
             lblNbAdmins.setText(String.valueOf(a));
             lblNbTotal.setText(String.valueOf(users.size()));
 
-            ObservableList<PieChart.Data> pie = FXCollections.observableArrayList(
-                    new PieChart.Data("Patients (" + p + ")", Math.max(p, 1)),
-                    new PieChart.Data("Coaches (" + c + ")",  Math.max(c, 1)),
-                    new PieChart.Data("Admins (" + a + ")",   Math.max(a, 1)));
-            pieChartRoles.setData(pie);
+            XYChart.Series<String, Number> series = new XYChart.Series<>();
+            series.setName("Utilisateurs");
+            series.getData().add(new XYChart.Data<>("Patients", (Number) fp));
+            series.getData().add(new XYChart.Data<>("Coaches",  (Number) fc));
+            series.getData().add(new XYChart.Data<>("Admins",   (Number) fa));
+            barChartRoles.getData().clear();
+            barChartRoles.getData().add(series);
             Platform.runLater(() -> {
-                if (pieChartRoles.getData().size() >= 3) {
-                    pieChartRoles.getData().get(0).getNode().setStyle("-fx-pie-color: #E8956D;");
-                    pieChartRoles.getData().get(1).getNode().setStyle("-fx-pie-color: #F5C87A;");
-                    pieChartRoles.getData().get(2).getNode().setStyle("-fx-pie-color: #4A6FA5;");
+                if (series.getData().size() >= 3) {
+                    series.getData().get(0).getNode().setStyle("-fx-bar-fill: #E8956D;");
+                    series.getData().get(1).getNode().setStyle("-fx-bar-fill: #F5C87A;");
+                    series.getData().get(2).getNode().setStyle("-fx-bar-fill: #4A6FA5;");
                 }
             });
         } catch (SQLException e) {
@@ -208,7 +213,6 @@ public class AdminHome {
         setActiveNav(navDashboard, indicDashboard);
         contentArea.getChildren().setAll(dashboardPane);
         refreshStats(null);
-        loadQuoteOfDay(); // ✅ Nouvelle citation à chaque retour sur le dashboard
     }
 
     @FXML
@@ -262,7 +266,7 @@ public class AdminHome {
     @FXML void onNavProfilEnter(MouseEvent e)     { if(navProfil     !=currentActiveNav) navProfil.setStyle(NAV_ACTIVE); }
     @FXML void onNavProfilExit(MouseEvent e)      { if(navProfil     !=currentActiveNav) navProfil.setStyle(NAV_NORMAL); }
 
-    // ─── Map & Rapport in content area (ActionEvent from Button) ─
+    // ─── Map in content area ──────────────────────────────────
     @FXML
     void loadMapSection(ActionEvent event) {
         try {
@@ -272,20 +276,6 @@ public class AdminHome {
         } catch (IOException e) {
             e.printStackTrace();
             LightDialog.showError("Erreur", "Impossible de charger la carte.");
-        }
-    }
-
-    @FXML
-    void loadRapportSection(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/GenerateRapport.fxml"));
-            VBox page = loader.load();
-            RapportController ctrl = loader.getController();
-            ctrl.setCoach(currentUser);
-            contentArea.getChildren().setAll(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LightDialog.showError("Erreur", "Impossible de charger le rapport.");
         }
     }
 

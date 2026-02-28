@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<!--
+    QuickNotes — Notes rapides du Coach
+    Sauvegarde des notes par patient avec tags et priorité
+-->
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.QuickNotesController"
+      spacing="0" style="-fx-background-color: #F0F7F4;">
+
+    <HBox alignment="CENTER_LEFT" spacing="15"
+          style="-fx-padding: 22 30; -fx-background-color: white;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+        <VBox spacing="3">
+            <Label text="📝 Notes Rapides"
+                   style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #1B4332;"/>
+            <Label text="Capturez vos observations instantanément"
+                   style="-fx-font-size: 12px; -fx-text-fill: #52B788;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblNoteCount"
+               style="-fx-font-size: 13px; -fx-text-fill: #2D6A4F; -fx-font-weight: 600;
+                      -fx-background-color: #EAF7EF; -fx-background-radius: 20; -fx-padding: 8 16;"/>
+    </HBox>
+
+    <HBox VBox.vgrow="ALWAYS">
+
+        <!-- Left: New note -->
+        <VBox prefWidth="380" spacing="0"
+              style="-fx-background-color: white; -fx-padding: 25;
+                     -fx-border-color: transparent #E8F5EC transparent transparent;
+                     -fx-border-width: 1;">
+            <VBox spacing="14">
+                <Label text="✏️ Nouvelle note"
+                       style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #1B4332;"/>
+
+                <!-- Titre -->
+                <VBox spacing="6">
+                    <Label text="Titre" style="-fx-font-size: 12px; -fx-text-fill: #52B788; -fx-font-weight: 600;"/>
+                    <TextField fx:id="tfTitre" promptText="Ex: Séance du 15 Jan — Ali B."
+                               style="-fx-background-color: #F6FAF7; -fx-border-color: #C8E6D4;
+                                      -fx-border-radius: 9; -fx-background-radius: 9;
+                                      -fx-border-width: 1.5; -fx-padding: 11 14;
+                                      -fx-font-size: 13px; -fx-text-fill: #1B4332;
+                                      -fx-prompt-text-fill: #A8C8B8;"/>
+                </VBox>
+
+                <!-- Patient -->
+                <VBox spacing="6">
+                    <Label text="Patient (optionnel)" style="-fx-font-size: 12px; -fx-text-fill: #52B788; -fx-font-weight: 600;"/>
+                    <ComboBox fx:id="cbPatientNote" maxWidth="Infinity" promptText="Sélectionner un patient"
+                              style="-fx-background-color: #F6FAF7; -fx-border-color: #C8E6D4;
+                                     -fx-border-radius: 9; -fx-background-radius: 9;
+                                     -fx-border-width: 1.5; -fx-padding: 4 8;"/>
+                </VBox>
+
+                <!-- Priorité -->
+                <VBox spacing="6">
+                    <Label text="Priorité" style="-fx-font-size: 12px; -fx-text-fill: #52B788; -fx-font-weight: 600;"/>
+                    <HBox spacing="10">
+                        <Button fx:id="btnPrioNorm" text="🔵 Normale" onAction="#setPrioNormal"
+                                style="-fx-background-color: #EAF7EF; -fx-text-fill: #2D6A4F;
+                                       -fx-background-radius: 20; -fx-padding: 7 16;
+                                       -fx-font-size: 12px; -fx-cursor: hand;
+                                       -fx-border-color: #2D6A4F; -fx-border-radius: 20;"/>
+                        <Button fx:id="btnPrioUrgent" text="🔴 Urgente" onAction="#setPrioUrgent"
+                                style="-fx-background-color: #F5F5F5; -fx-text-fill: #888;
+                                       -fx-background-radius: 20; -fx-padding: 7 16;
+                                       -fx-font-size: 12px; -fx-cursor: hand;"/>
+                        <Button fx:id="btnPrioInfo" text="🟡 Info" onAction="#setPrioInfo"
+                                style="-fx-background-color: #F5F5F5; -fx-text-fill: #888;
+                                       -fx-background-radius: 20; -fx-padding: 7 16;
+                                       -fx-font-size: 12px; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Contenu -->
+                <VBox spacing="6" VBox.vgrow="ALWAYS">
+                    <Label text="Contenu de la note" style="-fx-font-size: 12px; -fx-text-fill: #52B788; -fx-font-weight: 600;"/>
+                    <TextArea fx:id="taContenuNote" wrapText="true" prefHeight="140"
+                              promptText="Observations, comportements notables, points à suivre..."
+                              style="-fx-background-color: #F6FAF7; -fx-border-color: #C8E6D4;
+                                     -fx-border-radius: 9; -fx-background-radius: 9;
+                                     -fx-border-width: 1.5; -fx-padding: 12;
+                                     -fx-font-size: 13px; -fx-text-fill: #1B4332;
+                                     -fx-prompt-text-fill: #A8C8B8;"/>
+                </VBox>
+
+                <Button text="💾  Sauvegarder la note" onAction="#saveNote" maxWidth="Infinity"
+                        style="-fx-background-color: #2D6A4F; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-font-weight: 700; -fx-padding: 13;
+                               -fx-background-radius: 10; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(45,106,79,0.3), 8, 0, 0, 3);"/>
+            </VBox>
+        </VBox>
+
+        <!-- Right: Notes list -->
+        <VBox HBox.hgrow="ALWAYS" spacing="14"
+              style="-fx-padding: 25; -fx-background-color: #F0F7F4;">
+
+            <!-- Filters -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Filtrer:" style="-fx-font-size: 12px; -fx-text-fill: #52B788; -fx-font-weight: 600;"/>
+                <Button text="Toutes" onAction="#filterAll"
+                        style="-fx-background-color: #2D6A4F; -fx-text-fill: white;
+                               -fx-background-radius: 15; -fx-padding: 6 14; -fx-font-size: 11px; -fx-cursor: hand;"/>
+                <Button text="🔴 Urgentes" onAction="#filterUrgent"
+                        style="-fx-background-color: #FFE8E8; -fx-text-fill: #C05050;
+                               -fx-background-radius: 15; -fx-padding: 6 14; -fx-font-size: 11px; -fx-cursor: hand;"/>
+                <Button text="🔵 Normales" onAction="#filterNormal"
+                        style="-fx-background-color: #EAF7EF; -fx-text-fill: #2D6A4F;
+                               -fx-background-radius: 15; -fx-padding: 6 14; -fx-font-size: 11px; -fx-cursor: hand;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🗑 Supprimer sélection" onAction="#deleteSelected"
+                        style="-fx-background-color: transparent; -fx-text-fill: #C05050;
+                               -fx-font-size: 11px; -fx-cursor: hand; -fx-padding: 6 10;"/>
+            </HBox>
+
+            <ListView fx:id="listNotes" VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
+
+            <!-- Preview -->
+            <VBox fx:id="previewBox" spacing="10" visible="false" managed="false"
+                  style="-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 18;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 8, 0, 0, 2);">
+                <Label text="📋 Aperçu de la note"
+                       style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #1B4332;"/>
+                <Label fx:id="lblPreviewTitle" text=""
+                       style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #2D6A4F;"/>
+                <TextArea fx:id="taPreviewContent" editable="false" wrapText="true" prefHeight="80"
+                          style="-fx-background-color: #F6FAF7; -fx-border-color: transparent;
+                                 -fx-font-size: 12px; -fx-text-fill: #3A5A3A;"/>
+            </VBox>
+        </VBox>
+    </HBox>
+</VBox>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="controllers.FormationController"
+      spacing="15">
+    <padding><Insets top="10" bottom="10" left="10" right="10"/></padding>
+
+    <!-- TOP BAR -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Label text="📚 Gestion des Formations"
+               style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+        <HBox HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="tfSearch" promptText="🔍 Rechercher..."
+                   prefWidth="250" onKeyReleased="#handleSearch"
+                   styleClass="search-field"/>
+        <Button text="➕ Ajouter" onAction="#showAddForm"
+                styleClass="btn-add-new"/>
+    </HBox>
+    <Separator/>
+
+    <!-- MAIN CONTENT -->
+    <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS"
+                style="-fx-background: transparent; -fx-background-color: transparent;">
+
+        <StackPane fx:id="formationContent">
+
+            <!-- ════════════════════════════════ -->
+            <!-- SECTION 1: TABLE                -->
+            <!-- ════════════════════════════════ -->
+            <VBox fx:id="tableSection" spacing="10">
+                <TableView fx:id="tvFormations" prefHeight="400">
+                    <columns>
+                        <TableColumn fx:id="colTitle" text="Titre" prefWidth="150"/>
+                        <TableColumn fx:id="colDescription" text="Description"
+                                     prefWidth="200"/>
+                        <TableColumn fx:id="colCategory" text="Catégorie"
+                                     prefWidth="120"/>
+                        <TableColumn fx:id="colVideo" text="Vidéo" prefWidth="80"/>
+                        <TableColumn fx:id="colQuiz" text="Quiz" prefWidth="100"/>
+                        <TableColumn fx:id="colActions" text="Actions"
+                                     prefWidth="160"/>
+                    </columns>
+                    <placeholder><Label text="Aucune formation"/></placeholder>
+                </TableView>
+                <HBox alignment="CENTER_LEFT">
+                    <Label fx:id="lblTotal" text="Total: 0"/>
+                    <HBox HBox.hgrow="ALWAYS"/>
+                    <Button text="🔄 Rafraîchir" onAction="#handleRefresh"
+                            styleClass="btn-refresh"/>
+                </HBox>
+            </VBox>
+
+            <!-- ════════════════════════════════ -->
+            <!-- SECTION 2: ADD/EDIT FORM        -->
+            <!-- ════════════════════════════════ -->
+            <ScrollPane fx:id="formScrollPane" fitToWidth="true"
+                        visible="false" managed="false"
+                        style="-fx-background: transparent;
+                               -fx-background-color: transparent;">
+                <VBox fx:id="formSection" spacing="15">
+                    <padding>
+                        <Insets top="10" bottom="30" left="10" right="10"/>
+                    </padding>
+
+                    <Label fx:id="lblFormTitle" text="➕ Ajouter"
+                           style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+                    <VBox spacing="15" styleClass="form-card" maxWidth="600">
+                        <padding>
+                            <Insets top="25" bottom="25" left="25" right="25"/>
+                        </padding>
+
+                        <!-- Title -->
+                        <Label text="Titre:" styleClass="form-label"/>
+                        <TextField fx:id="tfTitle" promptText="Titre de la formation"
+                                   styleClass="form-input"/>
+
+                        <!-- Description -->
+                        <Label text="Description:" styleClass="form-label"/>
+                        <TextArea fx:id="taDescription"
+                                  promptText="Description de la formation"
+                                  prefRowCount="3" wrapText="true"
+                                  styleClass="form-input"/>
+
+                        <!-- Video URL with file chooser and YouTube search -->
+                        <Label text="Vidéo (YouTube ou fichier .MP4):"
+                               styleClass="form-label"/>
+                        <HBox spacing="10">
+                            <TextField fx:id="tfVideoUrl"
+                                       promptText="https://youtube.com/watch?v=... ou fichier .mp4"
+                                       styleClass="form-input"
+                                       HBox.hgrow="ALWAYS"/>
+                            <Button text="📁" onAction="#handleChooseVideo"
+                                    style="-fx-background-color: #636e72;
+                                           -fx-text-fill: white;
+                                           -fx-cursor: hand;
+                                           -fx-background-radius: 5;"/>
+                            <Button text="🔍 YouTube"
+                                    onAction="#handleSearchYouTube"
+                                    style="-fx-background-color: #d63031;
+                                           -fx-text-fill: white;
+                                           -fx-cursor: hand;
+                                           -fx-background-radius: 5;
+                                           -fx-font-weight: bold;"/>
+                        </HBox>
+
+                        <!-- Category -->
+                        <Label text="Catégorie:" styleClass="form-label"/>
+                        <ComboBox fx:id="cbCategory" promptText="Choisir une catégorie"
+                                  prefWidth="300" styleClass="form-input"/>
+                        <!-- Coach Assignment (admin only) -->
+                        <Label text="Assigner au Coach:" styleClass="form-label"/>
+                        <ComboBox fx:id="cbCoach" promptText="Choisir un coach"
+                                  prefWidth="300" styleClass="form-input"/>
+
+                        <!-- Error label -->
+                        <Label fx:id="lblError" text=""
+                               style="-fx-text-fill: red; -fx-font-size: 12px;"/>
+
+                        <!-- Buttons -->
+                        <HBox spacing="15">
+                            <Button fx:id="btnSave" text="✅ Enregistrer"
+                                    onAction="#handleSave" styleClass="btn-save"/>
+                            <Button text="🔄 Effacer" onAction="#handleClear"
+                                    styleClass="btn-clear"/>
+                            <Button text="↩️ Retour" onAction="#showTable"
+                                    styleClass="btn-back"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <!-- ════════════════════════════════ -->
+            <!-- SECTION 3: VIDEO PLAYER         -->
+            <!-- (Built dynamically in Java)     -->
+            <!-- ════════════════════════════════ -->
+            <VBox fx:id="videoSection" spacing="15"
+                  visible="false" managed="false">
+                <padding>
+                    <Insets top="10" bottom="10" left="10" right="10"/>
+                </padding>
+            </VBox>
+
+            <!-- ════════════════════════════════ -->
+            <!-- SECTION 4: QUIZ MANAGER         -->
+            <!-- ════════════════════════════════ -->
+            <ScrollPane fx:id="quizScrollPane" fitToWidth="true"
+                        visible="false" managed="false"
+                        style="-fx-background: transparent;
+                               -fx-background-color: transparent;">
+                <VBox fx:id="quizSection" spacing="15">
+                    <padding>
+                        <Insets top="10" bottom="30" left="10" right="10"/>
+                    </padding>
+
+                    <!-- Quiz header with back button -->
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <Button text="↩️ Retour" onAction="#showTable"
+                                styleClass="btn-back"/>
+                        <Label fx:id="lblQuizTitle" text=""
+                               style="-fx-font-size: 18px;
+                                      -fx-font-weight: bold;"/>
+                    </HBox>
+
+                    <!-- Quiz form -->
+                    <VBox fx:id="quizFormArea" spacing="15"
+                          styleClass="form-card" maxWidth="600">
+                        <padding>
+                            <Insets top="25" bottom="25" left="25" right="25"/>
+                        </padding>
+
+                        <Label text="Titre du Quiz:" styleClass="form-label"/>
+                        <TextField fx:id="tfQuizTitle" promptText="Titre du quiz"
+                                   styleClass="form-input"/>
+
+                        <Label text="Score minimum (%):" styleClass="form-label"/>
+                        <TextField fx:id="tfPassingScore" promptText="70"
+                                   styleClass="form-input"/>
+
+                        <Label fx:id="lblQuizError" text=""
+                               style="-fx-text-fill: red; -fx-font-size: 12px;"/>
+
+                        <HBox spacing="15">
+                            <Button fx:id="btnSaveQuiz" text="✅ Enregistrer"
+                                    onAction="#handleSaveQuiz"
+                                    styleClass="btn-save"/>
+                            <Button text="🗑️ Supprimer Quiz"
+                                    onAction="#handleDeleteQuiz"
+                                    style="-fx-background-color: #d63031;
+                                           -fx-text-fill: white;
+                                           -fx-cursor: hand;
+                                           -fx-background-radius: 5;"/>
+                            <Button text="↩️ Retour" onAction="#showTable"
+                                    styleClass="btn-back"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Questions area -->
+                    <VBox fx:id="questionsArea" spacing="10">
+                        <Label text="📋 Questions:"
+                               style="-fx-font-size: 16px;
+                                      -fx-font-weight: bold;"/>
+
+                        <!-- Questions list (populated by Java) -->
+                        <VBox fx:id="questionsList" spacing="10"/>
+
+                        <!-- Add question buttons -->
+                        <HBox spacing="10">
+                            <Button text="➕ Ajouter Question"
+                                    onAction="#handleAddQuestion"
+                                    styleClass="btn-add-new"/>
+                            <Button text="🤖 Générer avec IA"
+                                    onAction="#handleAutoGenerateQuestions"
+                                    style="-fx-background-color: #6c5ce7;
+                                           -fx-text-fill: white;
+                                           -fx-font-weight: bold;
+                                           -fx-font-size: 14px;
+                                           -fx-padding: 8 20;
+                                           -fx-background-radius: 20;
+                                           -fx-cursor: hand;"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+        </StackPane>
+    </ScrollPane>
+</VBox>

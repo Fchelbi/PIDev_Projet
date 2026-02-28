@@ -16,6 +16,14 @@ public class MainFX extends Application {
     }
 
     @Override
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = FXMLLoader.load(getClass().getResource("/AdminDashboard.fxml"));
+        Scene scene = new Scene(root, 1100, 700);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        primaryStage.setTitle("EchoCare");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
     public void start(Stage primaryStage) {
         System.out.println("1️⃣. Bdit nlawej 3al FXML...");
 
@@ -42,6 +50,8 @@ public class MainFX extends Application {
             primaryStage.show();
             System.out.println("3️⃣. Fenetre t7allet !");
 
+    public static void main(String[] args) {
+        launch(args);
         } catch (IOException e) {
             System.out.println("❌ ERREUR FATALE:");
             e.printStackTrace();

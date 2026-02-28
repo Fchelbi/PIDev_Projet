@@ -4,7 +4,77 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done" />
+    <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <change afterPath="$PROJECT_DIR$/.ai/mcp/mcp.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/pidev.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/FormationController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/MoodTrackerController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/QuickNotesController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/entities/Formation.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/entities/Participant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/entities/Question.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/entities/Quiz.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/entities/QuizResult.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/entities/Reponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/CertificateService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/FormationService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/ParticipantService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/QuestionService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/QuizGeneratorAPI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/QuizResultService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/QuizService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/ReponseService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/YouTubeAPIService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/VideoPlayerUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/AdminDashboard.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/CoachDashboard.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/FormationView.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/MoodTracker.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/PatientDashboard.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/QuickNotes.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/test/java/FormationServiceTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/GestionUtilisateurs.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/GestionUtilisateurs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/Profil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Profil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/RapportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/RapportController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/ResetPassword.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/ResetPassword.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/SignIn.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/SignIn.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/SignUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/SignUp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/mains/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/mains/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/mains/MainFX.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/mains/MainFX.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/org/example/Main.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/services/CRUD.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/services/CRUD.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/services/serviceUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/services/serviceUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/utils/LightDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/LightDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/utils/MyDBConnexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/MyDBConnexion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Ajouterutilisateur.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Ajouterutilisateur.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Forgotpassword.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Forgotpassword.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/GenerateRapport.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/GenerateRapport.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/GestionUtilisateurs.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/GestionUtilisateurs.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Modifierutilisateur.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Modifierutilisateur.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Profil.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Profil.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Resetpassword.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Resetpassword.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/SignUp.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/SignUp.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Verifycode.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Verifycode.fxml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -66,7 +136,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "Merging main",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/fatmachelbi/uni_project/pidev_java/pidev",
@@ -307,5 +377,9 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
