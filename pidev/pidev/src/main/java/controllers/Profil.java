@@ -170,11 +170,11 @@ public class Profil {
                 sTitle = "💪 Espace Coach"; sInfo = "Gérez vos patients et séances.";
                 lblSubtitle.setText("Gérez votre profil coach"); break;
             case "PATIENT":
-                c1 = "#E0A7B5"; c2 = "#D4C5A5"; badge = "#D4889A"; bg = "#FDF2F8";
+                c1 = "#E8956D"; c2 = "#D4845C"; badge = "#C06A3A"; bg = "#FFF0E8";
                 sTitle = "🏥 Mon suivi"; sInfo = "Consultez vos rendez-vous.";
                 lblSubtitle.setText("Gérez votre profil patient"); break;
             default:
-                c1 = "#A7B5E0"; c2 = "#D4A5BD"; badge = "#9FAEE0"; bg = "#EDF0FA";
+                c1 = "#4A6FA5"; c2 = "#3A5A90"; badge = "#2E4A7A"; bg = "#EBF4FF";
                 sTitle = "👑 Privilèges Admin"; sInfo = "Gestion complète du système.";
                 lblSubtitle.setText("Gérez votre compte administrateur"); break;
         }
@@ -185,9 +185,9 @@ public class Profil {
         lblRoleBadge.setStyle("-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: " + badge +
                 "; -fx-background-color: " + bg + "; -fx-padding: 5 18; -fx-background-radius: 20;");
 
-        btnEdit.setStyle("-fx-background-color: linear-gradient(to right, " + c1 + ", " + c2 +
-                "); -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: 600; " +
-                "-fx-padding: 12 25; -fx-background-radius: 10; -fx-cursor: hand;");
+        btnEdit.setStyle("-fx-background-color: #E8956D; -fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: 600; " +
+                "-fx-padding: 12 25; -fx-background-radius: 10; -fx-cursor: hand; " +
+                "-fx-effect: dropshadow(gaussian, rgba(232,149,109,0.4), 10, 0, 0, 4);");
 
         EDITABLE_STYLE = "-fx-background-color: white; -fx-border-color: " + c1 +
                 "; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; " +

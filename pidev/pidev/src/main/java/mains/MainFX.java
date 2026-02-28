@@ -5,9 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 import java.net.URL;
-
 
 public class MainFX extends Application {
 
@@ -16,44 +16,31 @@ public class MainFX extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/AdminDashboard.fxml"));
-        Scene scene = new Scene(root, 1100, 700);
-        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
-        primaryStage.setTitle("EchoCare");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
     public void start(Stage primaryStage) {
-        System.out.println("1️⃣. Bdit nlawej 3al FXML...");
+        System.out.println("1. Bdit nlawej 3al FXML...");
 
         try {
-            // Nlawej 3al fichier
             URL fxmlUrl = getClass().getResource("/Login.fxml");
 
-            // Nchouf l9inah walla lé
             if (fxmlUrl == null) {
-                System.out.println("❌ MOCHKLA: Mal9itech 'Login.fxml' ! Thabet fi dossier resources.");
-                // Nwa9fou l khedma houni
+                System.out.println("MOCHKLA: Mal9itech 'Login.fxml'! Thabet fi dossier resources.");
                 return;
             } else {
-                System.out.println("✅ C Bon! L9it l fichier houni: " + fxmlUrl);
+                System.out.println("OK! L9it l fichier: " + fxmlUrl);
             }
 
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent root = loader.load();
-            System.out.println("2️⃣. Chargement FXML mcha mriguel.");
+            System.out.println("2. Chargement FXML OK.");
 
             Scene scene = new Scene(root);
-            primaryStage.setTitle("Test Final");
+            primaryStage.setTitle("EchoCare");
             primaryStage.setScene(scene);
             primaryStage.show();
-            System.out.println("3️⃣. Fenetre t7allet !");
+            System.out.println("3. Fenetre t7allet!");
 
-    public static void main(String[] args) {
-        launch(args);
         } catch (IOException e) {
-            System.out.println("❌ ERREUR FATALE:");
+            System.out.println("ERREUR FATALE:");
             e.printStackTrace();
         }
     }
