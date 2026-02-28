@@ -2,7 +2,6 @@ package controllers;
 
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import entities.User;
@@ -29,22 +27,11 @@ import java.util.regex.Pattern;
 
 public class SignUp {
     @FXML private TextField tfNom, tfPrenom, tfEmail, tfTel;
-    @FXML private PasswordField pfMdp;
+    @FXML private PasswordField pfMdp, pfConfirm;
     @FXML private ComboBox<String> cbRole;
     @FXML private ImageView imgSignUpPhoto;
     @FXML private Label lblPhotoPlaceholder;
     @FXML private StackPane photoContainer;
-
-    // ✅ FIX: Fields présents dans le FXML mais manquants dans le controller
-    @FXML private Label errNom;
-    @FXML private Label errPrenom;
-    @FXML private Label errEmail;
-    @FXML private Label errTel;
-    @FXML private Label errMdp;
-    @FXML private Label errConfirm;
-    @FXML private Label lblPhotoPath;
-    @FXML private Button btnPhoto;
-    @FXML private PasswordField pfConfirm;
 
     private final serviceUser us = new serviceUser();
     private String selectedPhotoPath = null;
@@ -52,114 +39,78 @@ public class SignUp {
 
     private static final Pattern EMAIL_P = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     private static final Pattern PHONE_P = Pattern.compile("^[0-9]{8}$");
-    private static final Pattern NAME_P = Pattern.compile("^[a-zA-ZÀ-ÿ\\s'-]+$");
-
-    private static final String S_N = "-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 13; -fx-font-size: 14px;";
-    private static final String S_E = "-fx-background-color: #FFF5F5; -fx-border-color: #E57373; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 13; -fx-font-size: 14px;";
-    private static final String S_S = "-fx-background-color: #F0FFF4; -fx-border-color: #81C995; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 13; -fx-font-size: 14px;";
+    private static final Pattern NAME_P  = Pattern.compile("^[a-zA-ZÀ-ÿ\\s'-]+$");
 
     @FXML
     void initialize() {
         cbRole.setItems(FXCollections.observableArrayList("PATIENT", "COACH", "ADMIN"));
         cbRole.setValue("PATIENT");
-
-        // Créer dossier photos
-        File dir = new File(PHOTOS_DIR);
-        if (!dir.exists()) dir.mkdirs();
-
-        setupValidation();
+        new File(PHOTOS_DIR).mkdirs();
     }
 
-    private void setupValidation() {
-        tfNom.textProperty().addListener((o, ov, nv) -> tfNom.setStyle(nv.isEmpty() ? S_N : NAME_P.matcher(nv).matches() && nv.length() >= 2 ? S_S : S_E));
-        tfPrenom.textProperty().addListener((o, ov, nv) -> tfPrenom.setStyle(nv.isEmpty() ? S_N : NAME_P.matcher(nv).matches() && nv.length() >= 2 ? S_S : S_E));
-        tfEmail.textProperty().addListener((o, ov, nv) -> tfEmail.setStyle(nv.isEmpty() ? S_N : EMAIL_P.matcher(nv).matches() ? S_S : S_E));
-        pfMdp.textProperty().addListener((o, ov, nv) -> pfMdp.setStyle(nv.isEmpty() ? S_N : nv.length() >= 6 ? S_S : S_E));
-        tfTel.textProperty().addListener((o, ov, nv) -> tfTel.setStyle(nv.isEmpty() ? S_N : PHONE_P.matcher(nv).matches() ? S_S : S_E));
-    }
-
-    /**
-     * Choisir photo de profil
-     */
     @FXML
-    void handleChoosePhoto() {
+    void handleChoosePhoto(ActionEvent event) {
         FileChooser fc = new FileChooser();
         fc.setTitle("Choisir une photo de profil");
-        fc.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif")
-        );
-
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif"));
         File file = fc.showOpenDialog(tfNom.getScene().getWindow());
         if (file != null) {
             try {
-                // Fichier temporaire, sera copié après inscription
                 selectedPhotoPath = file.getAbsolutePath();
-
-                // Preview
                 Image img = new Image(file.toURI().toString(), 100, 100, false, true);
                 imgSignUpPhoto.setImage(img);
                 imgSignUpPhoto.setVisible(true);
-                lblPhotoPlaceholder.setVisible(false);
-
-                System.out.println("📷 Photo sélectionnée: " + selectedPhotoPath);
+                if (lblPhotoPlaceholder != null) lblPhotoPlaceholder.setVisible(false);
             } catch (Exception e) {
                 LightDialog.showError("Erreur", "Impossible de charger la photo.");
             }
         }
     }
 
-    @FXML void handleSignUp(ActionEvent event) {
-        // Reset error labels
-        if (errNom != null) errNom.setText("");
-        if (errPrenom != null) errPrenom.setText("");
-        if (errEmail != null) errEmail.setText("");
-        if (errTel != null) errTel.setText("");
-        if (errMdp != null) errMdp.setText("");
-        if (errConfirm != null) errConfirm.setText("");
+    @FXML
+    void handleSignUp(ActionEvent event) {
+        String nom    = tfNom.getText().trim(),
+                prenom = tfPrenom.getText().trim(),
+                email  = tfEmail.getText().trim(),
+                mdp    = pfMdp.getText(),
+                mdp2   = pfConfirm.getText(),
+                tel    = tfTel.getText().trim(),
+                role   = cbRole.getValue();
 
-        String nom = tfNom.getText().trim(), prenom = tfPrenom.getText().trim(),
-                email = tfEmail.getText().trim(), mdp = pfMdp.getText(),
-                tel = tfTel.getText().trim(), role = cbRole.getValue();
-
-        // ✅ Validation avec affichage inline des erreurs
-        boolean hasError = false;
-        if (nom.isEmpty() || !NAME_P.matcher(nom).matches() || nom.length() < 2) {
-            if (errNom != null) errNom.setText("Nom invalide (min 2 lettres)");
-            else { LightDialog.showError("Nom invalide", "Min 2 lettres!"); }
-            hasError = true;
+        // ── Validations ──
+        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || mdp.isEmpty()) {
+            LightDialog.showError("Champs requis", "Remplissez tous les champs obligatoires !"); return;
         }
-        if (prenom.isEmpty() || !NAME_P.matcher(prenom).matches() || prenom.length() < 2) {
-            if (errPrenom != null) errPrenom.setText("Prénom invalide (min 2 lettres)");
-            else { LightDialog.showError("Prénom invalide", "Min 2 lettres!"); }
-            hasError = true;
+        if (!NAME_P.matcher(nom).matches() || nom.length() < 2) {
+            LightDialog.showError("Nom invalide", "Min 2 lettres alphabétiques."); return;
         }
-        if (email.isEmpty() || !EMAIL_P.matcher(email).matches()) {
-            if (errEmail != null) errEmail.setText("Email non valide");
-            else { LightDialog.showError("Email invalide", "Email non valide!"); }
-            hasError = true;
+        if (!NAME_P.matcher(prenom).matches() || prenom.length() < 2) {
+            LightDialog.showError("Prénom invalide", "Min 2 lettres alphabétiques."); return;
+        }
+        if (!EMAIL_P.matcher(email).matches()) {
+            LightDialog.showError("Email invalide", "Format email non valide."); return;
         }
         if (mdp.length() < 6) {
-            if (errMdp != null) errMdp.setText("Min 6 caractères");
-            else { LightDialog.showError("Mot de passe", "Min 6 caractères!"); }
-            hasError = true;
+            LightDialog.showError("Mot de passe", "Minimum 6 caractères."); return;
         }
-        // ✅ FIX: Vérification confirmation mot de passe
-        if (pfConfirm != null && !pfConfirm.getText().equals(mdp)) {
-            if (errConfirm != null) errConfirm.setText("Mots de passe différents");
-            else { LightDialog.showError("Mot de passe", "Ne correspondent pas!"); }
-            hasError = true;
+        if (!mdp.equals(mdp2)) {
+            LightDialog.showError("Confirmation", "Les mots de passe ne correspondent pas."); return;
         }
         if (!tel.isEmpty() && !PHONE_P.matcher(tel).matches()) {
-            if (errTel != null) errTel.setText("8 chiffres requis");
-            else { LightDialog.showError("Téléphone", "8 chiffres!"); }
-            hasError = true;
+            LightDialog.showError("Téléphone", "8 chiffres requis."); return;
         }
-        if (hasError) return;
+        // ── Unicité email ──
+        if (us.emailExists(email)) {
+            LightDialog.showError("Email déjà utilisé", "Un compte existe déjà avec cet email."); return;
+        }
+        // ── Unicité mot de passe ──
+        if (us.passwordExists(mdp)) {
+            LightDialog.showError("Mot de passe déjà utilisé", "Ce mot de passe est déjà utilisé par un autre compte. Choisissez-en un autre."); return;
+        }
 
         try {
             User newUser = new User(0, nom, prenom, email, mdp, role, tel);
 
-            // Copier la photo si sélectionnée
             if (selectedPhotoPath != null) {
                 String ext = selectedPhotoPath.substring(selectedPhotoPath.lastIndexOf('.'));
                 String fileName = "user_" + System.currentTimeMillis() + ext;
@@ -169,28 +120,22 @@ public class SignUp {
             }
 
             us.signUp(newUser);
-            LightDialog.showSuccess("Succès", "Compte créé avec succès!");
+            LightDialog.showSuccess("Compte créé !", "Bienvenue sur EchoCare. Connectez-vous !");
             goToLogin(null);
 
         } catch (SQLException e) {
-            LightDialog.showError("Erreur", e.getMessage());
+            LightDialog.showError("Erreur base de données", e.getMessage());
         } catch (IOException e) {
-            LightDialog.showError("Erreur", "Problème avec la photo.");
-            e.printStackTrace();
+            LightDialog.showError("Erreur photo", "Impossible de sauvegarder la photo.");
         }
     }
 
     @FXML
-    void switchToLogin(MouseEvent event) {
-        goToLogin(null);
-    }
-
-    // ✅ FIX: goToLogin — méthode appelée depuis le FXML (onAction="#goToLogin")
-    @FXML
     void goToLogin(ActionEvent event) {
         try {
             Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
-            ((Stage) tfNom.getScene().getWindow()).setScene(new Scene(root));
+            Stage stage = (Stage) tfNom.getScene().getWindow();
+            stage.setScene(new Scene(root));
         } catch (IOException e) { e.printStackTrace(); }
     }
 }

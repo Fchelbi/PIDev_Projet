@@ -49,8 +49,8 @@ public class GestionUtilisateurs {
             private final Button btnDel = new Button("🗑️");
             private final HBox pane = new HBox(8, btnMod, btnDel);
             {
-                btnMod.setStyle("-fx-background-color: #A7B5E0; -fx-text-fill: white; -fx-padding: 6 12; -fx-font-size: 12px; -fx-cursor: hand; -fx-background-radius: 6;");
-                btnDel.setStyle("-fx-background-color: #E57373; -fx-text-fill: white; -fx-padding: 6 12; -fx-font-size: 12px; -fx-cursor: hand; -fx-background-radius: 6;");
+                btnMod.setStyle("-fx-background-color: #4A6FA5; -fx-text-fill: white; -fx-padding: 6 12; -fx-font-size: 12px; -fx-cursor: hand; -fx-background-radius: 6;");
+                btnDel.setStyle("-fx-background-color: #E8956D; -fx-text-fill: white; -fx-padding: 6 12; -fx-font-size: 12px; -fx-cursor: hand; -fx-background-radius: 6;");
                 pane.setAlignment(Pos.CENTER);
                 btnMod.setOnAction(e -> handleModifier(getTableView().getItems().get(getIndex())));
                 btnDel.setOnAction(e -> handleSupprimer(getTableView().getItems().get(getIndex())));

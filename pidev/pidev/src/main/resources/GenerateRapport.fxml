@@ -6,18 +6,18 @@
 <?import javafx.scene.shape.*?>
 
 <VBox spacing="0" prefWidth="600" prefHeight="750"
-      style="-fx-background-color: #F2EDE8;"
+      style="-fx-background-color: #FAF7F5;"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.RapportController">
 
     <!-- Header -->
-    <HBox style="-fx-background-color: linear-gradient(to right, #4A6FA5, #7B9ED9);
+    <HBox style="-fx-background-color: linear-gradient(to right, #3A5A90, #4A6FA5);
                  -fx-padding: 22;" alignment="CENTER" spacing="12">
         <Label text="📄" style="-fx-font-size: 22px;"/>
         <VBox spacing="2" alignment="CENTER">
             <Label text="Générer un Rapport" textFill="WHITE"
                    style="-fx-font-size: 20px; -fx-font-weight: 700;">
-                <font><Font name="System Bold" size="20"/></font>
+
             </Label>
             <Label text="EchoCare - Rapport de suivi patient" textFill="WHITE" opacity="0.8"
                    style="-fx-font-size: 11px;"/>
@@ -31,10 +31,10 @@
             <!-- Patient Selection -->
             <VBox spacing="8">
                 <Label text="💆  Patient"
-                       style="-fx-font-size: 13px; -fx-text-fill: #5A6FA5; -fx-font-weight: 600;"/>
+                       style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
                 <ComboBox fx:id="cbPatient" maxWidth="Infinity" promptText="Sélectionner un patient"
-                          style="-fx-background-color: #F6F3F0;
-                                 -fx-border-color: #D5E3F5;
+                          style="-fx-background-color: #F7F5F2;
+                                 -fx-border-color: #E8E4DF;
                                  -fx-border-radius: 12;
                                  -fx-background-radius: 12;
                                  -fx-border-width: 1.5;
@@ -46,82 +46,82 @@
             <HBox spacing="15">
                 <VBox spacing="8" HBox.hgrow="ALWAYS">
                     <Label text="📅  Période"
-                           style="-fx-font-size: 13px; -fx-text-fill: #5A6FA5; -fx-font-weight: 600;"/>
+                           style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
                     <TextField fx:id="tfPeriode" promptText="Ex: Jan 2025 - Mars 2025"
-                               style="-fx-background-color: #F6F3F0;
-                                      -fx-border-color: #D5E3F5;
+                               style="-fx-background-color: #F7F5F2;
+                                      -fx-border-color: #E8E4DF;
                                       -fx-border-radius: 12;
                                       -fx-background-radius: 12;
                                       -fx-border-width: 1.5;
                                       -fx-padding: 12 16;
                                       -fx-font-size: 13px;
-                                      -fx-prompt-text-fill: #C0D3EB;"/>
+                                      -fx-prompt-text-fill: #A0AEC0;"/>
                 </VBox>
                 <VBox spacing="8" prefWidth="180">
                     <Label text="🧘  Nb Séances"
-                           style="-fx-font-size: 13px; -fx-text-fill: #5A6FA5; -fx-font-weight: 600;"/>
+                           style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
                     <TextField fx:id="tfNbSeances" promptText="Ex: 12"
-                               style="-fx-background-color: #F6F3F0;
-                                      -fx-border-color: #D5E3F5;
+                               style="-fx-background-color: #F7F5F2;
+                                      -fx-border-color: #E8E4DF;
                                       -fx-border-radius: 12;
                                       -fx-background-radius: 12;
                                       -fx-border-width: 1.5;
                                       -fx-padding: 12 16;
                                       -fx-font-size: 13px;
-                                      -fx-prompt-text-fill: #C0D3EB;"/>
+                                      -fx-prompt-text-fill: #A0AEC0;"/>
                 </VBox>
             </HBox>
 
             <!-- Score Humeur Slider -->
             <VBox spacing="10"
-                  style="-fx-background-color: #FFF8F3;
+                  style="-fx-background-color: #FFF8F0;
                          -fx-background-radius: 16;
                          -fx-padding: 20;">
                 <HBox spacing="10" alignment="CENTER_LEFT">
                     <Label text="😊  Score d'humeur moyen"
-                           style="-fx-font-size: 13px; -fx-text-fill: #5A6FA5; -fx-font-weight: 600;"/>
+                           style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Label fx:id="lblHumeurEmoji" text="😐" style="-fx-font-size: 28px;"/>
                     <Label fx:id="lblHumeurValue" text="5.0 / 10"
-                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #E8956D;"/>
+                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #E8B4C8;"/>
                 </HBox>
                 <Slider fx:id="sliderHumeur" min="0" max="10" value="5"
                         showTickLabels="true" showTickMarks="true"
                         majorTickUnit="2" minorTickCount="1"
                         blockIncrement="0.5"
-                        style="-fx-control-inner-background: #F2EAE0;"/>
+                        style="-fx-control-inner-background: #FAE0E4;"/>
                 <HBox alignment="CENTER" spacing="30">
                     <Label text="😢 Très bas" style="-fx-font-size: 10px; -fx-text-fill: #E8B4B8;"/>
-                    <Label text="😐 Moyen" style="-fx-font-size: 10px; -fx-text-fill: #7B9ED9;"/>
-                    <Label text="😄 Excellent" style="-fx-font-size: 10px; -fx-text-fill: #F5C87A;"/>
+                    <Label text="😐 Moyen" style="-fx-font-size: 10px; -fx-text-fill: #718096;"/>
+                    <Label text="😄 Excellent" style="-fx-font-size: 10px; -fx-text-fill: #A8D5BA;"/>
                 </HBox>
             </VBox>
 
             <!-- Observations -->
             <VBox spacing="8">
                 <Label text="📝  Observations et notes de suivi"
-                       style="-fx-font-size: 13px; -fx-text-fill: #5A6FA5; -fx-font-weight: 600;"/>
+                       style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
                 <TextArea fx:id="taContenu" prefRowCount="5"
                           promptText="Décrivez l'évolution du patient, les progrès observés, les difficultés rencontrées..."
                           wrapText="true"
-                          style="-fx-background-color: #F6F3F0;
-                                 -fx-border-color: #D5E3F5;
+                          style="-fx-background-color: #F7F5F2;
+                                 -fx-border-color: #E8E4DF;
                                  -fx-border-radius: 12;
                                  -fx-background-radius: 12;
                                  -fx-border-width: 1.5;
                                  -fx-padding: 14;
                                  -fx-font-size: 13px;
-                                 -fx-prompt-text-fill: #C0D3EB;"/>
+                                 -fx-prompt-text-fill: #A0AEC0;"/>
             </VBox>
 
             <!-- Recommandations -->
             <VBox spacing="8">
                 <Label text="🌿  Recommandations (une par ligne)"
-                       style="-fx-font-size: 13px; -fx-text-fill: #5A6FA5; -fx-font-weight: 600;"/>
+                       style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
                 <TextArea fx:id="taRecommandations" prefRowCount="4"
                           promptText="Continuer la thérapie cognitive&#10;Exercices de respiration 2x/jour&#10;Méditation 15 min/jour&#10;Suivi mensuel recommandé"
                           wrapText="true"
-                          style="-fx-background-color: #FFF8F3;
+                          style="-fx-background-color: #F0FAF4;
                                  -fx-border-color: #C2E4CD;
                                  -fx-border-radius: 12;
                                  -fx-background-radius: 12;
@@ -135,7 +135,7 @@
             <HBox spacing="15" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
                 <Button text="📄  Générer le PDF" onAction="#handleGenerate"
                         prefWidth="220"
-                        style="-fx-background-color: linear-gradient(to right, #4A6FA5, #7B9ED9);
+                        style="-fx-background-color: linear-gradient(to right, #E8956D, #D4845C);
                                -fx-text-fill: white;
                                -fx-font-size: 14px;
                                -fx-font-weight: 700;
@@ -143,12 +143,12 @@
                                -fx-background-radius: 12;
                                -fx-cursor: hand;
                                -fx-effect: dropshadow(gaussian, rgba(124,107,196,0.35), 10, 0, 0, 4);">
-                    <font><Font name="System Bold" size="14"/></font>
+
                 </Button>
                 <Button text="🔄  Réinitialiser" onAction="#resetForm"
                         prefWidth="160"
-                        style="-fx-background-color: #F0EBE5;
-                               -fx-text-fill: #5A6FA5;
+                        style="-fx-background-color: #F5F0FA;
+                               -fx-text-fill: #4A6FA5;
                                -fx-font-size: 14px;
                                -fx-font-weight: 600;
                                -fx-padding: 14;
@@ -158,15 +158,15 @@
 
             <!-- Info Banner -->
             <HBox spacing="12" alignment="CENTER_LEFT"
-                  style="-fx-background-color: linear-gradient(to right, #F0EBE5, #FFF8F3);
+                  style="-fx-background-color: linear-gradient(to right, #FFF8F0, #FFF2E8);
                          -fx-background-radius: 12;
                          -fx-padding: 15;">
                 <Label text="💡" style="-fx-font-size: 18px;"/>
                 <VBox spacing="3">
                     <Label text="Le rapport sera sauvegardé dans le dossier 'rapports_pdf'"
-                           style="-fx-font-size: 12px; -fx-text-fill: #5A6FA5;"/>
+                           style="-fx-font-size: 12px; -fx-text-fill: #4A6FA5;"/>
                     <Label text="Format: EchoCare_Rapport_NomPatient_Date.pdf"
-                           style="-fx-font-size: 11px; -fx-text-fill: #7B9ED9;"/>
+                           style="-fx-font-size: 11px; -fx-text-fill: #718096;"/>
                 </VBox>
             </HBox>
         </VBox>

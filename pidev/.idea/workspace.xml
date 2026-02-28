@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FxmlFile" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="formation" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Fchelbi&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Fchelbi/PIDev_Projet.git&quot;,
+    &quot;accountId&quot;: &quot;58ebee59-460d-4bd6-8973-6c982988d8b1&quot;
+  }
+}</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="39ejFflGyMjSElwzJaMNQd0KB3S" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "Application.MainFX.executor": "Run",
+    "JUnit.FormationServiceTest.executor": "Run",
+    "Maven.pidev [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/fatmachelbi/uni_project/pidev_java/pidev",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="controllers" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="pidev" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="pidev" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="" />
+      <created>1771063327952</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1771063327952</updated>
+      <workItem from="1771063329008" duration="17168000" />
+      <workItem from="1771155034085" duration="639000" />
+      <workItem from="1771160280187" duration="16865000" />
+      <workItem from="1771223085775" duration="103000" />
+      <workItem from="1771358092094" duration="4970000" />
+      <workItem from="1771394225419" duration="6156000" />
+      <workItem from="1771761505021" duration="11552000" />
+      <workItem from="1771792325087" duration="18332000" />
+      <workItem from="1771947038515" duration="6485000" />
+      <workItem from="1771980077987" duration="452000" />
+      <workItem from="1771980807629" duration="44000" />
+      <workItem from="1771981141616" duration="110000" />
+      <workItem from="1771981399629" duration="127000" />
+      <workItem from="1772006997454" duration="3182000" />
+      <workItem from="1772016384914" duration="679000" />
+      <workItem from="1772199058644" duration="2073000" />
+    </task>
+    <task id="LOCAL-00001" summary="commit">
+      <option name="closed" value="true" />
+      <created>1771155042316</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1771155042316</updated>
+    </task>
+    <task id="LOCAL-00002" summary="commit">
+      <option name="closed" value="true" />
+      <created>1771175819807</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1771175819807</updated>
+    </task>
+    <task id="LOCAL-00003" summary="commit">
+      <option name="closed" value="true" />
+      <created>1771177874070</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1771177874070</updated>
+    </task>
+    <task id="LOCAL-00004" summary="commit">
+      <option name="closed" value="true" />
+      <created>1771180492311</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1771180492311</updated>
+    </task>
+    <task id="LOCAL-00005" summary="commit">
+      <option name="closed" value="true" />
+      <created>1771192370652</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1771192370652</updated>
+    </task>
+    <task id="LOCAL-00006" summary="commit">
+      <option name="closed" value="true" />
+      <created>1771192943640</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1771192943640</updated>
+    </task>
+    <task id="LOCAL-00007" summary="crud formation done&#10;interface done&#10;crud quiz encours">
+      <option name="closed" value="true" />
+      <created>1771195954124</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1771195954124</updated>
+    </task>
+    <task id="LOCAL-00008" summary="crud formation done&#10;interface done&#10;crud quiz done">
+      <option name="closed" value="true" />
+      <created>1771201254129</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1771201254129</updated>
+    </task>
+    <task id="LOCAL-00009" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771364744374</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1771364744374</updated>
+    </task>
+    <task id="LOCAL-00010" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771764093894</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1771764093894</updated>
+    </task>
+    <task id="LOCAL-00011" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771769582554</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1771769582554</updated>
+    </task>
+    <task id="LOCAL-00012" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771794720338</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1771794720338</updated>
+    </task>
+    <task id="LOCAL-00013" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771849310727</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1771849310727</updated>
+    </task>
+    <task id="LOCAL-00014" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771859648487</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1771859648487</updated>
+    </task>
+    <task id="LOCAL-00015" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771884394292</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1771884394292</updated>
+    </task>
+    <task id="LOCAL-00016" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771884473483</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1771884473483</updated>
+    </task>
+    <task id="LOCAL-00017" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771889363686</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1771889363686</updated>
+    </task>
+    <task id="LOCAL-00018" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1771889784860</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1771889784860</updated>
+    </task>
+    <task id="LOCAL-00019" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1772199846135</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1772199846135</updated>
+    </task>
+    <task id="LOCAL-00020" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1772237019028</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1772237019028</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="commit" />
+    <MESSAGE value="crud formation done&#10;interface done&#10;crud quiz encours" />
+    <MESSAGE value="crud formation done&#10;interface done&#10;crud quiz done" />
+    <MESSAGE value="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done" />
+    <option name="LAST_COMMIT_MESSAGE" value="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/pidev/src/main/java/org/example/Main.java</url>
+          <line>13</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

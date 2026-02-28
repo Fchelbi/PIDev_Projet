@@ -242,7 +242,7 @@
 
                         <!-- Total -->
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
-                              style="-fx-background-color: linear-gradient(to bottom right, #4A6FA5, #3A5A90); -fx-padding: 22; -fx-background-radius: 14; -fx-effect: dropshadow(gaussian, rgba(74,111,165,0.4), 12, 0, 0, 4);">
+                              style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #4A6FA5, #3A5A90); -fx-padding: 22; -fx-background-radius: 14; -fx-effect: dropshadow(gaussian, rgba(74,111,165,0.4), 12, 0, 0, 4);">
                             <HBox alignment="CENTER_LEFT" spacing="12">
                                 <StackPane prefWidth="44" prefHeight="44">
                                     <Circle radius="22" fill="rgba(255,255,255,0.2)"/>
@@ -268,14 +268,17 @@
                                 <Label text="Répartition des rôles"
                                        style="-fx-font-size: 15px; -fx-font-weight: 600; -fx-text-fill: #2D3748;"/>
                             </HBox>
-                            <PieChart fx:id="pieChartRoles" prefHeight="200"
-                                      labelsVisible="true" animated="true"
-                                      style="-fx-background-color: transparent;"/>
+                            <BarChart fx:id="barChartRoles" prefHeight="200" animated="true"
+                                      style="-fx-background-color: transparent;"
+                                      barGap="8" categoryGap="20">
+                                <xAxis><CategoryAxis label="Rôles"/></xAxis>
+                                <yAxis><NumberAxis label="Nombre" minorTickVisible="false"/></yAxis>
+                            </BarChart>
                         </VBox>
 
                         <!-- ZenQuotes API Widget -->
                         <VBox spacing="12" prefWidth="340" minWidth="300"
-                              style="-fx-background-color: linear-gradient(to bottom right, #FFF8F0, #FFF2E8); -fx-padding: 25; -fx-background-radius: 14; -fx-border-color: #F5C87A; -fx-border-radius: 14; -fx-border-width: 1.5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
+                              style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FFF8F0, #FFF2E8); -fx-padding: 25; -fx-background-radius: 14; -fx-border-color: #F5C87A; -fx-border-radius: 14; -fx-border-width: 1.5; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Label text="💡" style="-fx-font-size: 20px;"/>
                                 <VBox spacing="2">
@@ -327,34 +330,6 @@
                                    style="-fx-font-size: 12px; -fx-text-fill: #A0AEC0;" wrapText="true"/>
                             <Button text="📍  Afficher les psychologues" onAction="#loadMapSection"
                                     style="-fx-background-color: #E8956D; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: 600; -fx-padding: 12 28; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                        </VBox>
-                    </VBox>
-
-                    <!-- ═══════════════════════════════════════════════
-                         RAPPORT PDF SECTION (scroll down more)
-                    ═══════════════════════════════════════════════ -->
-                    <VBox spacing="0" style="-fx-background-color: white; -fx-background-radius: 14; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
-                        <HBox alignment="CENTER_LEFT" spacing="12"
-                              style="-fx-padding: 20 25; -fx-border-color: transparent transparent #F0EDE8 transparent; -fx-border-width: 1;">
-                            <StackPane prefWidth="40" prefHeight="40">
-                                <Circle radius="20" fill="#EBF4FF"/>
-                                <Label text="📄" style="-fx-font-size: 18px;"/>
-                            </StackPane>
-                            <VBox spacing="2">
-                                <Label text="Génération de Rapports PDF"
-                                       style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #2D3748;"/>
-                                <Label text="Exportez des rapports de suivi patient au format PDF"
-                                       style="-fx-font-size: 11px; -fx-text-fill: #A0AEC0;"/>
-                            </VBox>
-                        </HBox>
-                        <VBox alignment="CENTER" spacing="15" style="-fx-padding: 30; -fx-min-height: 200;">
-                            <Label text="📋" style="-fx-font-size: 48px;"/>
-                            <Label text="Rapport de suivi psychologique"
-                                   style="-fx-font-size: 15px; -fx-font-weight: 600; -fx-text-fill: #4A5568;"/>
-                            <Label text="Générez des rapports complets avec suivi d'humeur, séances et recommandations"
-                                   style="-fx-font-size: 12px; -fx-text-fill: #A0AEC0;" wrapText="true"/>
-                            <Button text="📄  Créer un rapport PDF" onAction="#loadRapportSection"
-                                    style="-fx-background-color: #4A6FA5; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: 600; -fx-padding: 12 28; -fx-background-radius: 10; -fx-cursor: hand;"/>
                         </VBox>
                     </VBox>
 
