@@ -138,10 +138,11 @@ public class PatientHome {
         services.Notificationservice ns = services.Notificationservice.INSTANCE;
         ns.start(currentUser);
 
+        // Badge total non lus
         ns.setOnUnreadCountChanged(count -> {
             if (lblMessagesBadge == null) return;
             if (count > 0) {
-                lblMessagesBadge.setText(String.valueOf(count));
+                lblMessagesBadge.setText(count > 9 ? "9+" : String.valueOf(count));
                 lblMessagesBadge.setVisible(true);
                 lblMessagesBadge.setManaged(true);
             } else {
@@ -150,16 +151,17 @@ public class PatientHome {
             }
         });
 
-        ns.setOnNewMessage(() ->
-                utils.Notificationhelper.show("💬", "Nouveau message",
-                        "Votre coach vous a envoyé un message", this::openMessagerie));
+        // Toast — NotificationService gère le nom de l'expéditeur
+        ns.setOnNewMessage(this::openMessagerie);
 
+        // Appel entrant
         ns.setOnIncomingCall(call -> {
             try {
                 entities.User caller = us.getUserById(call.getId_caller());
                 if (caller == null) return;
-                utils.Notificationhelper.show("📞", "Appel entrant",
-                        caller.getPrenom() + " " + caller.getNom() + " vous appelle",
+                utils.Notificationhelper.show("📞",
+                        caller.getPrenom() + " " + caller.getNom() + " · " + caller.getRole(),
+                        "Appel entrant — Appuyez pour répondre",
                         () -> openCallScreen(caller, call));
             } catch (Exception e) { e.printStackTrace(); }
         });
@@ -184,6 +186,7 @@ public class PatientHome {
             HBox page = loader.load();
             Messageriecontroller ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
+            ctrl.setSelectedContact(caller);
             contentArea.getChildren().setAll(page);
             ctrl.openCallScreen(true, call, call.getId_call());
         } catch (IOException e) { e.printStackTrace(); }

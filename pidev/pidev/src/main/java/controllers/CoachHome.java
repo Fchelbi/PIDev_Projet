@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 import entities.User;
 import entities.Call;
 import services.serviceUser;
-import services.Notificationservice;
 import utils.LightDialog;
 
 import java.io.File;
@@ -178,11 +177,11 @@ public class CoachHome {
         services.Notificationservice ns = services.Notificationservice.INSTANCE;
         ns.start(currentUser);
 
-        // Badge messages non lus
+        // Badge total messages non lus
         ns.setOnUnreadCountChanged(count -> {
             if (lblMessagesBadge == null) return;
             if (count > 0) {
-                lblMessagesBadge.setText(String.valueOf(count));
+                lblMessagesBadge.setText(count > 9 ? "9+" : String.valueOf(count));
                 lblMessagesBadge.setVisible(true);
                 lblMessagesBadge.setManaged(true);
             } else {
@@ -191,19 +190,18 @@ public class CoachHome {
             }
         });
 
-        // Toast nouveau message
-        ns.setOnNewMessage(() ->
-                utils.Notificationhelper.show("💬", "Nouveau message",
-                        "Vous avez reçu un nouveau message", this::openMessagerie));
+        // Toast nouveau message (NotificationService gère le nom expéditeur maintenant)
+        ns.setOnNewMessage(this::openMessagerie);
 
         // Appel entrant
         ns.setOnIncomingCall(call -> {
-            // Chercher l'appelant
             try {
                 entities.User caller = us.getUserById(call.getId_caller());
                 if (caller == null) return;
-                utils.Notificationhelper.show("📞", "Appel entrant",
-                        caller.getPrenom() + " " + caller.getNom() + " vous appelle",
+                // Notification toast appel avec name
+                utils.Notificationhelper.show("📞",
+                        caller.getPrenom() + " " + caller.getNom() + " · " + caller.getRole(),
+                        "Appel entrant — Appuyez pour répondre",
                         () -> openCallScreen(caller, call));
             } catch (Exception e) { e.printStackTrace(); }
         });
@@ -226,6 +224,8 @@ public class CoachHome {
             javafx.scene.layout.HBox page = loader.load();
             Messageriecontroller ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
+            // Définir le contact AVANT d'ouvrir l'écran appel
+            ctrl.setSelectedContact(caller);
             contentArea.getChildren().setAll(page);
             ctrl.openCallScreen(true, call, call.getId_call());
         } catch (IOException e) { e.printStackTrace(); }

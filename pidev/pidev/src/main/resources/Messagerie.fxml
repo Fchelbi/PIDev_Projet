@@ -86,6 +86,12 @@
                     <Circle radius="20" fill="#EBF4FF"/>
                     <Label text="📞" style="-fx-font-size: 18px;"/>
                 </StackPane>
+                <!-- Bouton Supprimer conversation -->
+                <StackPane prefWidth="40" prefHeight="40" style="-fx-cursor: hand;"
+                           onMouseClicked="#handleDeleteConversation">
+                    <Circle radius="20" fill="#FFE8E8"/>
+                    <Label text="🗑️" style="-fx-font-size: 16px;"/>
+                </StackPane>
             </HBox>
 
             <!-- Messages scroll area -->
