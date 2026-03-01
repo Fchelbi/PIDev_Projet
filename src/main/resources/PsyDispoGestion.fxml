@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane prefHeight="650.0" prefWidth="1100.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="tn.esprit.projet.gui.patient.PsyDispoController"
+            style="-fx-background-color: #F2F0EC;">
+
+    <!-- ═════════ TOP BAR ═════════ -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15"
+              style="-fx-background-color: white;
+                     -fx-padding: 20 30;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 3);">
+
+            <VBox spacing="3">
+                <Label text="Espace Psychologue"
+                       style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #2D3748;"/>
+                <Label text="Gérez vos demandes de consultation"
+                       style="-fx-font-size: 12px; -fx-text-fill: #718096;"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="⬅ Menu"
+                    onAction="#retourMenu"
+                    style="-fx-background-color: #E8956D;
+                           -fx-text-fill: white;
+                           -fx-font-weight: 600;
+                           -fx-padding: 8 18;
+                           -fx-background-radius: 8;"/>
+        </HBox>
+    </top>
+
+    <!-- ═════════ SIDEBAR ═════════ -->
+    <left>
+        <VBox prefWidth="240"
+              style="-fx-background-color: linear-gradient(to bottom, #3A5A90, #2E4A7A);
+                     -fx-padding: 30 20;
+                     -fx-spacing: 20;">
+
+            <Label text="🧠"
+                   style="-fx-font-size: 40px;"
+                   alignment="CENTER"
+                   maxWidth="Infinity"/>
+
+            <Label text="EchoCare"
+                   style="-fx-font-size: 18px;
+                          -fx-font-weight: 700;
+                          -fx-text-fill: white;"
+                   alignment="CENTER"
+                   maxWidth="Infinity"/>
+
+            <Separator style="-fx-background-color: rgba(255,255,255,0.2);"/>
+
+            <Button text="📅  Mes consultations"
+                    maxWidth="Infinity"
+                    alignment="CENTER_LEFT"
+                    style="-fx-background-color: rgba(255,255,255,0.15);
+                           -fx-text-fill: white;
+                           -fx-padding: 12 15;
+                           -fx-background-radius: 8;"/>
+
+        </VBox>
+    </left>
+
+    <!-- ═════════ MAIN CONTENT ═════════ -->
+    <center>
+        <VBox spacing="25" style="-fx-padding: 30;">
+
+            <!-- Title -->
+            <Label text="Tableau de bord Psychologue"
+                   style="-fx-font-size: 20px;
+                          -fx-font-weight: 700;
+                          -fx-text-fill: #2D3748;"/>
+
+            <!-- ═════ TABLE CARD ═════ -->
+            <VBox spacing="15"
+                  style="-fx-background-color: white;
+                         -fx-padding: 25;
+                         -fx-background-radius: 14;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);">
+
+                <TableView fx:id="tableRdv"
+                           prefHeight="350"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colPatient" text="Patient" prefWidth="200"/>
+                        <TableColumn fx:id="colDate" text="Date prévue" prefWidth="300"/>
+                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="200"/>
+                    </columns>
+                </TableView>
+
+                <!-- Actions -->
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+
+                    <Button text="✓ Accepter"
+                            onAction="#handleAccepter"
+                            style="-fx-background-color: #6BCB77;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: 600;
+                                   -fx-padding: 8 18;
+                                   -fx-background-radius: 8;"/>
+
+                    <Button text="⏳ À replanifier"
+                            onAction="#handleRefuser"
+                            style="-fx-background-color: #E8956D;
+                                   -fx-text-fill: white;
+                                   -fx-font-weight: 600;
+                                   -fx-padding: 8 18;
+                                   -fx-background-radius: 8;"/>
+
+                </HBox>
+
+            </VBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>
