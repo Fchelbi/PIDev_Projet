@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 import java.net.URL;
 
@@ -17,38 +16,32 @@ public class MainFX extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        System.out.println("1. Bdit nlawej 3al FXML...");
-        // --- CHOOSE YOUR STARTING PAGE HERE ---
-        // Change to "/AdminDashboard.fxml" if you want to start there instead
+        System.out.println("1️⃣. Starting the application...");
+
+        // We choose Login.fxml as the starting page
         String fxmlFile = "/Login.fxml";
 
-        System.out.println("1️⃣. Searching for FXML: " + fxmlFile);
-
         try {
-            URL fxmlUrl = getClass().getResource("/Login.fxml");
-            // Find the file
+            // Find the FXML file
             URL fxmlUrl = getClass().getResource(fxmlFile);
 
             // Check if it exists
             if (fxmlUrl == null) {
-                System.out.println("MOCHKLA: Mal9itech 'Login.fxml'! Thabet fi dossier resources.");
                 System.out.println("❌ ERROR: Could not find '" + fxmlFile + "'! Check your resources folder.");
                 return;
             } else {
-                System.out.println("OK! L9it l fichier: " + fxmlUrl);
                 System.out.println("✅ Found it! Path: " + fxmlUrl);
             }
 
+            // Load the FXML
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent root = loader.load();
-            System.out.println("2. Chargement FXML OK.");
             System.out.println("2️⃣. FXML loaded successfully.");
 
-            // Create scene with a default size (adjust if needed)
+            // Create and set the scene
             Scene scene = new Scene(root);
-            primaryStage.setTitle("EchoCare");
 
-            // Try to load CSS if it exists
+            // Apply CSS if it exists
             try {
                 URL cssUrl = getClass().getResource("/style.css");
                 if (cssUrl != null) {
@@ -56,16 +49,16 @@ public class MainFX extends Application {
                     System.out.println("🎨 Stylesheet applied.");
                 }
             } catch (Exception e) {
-                System.out.println("⚠️ Note: No style.css applied.");
+                System.out.println("⚠️ Note: style.css not found, skipping styles.");
             }
 
             primaryStage.setTitle("EchoCare");
             primaryStage.setScene(scene);
             primaryStage.show();
-            System.out.println("3. Fenetre t7allet!");
+            System.out.println("3️⃣. Window is now open!");
 
         } catch (IOException e) {
-            System.out.println("ERREUR FATALE:");
+            System.out.println("❌ FATAL ERROR: Loading FXML failed!");
             e.printStackTrace();
         }
     }

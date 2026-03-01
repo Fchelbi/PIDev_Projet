@@ -5,25 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Coachstats.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/Coachstats.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pidev/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/ModifierUtilisateur.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/ModifierUtilisateur.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/Profil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Profil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/mains/MainFX.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/mains/MainFX.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/services/CRUD.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/services/CRUD.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pidev/src/main/java/utils/MyDBConnexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/MyDBConnexion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/GenerateRapport.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/GenerateRapport.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Modifierutilisateur.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Modifierutilisateur.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,6 +63,7 @@
     "Application.Main.executor": "Run",
     "Application.MainFX.executor": "Run",
     "JUnit.FormationServiceTest.executor": "Run",
+    "Maven.Unknown [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
     "Maven.pidev [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.MCP Project settings loaded": "true",
@@ -86,7 +72,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "#2 on Merging formation",
+    "git-widget-placeholder": "#2 on formation",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/fatmachelbi/uni_project/pidev_java/pidev",
@@ -299,7 +285,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772237019028</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1772365515939</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1772365515939</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

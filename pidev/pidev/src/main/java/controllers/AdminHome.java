@@ -240,4 +240,16 @@ public class AdminHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+
+    @FXML
+    private void showFormations(javafx.scene.input.MouseEvent event) {
+        try {
+            // Change "contentArea" to match the fx:id of your friend's StackPane
+            Parent fxml = FXMLLoader.load(getClass().getResource("/FormationView.fxml"));
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(fxml);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -16,8 +16,6 @@
     </properties>
 
     <dependencies>
-
-        <!-- JavaFX (version 21 stable - disponible sur Maven Central) -->
         <!-- MySQL Connector -->
         <dependency>
             <groupId>mysql</groupId>
@@ -30,34 +28,21 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>21.0.2</version>
-            <artifactId>javafx-controls</artifactId>
-            <version>21</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.2</version>
-            <artifactId>javafx-fxml</artifactId>
-            <version>21</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
-            <version>21</version>
+            <version>21.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
             <version>21.0.2</version>
-        </dependency>
-            <version>21</version>
-        </dependency>
-
-        <!-- MySQL -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
         </dependency>
 
         <!-- Email (JavaMail) -->
@@ -68,7 +53,6 @@
         </dependency>
 
         <!-- Gson (JSON Parser) -->
-        <!-- Gson - JSON parser pour MapService -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -76,7 +60,6 @@
         </dependency>
 
         <!-- iText7 (PDF Generation) -->
-        <!-- iText7 - génération PDF -->
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>kernel</artifactId>
@@ -102,14 +85,8 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.10.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.0</version>
+            <version>5.10.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -122,17 +99,10 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <!-- Change this to mains.Main if MainFX doesn't work -->
                     <mainClass>mains.MainFX</mainClass>
                 </configuration>
             </plugin>
-
-            <!-- Surefire for JUnit 5 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
-            </plugin>
+            <!-- Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -145,5 +115,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
