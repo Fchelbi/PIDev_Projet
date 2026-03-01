@@ -60,6 +60,25 @@
             </VBox>
         </HBox>
 
+        <!-- Messages -->
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <HBox fx:id="indicMessages" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
+            <VBox fx:id="navMessages" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showMessages" onMouseEntered="#onNavMessagesEnter" onMouseExited="#onNavMessagesExit">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="💬" style="-fx-font-size:16px;"/>
+                    <Label text="Messagerie" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblMessagesBadge" text="0" visible="false" managed="false"
+                           style="-fx-background-color:#E8956D;-fx-text-fill:white;
+                                  -fx-font-size:9px;-fx-font-weight:700;
+                                  -fx-padding:2 6;-fx-background-radius:10;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
         <Region VBox.vgrow="ALWAYS"/>
         <VBox spacing="10" style="-fx-padding:15;-fx-border-color:rgba(255,255,255,0.1) transparent transparent transparent;-fx-border-width:1;">
             <HBox spacing="8" alignment="CENTER_LEFT">
@@ -152,32 +171,6 @@
                                    style="-fx-font-size:14px;-fx-text-fill:#2D3748;-fx-font-style:italic;-fx-line-spacing:5;"/>
                             <Region VBox.vgrow="ALWAYS"/>
                             <Label text="Cliquez 🔄 pour une nouvelle affirmation"
-                                   style="-fx-font-size:10px;-fx-text-fill:#CBD5E0;"/>
-                        </VBox>
-                        <!-- Advice Slip -->
-                        <VBox HBox.hgrow="ALWAYS" spacing="14"
-                              style="-fx-background-color:white;-fx-padding:25;-fx-background-radius:14;
-                                     -fx-border-color:#4A6FA5;-fx-border-radius:14;-fx-border-width:2;
-                                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
-                            <HBox alignment="CENTER_LEFT" spacing="10">
-                                <StackPane prefWidth="38" prefHeight="38">
-                                    <Circle radius="19" fill="#4A6FA5"/>
-                                    <Label text="🌿" style="-fx-font-size:17px;"/>
-                                </StackPane>
-                                <VBox spacing="2">
-                                    <Label fx:id="lblAdviceStatus" text="🌿 Conseil bien-être"
-                                           style="-fx-font-size:11px;-fx-font-weight:700;-fx-text-fill:#4A6FA5;-fx-letter-spacing:1;"/>
-                                    <Label text="adviceslip.com · API gratuite"
-                                           style="-fx-font-size:9px;-fx-text-fill:#A0AEC0;"/>
-                                </VBox>
-                                <Region HBox.hgrow="ALWAYS"/>
-                                <Label text="🔄" style="-fx-font-size:18px;-fx-cursor:hand;"
-                                       onMouseClicked="#refreshAdvice"/>
-                            </HBox>
-                            <Label fx:id="lblAdvice" wrapText="true" text="Chargement..."
-                                   style="-fx-font-size:14px;-fx-text-fill:#2D3748;-fx-font-style:italic;-fx-line-spacing:5;"/>
-                            <Region VBox.vgrow="ALWAYS"/>
-                            <Label text="Cliquez 🔄 pour un nouveau conseil"
                                    style="-fx-font-size:10px;-fx-text-fill:#CBD5E0;"/>
                         </VBox>
                     </HBox>

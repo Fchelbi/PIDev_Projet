@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import entities.User;
+import entities.Call;
 import services.serviceUser;
 import utils.LightDialog;
 
@@ -31,8 +32,9 @@ public class CoachHome {
     @FXML private ScrollPane accueilPane;
 
     // Sidebar nav
-    @FXML private VBox navAccueil, navProfil, navRapport, navStats;
-    @FXML private HBox indicAccueil, indicProfil, indicRapport, indicStats;
+    @FXML private VBox navAccueil, navProfil, navRapport, navStats, navMessages;
+    @FXML private Label lblMessagesBadge; // badge rouge non-lu
+    @FXML private HBox indicAccueil, indicProfil, indicRapport, indicStats, indicMessages;
 
     private User currentUser;
     private final serviceUser us = new serviceUser();
@@ -53,6 +55,7 @@ public class CoachHome {
         this.currentUser = user;
         refreshUserData();
         setActiveNav(navAccueil, indicAccueil);
+        startNotifications();
     }
 
     public void refreshUserData() {
@@ -106,6 +109,7 @@ public class CoachHome {
             Profil ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
             ctrl.setOnPhotoChanged(this::refreshUserData);
+            ctrl.setOnBackToAccueil(this::showAccueilFromProfil);
             contentArea.getChildren().setAll(page);
         } catch (IOException e) {
             e.printStackTrace();
@@ -141,10 +145,15 @@ public class CoachHome {
         }
     }
 
+    private void showAccueilFromProfil() {
+        setActiveNav(navAccueil, indicAccueil);
+        contentArea.getChildren().setAll(accueilPane);
+    }
+
     private void setActiveNav(VBox nav, HBox indic) {
-        for (VBox n : new VBox[]{navAccueil, navProfil, navRapport, navStats})
+        for (VBox n : new VBox[]{navAccueil, navProfil, navRapport, navStats, navMessages})
             if (n != null) n.setStyle(NAV_NORMAL);
-        for (HBox i : new HBox[]{indicAccueil, indicProfil, indicRapport, indicStats})
+        for (HBox i : new HBox[]{indicAccueil, indicProfil, indicRapport, indicStats, indicMessages})
             if (i != null) i.setStyle(INDIC_HIDDEN);
         if (nav   != null) nav.setStyle(NAV_ACTIVE);
         if (indic != null) indic.setStyle(INDIC_VISIBLE);
@@ -159,6 +168,68 @@ public class CoachHome {
     @FXML void onNavRapportExit(MouseEvent e)   { if(navRapport!=currentActiveNav) navRapport.setStyle(NAV_NORMAL); }
     @FXML void onNavStatsEnter(MouseEvent e)    { if(navStats  !=currentActiveNav) navStats.setStyle(NAV_ACTIVE); }
     @FXML void onNavStatsExit(MouseEvent e)     { if(navStats  !=currentActiveNav) navStats.setStyle(NAV_NORMAL); }
+    @FXML void onNavMessagesEnter(MouseEvent e) { if(navMessages!=currentActiveNav) navMessages.setStyle(NAV_ACTIVE); }
+    @FXML void onNavMessagesExit(MouseEvent e)  { if(navMessages!=currentActiveNav) navMessages.setStyle(NAV_NORMAL); }
+
+    @FXML void showMessages(MouseEvent event) { openMessagerie(); }
+
+    private void startNotifications() {
+        services.Notificationservice ns = services.Notificationservice.INSTANCE;
+        ns.start(currentUser);
+
+        // Badge total messages non lus
+        ns.setOnUnreadCountChanged(count -> {
+            if (lblMessagesBadge == null) return;
+            if (count > 0) {
+                lblMessagesBadge.setText(count > 9 ? "9+" : String.valueOf(count));
+                lblMessagesBadge.setVisible(true);
+                lblMessagesBadge.setManaged(true);
+            } else {
+                lblMessagesBadge.setVisible(false);
+                lblMessagesBadge.setManaged(false);
+            }
+        });
+
+        // Toast nouveau message (NotificationService gère le nom expéditeur maintenant)
+        ns.setOnNewMessage(this::openMessagerie);
+
+        // Appel entrant
+        ns.setOnIncomingCall(call -> {
+            try {
+                entities.User caller = us.getUserById(call.getId_caller());
+                if (caller == null) return;
+                // Notification toast appel avec name
+                utils.Notificationhelper.show("📞",
+                        caller.getPrenom() + " " + caller.getNom() + " · " + caller.getRole(),
+                        "Appel entrant — Appuyez pour répondre",
+                        () -> openCallScreen(caller, call));
+            } catch (Exception e) { e.printStackTrace(); }
+        });
+    }
+
+    private void openMessagerie() {
+        try {
+            setActiveNav(navMessages, indicMessages);
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/Messagerie.fxml"));
+            javafx.scene.layout.HBox page = loader.load();
+            Messageriecontroller ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
+            contentArea.getChildren().setAll(page);
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    private void openCallScreen(entities.User caller, entities.Call call) {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/Messagerie.fxml"));
+            javafx.scene.layout.HBox page = loader.load();
+            Messageriecontroller ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
+            // Définir le contact AVANT d'ouvrir l'écran appel
+            ctrl.setSelectedContact(caller);
+            contentArea.getChildren().setAll(page);
+            ctrl.openCallScreen(true, call, call.getId_call());
+        } catch (IOException e) { e.printStackTrace(); }
+    }
 
     @FXML void handleLogout(MouseEvent event) {
         if (LightDialog.showConfirmation("Déconnexion", "Voulez-vous vraiment quitter ?", "👋")) {

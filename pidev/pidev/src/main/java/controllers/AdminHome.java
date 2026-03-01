@@ -38,8 +38,6 @@ public class AdminHome {
     @FXML private Label lblPctPatients, lblPctCoaches, lblPctAdmins;
     @FXML private ProgressBar pbPatients, pbCoaches, pbAdmins;
 
-    // API — Quotable
-    @FXML private Label lblQuoteStatus, lblQuote, lblQuoteAuthor;
 
     @FXML private StackPane contentArea;
     @FXML private ScrollPane dashboardPane;
@@ -67,7 +65,6 @@ public class AdminHome {
         this.currentUser = user;
         refreshUserData();
         refreshStats(null);
-        loadQuotableQuote();
         setActiveNav(navDashboard, indicDashboard);
     }
 
@@ -130,61 +127,12 @@ public class AdminHome {
         }
     }
 
-    // ─── API: Quotable.io — Citations inspirantes ──────────────
-    private void loadQuotableQuote() {
-        if (lblQuote == null) return;
-        Platform.runLater(() -> {
-            if (lblQuoteStatus != null) lblQuoteStatus.setText("⏳ Chargement...");
-            lblQuote.setText("");
-            if (lblQuoteAuthor != null) lblQuoteAuthor.setText("");
-        });
-        Thread t = new Thread(() -> {
-            try {
-                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
-                HttpRequest req = HttpRequest.newBuilder()
-                        .uri(URI.create("https://api.quotable.io/random?tags=inspirational,leadership,wisdom"))
-                        .timeout(Duration.ofSeconds(8))
-                        .header("User-Agent", "EchoCare/1.0").GET().build();
-                HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
-                String content = extractValue(resp.body(), "content");
-                String author  = extractValue(resp.body(), "author");
-                Platform.runLater(() -> {
-                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation du jour");
-                    lblQuote.setText("❝  " + content + "  ❞");
-                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— " + author);
-                });
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation");
-                    lblQuote.setText("❝  Le succès n'est pas la clé du bonheur. Le bonheur est la clé du succès.  ❞");
-                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— Albert Schweitzer");
-                });
-            }
-        });
-        t.setDaemon(true);
-        t.start();
-    }
-
-    private String extractValue(String json, String key) {
-        String s = "\"" + key + "\":\"";
-        int i = json.indexOf(s);
-        if (i < 0) return "";
-        i += s.length();
-        int end = json.indexOf("\"", i);
-        return end < 0 ? "" : json.substring(i, end)
-                .replace("\\u2019","'").replace("\\u2018","'")
-                .replace("\\u201c","\"").replace("\\u201d","\"")
-                .replace("\\n"," ");
-    }
-
-    @FXML void refreshQuote(MouseEvent event) { loadQuotableQuote(); }
 
     // ─── Navigation ───────────────────────────────────────────
     @FXML void showDashboard(MouseEvent event) {
         setActiveNav(navDashboard, indicDashboard);
         contentArea.getChildren().setAll(dashboardPane);
         refreshStats(null);
-        loadQuotableQuote();
     }
 
     @FXML void showUtilisateurs(MouseEvent event) {
@@ -208,11 +156,18 @@ public class AdminHome {
             Profil ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
             ctrl.setOnPhotoChanged(this::refreshUserData);
+            ctrl.setOnBackToAccueil(this::showDashboardFromProfil);
             contentArea.getChildren().setAll(page);
         } catch (IOException e) {
             e.printStackTrace();
             LightDialog.showError("Erreur", "Chargement impossible.");
         }
+    }
+
+    private void showDashboardFromProfil() {
+        setActiveNav(navDashboard, indicDashboard);
+        contentArea.getChildren().setAll(dashboardPane);
+        refreshStats(null);
     }
 
     private void setActiveNav(VBox nav, HBox indic) {

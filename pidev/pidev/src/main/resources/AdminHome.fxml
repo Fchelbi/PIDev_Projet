@@ -205,36 +205,6 @@
                         </VBox>
                     </HBox>
 
-                    <!-- ── Quotable API — Citations inspirantes ── -->
-                    <VBox spacing="14"
-                          style="-fx-background-color: white; -fx-padding: 28; -fx-background-radius: 14;
-                                 -fx-border-color: #F5C87A; -fx-border-radius: 14; -fx-border-width: 2;
-                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
-                        <HBox alignment="CENTER_LEFT" spacing="12">
-                            <StackPane prefWidth="42" prefHeight="42">
-                                <Circle radius="21" fill="#4A6FA5"/>
-                                <Label text="💬" style="-fx-font-size:18px;"/>
-                            </StackPane>
-                            <VBox spacing="2">
-                                <Label fx:id="lblQuoteStatus" text="💬 Citation du jour"
-                                       style="-fx-font-size:11px;-fx-font-weight:700;-fx-text-fill:#4A6FA5;-fx-letter-spacing:1;"/>
-                                <Label text="quotable.io · Citations inspirantes"
-                                       style="-fx-font-size:9px;-fx-text-fill:#A0AEC0;"/>
-                            </VBox>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Label text="🔄" style="-fx-font-size:20px;-fx-cursor:hand;"
-                                   onMouseClicked="#refreshQuote"/>
-                        </HBox>
-                        <Label fx:id="lblQuote" wrapText="true" text="Chargement..."
-                               style="-fx-font-size:16px;-fx-text-fill:#2D3748;-fx-font-style:italic;-fx-line-spacing:5;"/>
-                        <HBox alignment="CENTER_RIGHT">
-                            <Label fx:id="lblQuoteAuthor" text=""
-                                   style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#E8956D;"/>
-                        </HBox>
-                        <Label text="Cliquez 🔄 pour une nouvelle citation · quotable.io API"
-                               style="-fx-font-size:10px;-fx-text-fill:#CBD5E0;"/>
-                    </VBox>
-
                     <VBox style="-fx-padding: 5 0;"/>
                 </VBox>
             </VBox>

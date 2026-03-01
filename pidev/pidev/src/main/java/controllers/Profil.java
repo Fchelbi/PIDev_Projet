@@ -49,6 +49,7 @@ public class Profil {
     private String selectedPhotoPath = null;
     private String EDITABLE_STYLE;
     private Runnable onPhotoChanged;
+    private Runnable onBackToAccueil;
 
     private final String READONLY_STYLE =
             "-fx-background-color: #F7FAFC; -fx-border-color: #E2E8F0; " +
@@ -221,6 +222,11 @@ public class Profil {
     }
 
     @FXML
+    void handleBackToAccueil() {
+        if (onBackToAccueil != null) onBackToAccueil.run();
+    }
+
+    @FXML
     void toggleEditMode() {
         isEditMode = !isEditMode;
         if (isEditMode) {
@@ -358,6 +364,8 @@ public class Profil {
         pfConfirmPassword.setStyle(s);
         tfRole.setEditable(false);
     }
+    public void setOnBackToAccueil(Runnable callback) { this.onBackToAccueil = callback; }
+
     public void setOnPhotoChanged(Runnable callback) {
         this.onPhotoChanged = callback;
     }
