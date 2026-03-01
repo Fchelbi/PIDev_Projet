@@ -2,173 +2,159 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
 
-<VBox spacing="0" prefWidth="600" prefHeight="750"
-      style="-fx-background-color: #FAF7F5;"
+<VBox spacing="0" prefWidth="620" prefHeight="800"
+      style="-fx-background-color: #FAF8F4;"
       xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.RapportController">
 
     <!-- Header -->
-    <HBox style="-fx-background-color: linear-gradient(to right, #3A5A90, #4A6FA5);
-                 -fx-padding: 22;" alignment="CENTER" spacing="12">
-        <Label text="📄" style="-fx-font-size: 22px;"/>
-        <VBox spacing="2" alignment="CENTER">
-            <Label text="Générer un Rapport" textFill="WHITE"
-                   style="-fx-font-size: 20px; -fx-font-weight: 700;">
-
-            </Label>
-            <Label text="EchoCare - Rapport de suivi patient" textFill="WHITE" opacity="0.8"
-                   style="-fx-font-size: 11px;"/>
+    <HBox alignment="CENTER_LEFT" spacing="14"
+          style="-fx-padding: 22 28;
+                 -fx-background-color: linear-gradient(to right, #3A5A90, #4A6FA5);
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 8, 0, 0, 3);">
+        <StackPane prefWidth="44" prefHeight="44">
+            <Circle radius="22" fill="rgba(255,255,255,0.15)"/>
+            <Label text="📄" style="-fx-font-size: 22px;"/>
+        </StackPane>
+        <VBox spacing="2">
+            <Label text="Générer un Rapport PDF"
+                   style="-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+            <Label text="EchoCare · Rapport de suivi patient"
+                   style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.65);"/>
         </VBox>
     </HBox>
 
-    <ScrollPane fitToWidth="true" style="-fx-background: WHITE; -fx-background-color: WHITE;"
-                VBox.vgrow="ALWAYS">
-        <VBox spacing="20" style="-fx-padding: 30; -fx-background-color: WHITE;">
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
+                style="-fx-background: white; -fx-background-color: white;">
+        <VBox spacing="18" style="-fx-padding: 26; -fx-background-color: white;">
 
-            <!-- Patient Selection -->
-            <VBox spacing="8">
-                <Label text="💆  Patient"
-                       style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
-                <ComboBox fx:id="cbPatient" maxWidth="Infinity" promptText="Sélectionner un patient"
-                          style="-fx-background-color: #F7F5F2;
-                                 -fx-border-color: #E8E4DF;
-                                 -fx-border-radius: 12;
-                                 -fx-background-radius: 12;
-                                 -fx-border-width: 1.5;
-                                 -fx-padding: 8 12;
-                                 -fx-font-size: 13px;"/>
+            <!-- Patient -->
+            <VBox spacing="5">
+                <Label text="PATIENT" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                <ComboBox fx:id="cbPatient" maxWidth="Infinity" promptText="Sélectionner un patient..."
+                          style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;
+                                 -fx-border-width: 1.5; -fx-padding: 4 12; -fx-font-size: 13px;"/>
             </VBox>
 
-            <!-- Période + Nb séances -->
-            <HBox spacing="15">
-                <VBox spacing="8" HBox.hgrow="ALWAYS">
-                    <Label text="📅  Période"
-                           style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
-                    <TextField fx:id="tfPeriode" promptText="Ex: Jan 2025 - Mars 2025"
-                               style="-fx-background-color: #F7F5F2;
-                                      -fx-border-color: #E8E4DF;
-                                      -fx-border-radius: 12;
-                                      -fx-background-radius: 12;
-                                      -fx-border-width: 1.5;
-                                      -fx-padding: 12 16;
-                                      -fx-font-size: 13px;
-                                      -fx-prompt-text-fill: #A0AEC0;"/>
+            <!-- Calendrier Période -->
+            <VBox spacing="8"
+                  style="-fx-background-color: #FFF8F0; -fx-padding: 18; -fx-background-radius: 12;
+                         -fx-border-color: #F5C87A; -fx-border-radius: 12; -fx-border-width: 1.5;">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="📅" style="-fx-font-size: 16px;"/>
+                    <Label text="PÉRIODE DE SUIVI"
+                           style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                </HBox>
+                <HBox spacing="14">
+                    <VBox HBox.hgrow="ALWAYS" spacing="5">
+                        <Label text="Date de début" style="-fx-font-size: 11px; -fx-text-fill: #718096; -fx-font-weight: 600;"/>
+                        <DatePicker fx:id="dpDebut" maxWidth="Infinity" promptText="JJ/MM/AAAA"
+                                    style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                           -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" style="-fx-padding: 18 0 0 0;">
+                        <Label text="→" style="-fx-font-size: 18px; -fx-text-fill: #E8956D; -fx-font-weight: 700;"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" spacing="5">
+                        <Label text="Date de fin" style="-fx-font-size: 11px; -fx-text-fill: #718096; -fx-font-weight: 600;"/>
+                        <DatePicker fx:id="dpFin" maxWidth="Infinity" promptText="JJ/MM/AAAA"
+                                    style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                           -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5;"/>
+                    </VBox>
+                </HBox>
+                <VBox spacing="4">
+                    <Label text="Ou saisissez manuellement :" style="-fx-font-size: 11px; -fx-text-fill: #718096;"/>
+                    <TextField fx:id="tfPeriode" promptText="Ex: Jan 2025 → Mars 2025 (auto-rempli par les dates)"
+                               style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                      -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 12px;"/>
                 </VBox>
-                <VBox spacing="8" prefWidth="180">
-                    <Label text="🧘  Nb Séances"
-                           style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
-                    <TextField fx:id="tfNbSeances" promptText="Ex: 12"
-                               style="-fx-background-color: #F7F5F2;
-                                      -fx-border-color: #E8E4DF;
-                                      -fx-border-radius: 12;
-                                      -fx-background-radius: 12;
-                                      -fx-border-width: 1.5;
-                                      -fx-padding: 12 16;
-                                      -fx-font-size: 13px;
-                                      -fx-prompt-text-fill: #A0AEC0;"/>
-                </VBox>
-            </HBox>
+            </VBox>
 
-            <!-- Score Humeur Slider -->
-            <VBox spacing="10"
-                  style="-fx-background-color: #FFF8F0;
-                         -fx-background-radius: 16;
-                         -fx-padding: 20;">
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="😊  Score d'humeur moyen"
-                           style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
+            <!-- Nb Séances -->
+            <VBox spacing="5">
+                <Label text="NOMBRE DE SÉANCES EFFECTUÉES"
+                       style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                <TextField fx:id="tfNbSeances" promptText="Ex: 12"
+                           style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <!-- Score humeur -->
+            <VBox spacing="12"
+                  style="-fx-background-color: #F7F5F2; -fx-padding: 18; -fx-background-radius: 12;
+                         -fx-border-color: #E8E4DF; -fx-border-radius: 12; -fx-border-width: 1.5;">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="SCORE D'HUMEUR MOYEN"
+                           style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Label fx:id="lblHumeurEmoji" text="😐" style="-fx-font-size: 28px;"/>
+                    <Label fx:id="lblHumeurEmoji" text="😐" style="-fx-font-size: 26px;"/>
                     <Label fx:id="lblHumeurValue" text="5.0 / 10"
-                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #E8B4C8;"/>
+                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #E8956D;"/>
                 </HBox>
                 <Slider fx:id="sliderHumeur" min="0" max="10" value="5"
                         showTickLabels="true" showTickMarks="true"
-                        majorTickUnit="2" minorTickCount="1"
-                        blockIncrement="0.5"
-                        style="-fx-control-inner-background: #FAE0E4;"/>
-                <HBox alignment="CENTER" spacing="30">
-                    <Label text="😢 Très bas" style="-fx-font-size: 10px; -fx-text-fill: #E8B4B8;"/>
-                    <Label text="😐 Moyen" style="-fx-font-size: 10px; -fx-text-fill: #718096;"/>
-                    <Label text="😄 Excellent" style="-fx-font-size: 10px; -fx-text-fill: #A8D5BA;"/>
+                        majorTickUnit="2" minorTickCount="1" blockIncrement="0.5"/>
+                <HBox alignment="CENTER" spacing="50">
+                    <Label text="😢 Très bas"  style="-fx-font-size: 10px; -fx-text-fill: #CBD5E0;"/>
+                    <Label text="😐 Moyen"     style="-fx-font-size: 10px; -fx-text-fill: #CBD5E0;"/>
+                    <Label text="😄 Excellent" style="-fx-font-size: 10px; -fx-text-fill: #CBD5E0;"/>
                 </HBox>
             </VBox>
 
             <!-- Observations -->
-            <VBox spacing="8">
-                <Label text="📝  Observations et notes de suivi"
-                       style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
-                <TextArea fx:id="taContenu" prefRowCount="5"
+            <VBox spacing="5">
+                <Label text="OBSERVATIONS ET NOTES"
+                       style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                <TextArea fx:id="taContenu" prefRowCount="5" wrapText="true"
                           promptText="Décrivez l'évolution du patient, les progrès observés, les difficultés rencontrées..."
-                          wrapText="true"
-                          style="-fx-background-color: #F7F5F2;
-                                 -fx-border-color: #E8E4DF;
-                                 -fx-border-radius: 12;
-                                 -fx-background-radius: 12;
-                                 -fx-border-width: 1.5;
-                                 -fx-padding: 14;
-                                 -fx-font-size: 13px;
-                                 -fx-prompt-text-fill: #A0AEC0;"/>
+                          style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;
+                                 -fx-border-width: 1.5; -fx-padding: 12; -fx-font-size: 13px;"/>
             </VBox>
 
             <!-- Recommandations -->
-            <VBox spacing="8">
-                <Label text="🌿  Recommandations (une par ligne)"
-                       style="-fx-font-size: 13px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
-                <TextArea fx:id="taRecommandations" prefRowCount="4"
-                          promptText="Continuer la thérapie cognitive&#10;Exercices de respiration 2x/jour&#10;Méditation 15 min/jour&#10;Suivi mensuel recommandé"
-                          wrapText="true"
-                          style="-fx-background-color: #F0FAF4;
-                                 -fx-border-color: #C2E4CD;
-                                 -fx-border-radius: 12;
-                                 -fx-background-radius: 12;
-                                 -fx-border-width: 1.5;
-                                 -fx-padding: 14;
-                                 -fx-font-size: 13px;
-                                 -fx-prompt-text-fill: #B5D9C2;"/>
+            <VBox spacing="5">
+                <Label text="RECOMMANDATIONS (une par ligne)"
+                       style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                <TextArea fx:id="taRecommandations" prefRowCount="4" wrapText="true"
+                          promptText="Continuer la thérapie cognitive&#10;Exercices de respiration 2x/jour&#10;Suivi mensuel recommandé"
+                          style="-fx-background-color: #F0FAF4; -fx-border-color: #C2E4CD;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;
+                                 -fx-border-width: 1.5; -fx-padding: 12; -fx-font-size: 13px;"/>
             </VBox>
 
-            <!-- Buttons -->
-            <HBox spacing="15" alignment="CENTER" style="-fx-padding: 10 0 0 0;">
-                <Button text="📄  Générer le PDF" onAction="#handleGenerate"
-                        prefWidth="220"
-                        style="-fx-background-color: linear-gradient(to right, #E8956D, #D4845C);
-                               -fx-text-fill: white;
-                               -fx-font-size: 14px;
-                               -fx-font-weight: 700;
-                               -fx-padding: 14;
-                               -fx-background-radius: 12;
-                               -fx-cursor: hand;
-                               -fx-effect: dropshadow(gaussian, rgba(124,107,196,0.35), 10, 0, 0, 4);">
-
-                </Button>
-                <Button text="🔄  Réinitialiser" onAction="#resetForm"
-                        prefWidth="160"
-                        style="-fx-background-color: #F5F0FA;
-                               -fx-text-fill: #4A6FA5;
-                               -fx-font-size: 14px;
-                               -fx-font-weight: 600;
-                               -fx-padding: 14;
-                               -fx-background-radius: 12;
-                               -fx-cursor: hand;"/>
-            </HBox>
-
-            <!-- Info Banner -->
-            <HBox spacing="12" alignment="CENTER_LEFT"
-                  style="-fx-background-color: linear-gradient(to right, #FFF8F0, #FFF2E8);
-                         -fx-background-radius: 12;
-                         -fx-padding: 15;">
-                <Label text="💡" style="-fx-font-size: 18px;"/>
-                <VBox spacing="3">
-                    <Label text="Le rapport sera sauvegardé dans le dossier 'rapports_pdf'"
-                           style="-fx-font-size: 12px; -fx-text-fill: #4A6FA5;"/>
+            <!-- Info -->
+            <HBox spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-background-color: #EBF4FF; -fx-padding: 12 16; -fx-background-radius: 10;
+                         -fx-border-color: #4A6FA5; -fx-border-radius: 10; -fx-border-width: 1;">
+                <Label text="💡" style="-fx-font-size: 14px;"/>
+                <VBox spacing="2">
+                    <Label text="Sauvegardé dans  rapports_pdf/"
+                           style="-fx-font-size: 11px; -fx-text-fill: #4A6FA5; -fx-font-weight: 600;"/>
                     <Label text="Format: EchoCare_Rapport_NomPatient_Date.pdf"
-                           style="-fx-font-size: 11px; -fx-text-fill: #718096;"/>
+                           style="-fx-font-size: 10px; -fx-text-fill: #718096;"/>
                 </VBox>
             </HBox>
+
+            <!-- Buttons -->
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="🔄  Réinitialiser" onAction="#resetForm" prefWidth="150"
+                        style="-fx-background-color: #F7F5F2; -fx-text-fill: #718096;
+                               -fx-font-size: 13px; -fx-font-weight: 600;
+                               -fx-padding: 12 18; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                <Button text="📄  Générer le PDF" onAction="#handleGenerate" prefWidth="195"
+                        style="-fx-background-color: #E8956D; -fx-text-fill: white;
+                               -fx-font-size: 14px; -fx-font-weight: 700;
+                               -fx-padding: 12 18; -fx-background-radius: 10; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(232,149,109,0.4), 10, 0, 0, 4);"/>
+            </HBox>
+
         </VBox>
     </ScrollPane>
 </VBox>

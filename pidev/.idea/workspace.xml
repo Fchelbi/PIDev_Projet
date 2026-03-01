@@ -5,8 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Coachstats.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/Coachstats.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/ModifierUtilisateur.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/ModifierUtilisateur.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/Profil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Profil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/mains/MainFX.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/mains/MainFX.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/services/CRUD.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/services/CRUD.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/utils/MyDBConnexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/MyDBConnexion.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/GenerateRapport.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/GenerateRapport.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Modifierutilisateur.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Modifierutilisateur.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,35 +73,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Application.MainFX.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.FormationServiceTest.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.pidev [org.openjfx:javafx-maven-plugin:0.0.8:run].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;formation&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/fatmachelbi/uni_project/pidev_java/pidev&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.Main.executor": "Run",
+    "Application.MainFX.executor": "Run",
+    "JUnit.FormationServiceTest.executor": "Run",
+    "Maven.pidev [org.openjfx:javafx-maven-plugin:0.0.8:run].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "#2 on Merging formation",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/fatmachelbi/uni_project/pidev_java/pidev",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="controllers" />

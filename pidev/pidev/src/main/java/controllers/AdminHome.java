@@ -1,18 +1,13 @@
 package controllers;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -37,56 +32,42 @@ import java.util.List;
 
 public class AdminHome {
 
-    @FXML private Label lblWelcome;
-    @FXML private Label lblHeaderAvatar;
-    @FXML private Label lblNbPatients;
-    @FXML private Label lblNbCoaches;
-    @FXML private Label lblNbAdmins;
-    @FXML private Label lblNbTotal;
-    @FXML private Label lblQuote;
-    @FXML private Label lblQuoteAuthor;
-    @FXML private Label lblQuoteStatus;
+    // Top stats
+    @FXML private Label lblWelcome, lblHeaderAvatar;
+    @FXML private Label lblNbPatients, lblNbCoaches, lblNbAdmins, lblNbTotal;
+    @FXML private Label lblPctPatients, lblPctCoaches, lblPctAdmins;
+    @FXML private ProgressBar pbPatients, pbCoaches, pbAdmins;
 
-    @FXML private BarChart<String, Number> barChartRoles;
+    // API — Quotable
+    @FXML private Label lblQuoteStatus, lblQuote, lblQuoteAuthor;
+
     @FXML private StackPane contentArea;
     @FXML private ScrollPane dashboardPane;
     @FXML private ImageView imgHeaderPhoto;
 
-    // Sidebar nav items
-    @FXML private VBox navDashboard;
-    @FXML private VBox navUtilisateurs;
-    @FXML private VBox navProfil;
-
-    // Orange indicators
-    @FXML private HBox indicDashboard;
-    @FXML private HBox indicUtilisateurs;
-    @FXML private HBox indicProfil;
+    @FXML private VBox navDashboard, navUtilisateurs, navProfil;
+    @FXML private HBox indicDashboard, indicUtilisateurs, indicProfil;
 
     private User currentUser;
     private final serviceUser us = new serviceUser();
     private VBox currentActiveNav;
 
-    // ─── Styles ──────────────────────────────────────────────
     private static final String NAV_NORMAL =
-            "-fx-padding: 12 20 12 20; -fx-cursor: hand; -fx-background-color: transparent; -fx-background-radius: 10;";
+            "-fx-padding:12 20 12 20;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:10;";
     private static final String NAV_ACTIVE =
-            "-fx-padding: 12 20 12 20; -fx-cursor: hand; " +
-                    "-fx-background-color: rgba(255,255,255,0.13); -fx-background-radius: 10;";
+            "-fx-padding:12 20 12 20;-fx-cursor:hand;-fx-background-color:rgba(255,255,255,0.13);-fx-background-radius:10;";
     private static final String INDIC_HIDDEN =
-            "-fx-min-width: 4; -fx-max-width: 4; -fx-min-height: 30; -fx-background-color: transparent; -fx-background-radius: 2;";
+            "-fx-min-width:4;-fx-max-width:4;-fx-min-height:30;-fx-background-color:transparent;-fx-background-radius:2;";
     private static final String INDIC_VISIBLE =
-            "-fx-min-width: 4; -fx-max-width: 4; -fx-min-height: 30; -fx-background-color: #E8956D; -fx-background-radius: 2;";
+            "-fx-min-width:4;-fx-max-width:4;-fx-min-height:30;-fx-background-color:#E8956D;-fx-background-radius:2;";
 
-    @FXML
-    void initialize() {
-        System.out.println("✅ AdminHome initialized");
-    }
+    @FXML void initialize() { System.out.println("✅ AdminHome initialized"); }
 
     public void setUser(User user) {
         this.currentUser = user;
         refreshUserData();
         refreshStats(null);
-        loadQuoteOfDay();
+        loadQuotableQuote();
         setActiveNav(navDashboard, indicDashboard);
     }
 
@@ -94,9 +75,7 @@ public class AdminHome {
         try {
             User updated = us.getUserById(currentUser.getId_user());
             if (updated != null) this.currentUser = updated;
-        } catch (SQLException e) {
-            System.err.println("Refresh error: " + e.getMessage());
-        }
+        } catch (SQLException e) { System.err.println("Refresh: " + e.getMessage()); }
         lblWelcome.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         lblHeaderAvatar.setText(currentUser.getPrenom().substring(0, 1).toUpperCase());
         updateHeaderPhoto();
@@ -116,7 +95,7 @@ public class AdminHome {
         lblHeaderAvatar.setVisible(true);
     }
 
-    // ─── Stats ────────────────────────────────────────────────
+    // ─── Stats avec progress bars ──────────────────────────────
     @FXML
     void refreshStats(ActionEvent event) {
         try {
@@ -129,62 +108,56 @@ public class AdminHome {
                     case "ADMIN":   a++; break;
                 }
             }
-            int fp = p, fc = c, fa = a;
+            int total = users.size();
             lblNbPatients.setText(String.valueOf(p));
             lblNbCoaches.setText(String.valueOf(c));
             lblNbAdmins.setText(String.valueOf(a));
-            lblNbTotal.setText(String.valueOf(users.size()));
+            lblNbTotal.setText(String.valueOf(total));
 
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
-            series.setName("Utilisateurs");
-            series.getData().add(new XYChart.Data<>("Patients", (Number) fp));
-            series.getData().add(new XYChart.Data<>("Coaches",  (Number) fc));
-            series.getData().add(new XYChart.Data<>("Admins",   (Number) fa));
-            barChartRoles.getData().clear();
-            barChartRoles.getData().add(series);
-            Platform.runLater(() -> {
-                if (series.getData().size() >= 3) {
-                    series.getData().get(0).getNode().setStyle("-fx-bar-fill: #E8956D;");
-                    series.getData().get(1).getNode().setStyle("-fx-bar-fill: #F5C87A;");
-                    series.getData().get(2).getNode().setStyle("-fx-bar-fill: #4A6FA5;");
-                }
-            });
+            if (total > 0) {
+                double pp = p / (double) total;
+                double pc = c / (double) total;
+                double pa = a / (double) total;
+                if (pbPatients != null) pbPatients.setProgress(pp);
+                if (pbCoaches  != null) pbCoaches.setProgress(pc);
+                if (pbAdmins   != null) pbAdmins.setProgress(pa);
+                if (lblPctPatients != null) lblPctPatients.setText(String.format("%.0f%%", pp * 100));
+                if (lblPctCoaches  != null) lblPctCoaches.setText(String.format("%.0f%%", pc * 100));
+                if (lblPctAdmins   != null) lblPctAdmins.setText(String.format("%.0f%%", pa * 100));
+            }
         } catch (SQLException e) {
             LightDialog.showError("Erreur", "Impossible de charger les stats.");
         }
     }
 
-    // ─── ZenQuotes API ───────────────────────────────────────
-    private void loadQuoteOfDay() {
+    // ─── API: Quotable.io — Citations inspirantes ──────────────
+    private void loadQuotableQuote() {
         if (lblQuote == null) return;
         Platform.runLater(() -> {
             if (lblQuoteStatus != null) lblQuoteStatus.setText("⏳ Chargement...");
             lblQuote.setText("");
             if (lblQuoteAuthor != null) lblQuoteAuthor.setText("");
         });
-
         Thread t = new Thread(() -> {
             try {
-                HttpClient client = HttpClient.newBuilder()
-                        .connectTimeout(Duration.ofSeconds(6)).build();
+                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
                 HttpRequest req = HttpRequest.newBuilder()
-                        .uri(URI.create("https://zenquotes.io/api/random"))
+                        .uri(URI.create("https://api.quotable.io/random?tags=inspirational,leadership,wisdom"))
                         .timeout(Duration.ofSeconds(8))
-                        .header("User-Agent", "EchoCare/1.0")
-                        .GET().build();
+                        .header("User-Agent", "EchoCare/1.0").GET().build();
                 HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
-                String quote  = extractJson(resp.body(), "q");
-                String author = extractJson(resp.body(), "a");
+                String content = extractValue(resp.body(), "content");
+                String author  = extractValue(resp.body(), "author");
                 Platform.runLater(() -> {
-                    if (lblQuoteStatus != null) lblQuoteStatus.setText("✨ Citation du jour");
-                    lblQuote.setText("\"" + quote + "\"");
+                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation du jour");
+                    lblQuote.setText("❝  " + content + "  ❞");
                     if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— " + author);
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation");
-                    lblQuote.setText("\"La santé mentale est aussi importante que la santé physique.\"");
-                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— EchoCare");
+                    lblQuote.setText("❝  Le succès n'est pas la clé du bonheur. Le bonheur est la clé du succès.  ❞");
+                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— Albert Schweitzer");
                 });
             }
         });
@@ -192,31 +165,29 @@ public class AdminHome {
         t.start();
     }
 
-    private String extractJson(String json, String key) {
+    private String extractValue(String json, String key) {
         String s = "\"" + key + "\":\"";
         int i = json.indexOf(s);
         if (i < 0) return "";
         i += s.length();
         int end = json.indexOf("\"", i);
-        if (end < 0) return "";
-        return json.substring(i, end)
+        return end < 0 ? "" : json.substring(i, end)
                 .replace("\\u2019","'").replace("\\u2018","'")
-                .replace("\\u201c","\"").replace("\\u201d","\"");
+                .replace("\\u201c","\"").replace("\\u201d","\"")
+                .replace("\\n"," ");
     }
 
-    @FXML
-    void refreshQuote(MouseEvent event) { loadQuoteOfDay(); }
+    @FXML void refreshQuote(MouseEvent event) { loadQuotableQuote(); }
 
-    // ─── Navigation (MouseEvent for onMouseClicked) ──────────
-    @FXML
-    void showDashboard(MouseEvent event) {
+    // ─── Navigation ───────────────────────────────────────────
+    @FXML void showDashboard(MouseEvent event) {
         setActiveNav(navDashboard, indicDashboard);
         contentArea.getChildren().setAll(dashboardPane);
         refreshStats(null);
+        loadQuotableQuote();
     }
 
-    @FXML
-    void showUtilisateurs(MouseEvent event) {
+    @FXML void showUtilisateurs(MouseEvent event) {
         try {
             setActiveNav(navUtilisateurs, indicUtilisateurs);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GestionUtilisateurs.fxml"));
@@ -229,8 +200,7 @@ public class AdminHome {
         }
     }
 
-    @FXML
-    void showProfil(MouseEvent event) {
+    @FXML void showProfil(MouseEvent event) {
         try {
             setActiveNav(navProfil, indicProfil);
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
@@ -245,43 +215,24 @@ public class AdminHome {
         }
     }
 
-    // ─── Active nav + BOTH indicator & bg simultaneously ─────
     private void setActiveNav(VBox nav, HBox indic) {
-        // Reset all
-        VBox[] navs  = {navDashboard, navUtilisateurs, navProfil};
-        HBox[] indics = {indicDashboard, indicUtilisateurs, indicProfil};
-        for (VBox n : navs)  { if (n != null) n.setStyle(NAV_NORMAL); }
-        for (HBox i : indics){ if (i != null) i.setStyle(INDIC_HIDDEN); }
-        // Apply active — BOTH at the same time
+        for (VBox n : new VBox[]{navDashboard, navUtilisateurs, navProfil})
+            if (n != null) n.setStyle(NAV_NORMAL);
+        for (HBox i : new HBox[]{indicDashboard, indicUtilisateurs, indicProfil})
+            if (i != null) i.setStyle(INDIC_HIDDEN);
         if (nav   != null) nav.setStyle(NAV_ACTIVE);
         if (indic != null) indic.setStyle(INDIC_VISIBLE);
         currentActiveNav = nav;
     }
 
-    // ─── Hover effects ────────────────────────────────────────
-    @FXML void onNavDashboardEnter(MouseEvent e)  { if(navDashboard  !=currentActiveNav) navDashboard.setStyle(NAV_ACTIVE); }
-    @FXML void onNavDashboardExit(MouseEvent e)   { if(navDashboard  !=currentActiveNav) navDashboard.setStyle(NAV_NORMAL); }
-    @FXML void onNavUtilsEnter(MouseEvent e)      { if(navUtilisateurs!=currentActiveNav) navUtilisateurs.setStyle(NAV_ACTIVE); }
-    @FXML void onNavUtilsExit(MouseEvent e)       { if(navUtilisateurs!=currentActiveNav) navUtilisateurs.setStyle(NAV_NORMAL); }
-    @FXML void onNavProfilEnter(MouseEvent e)     { if(navProfil     !=currentActiveNav) navProfil.setStyle(NAV_ACTIVE); }
-    @FXML void onNavProfilExit(MouseEvent e)      { if(navProfil     !=currentActiveNav) navProfil.setStyle(NAV_NORMAL); }
+    @FXML void onNavDashboardEnter(MouseEvent e) { if(navDashboard   !=currentActiveNav) navDashboard.setStyle(NAV_ACTIVE); }
+    @FXML void onNavDashboardExit(MouseEvent e)  { if(navDashboard   !=currentActiveNav) navDashboard.setStyle(NAV_NORMAL); }
+    @FXML void onNavUtilsEnter(MouseEvent e)     { if(navUtilisateurs!=currentActiveNav) navUtilisateurs.setStyle(NAV_ACTIVE); }
+    @FXML void onNavUtilsExit(MouseEvent e)      { if(navUtilisateurs!=currentActiveNav) navUtilisateurs.setStyle(NAV_NORMAL); }
+    @FXML void onNavProfilEnter(MouseEvent e)    { if(navProfil      !=currentActiveNav) navProfil.setStyle(NAV_ACTIVE); }
+    @FXML void onNavProfilExit(MouseEvent e)     { if(navProfil      !=currentActiveNav) navProfil.setStyle(NAV_NORMAL); }
 
-    // ─── Map in content area ──────────────────────────────────
-    @FXML
-    void loadMapSection(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Map.fxml"));
-            VBox page = loader.load();
-            contentArea.getChildren().setAll(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LightDialog.showError("Erreur", "Impossible de charger la carte.");
-        }
-    }
-
-    // ─── Logout ───────────────────────────────────────────────
-    @FXML
-    void handleLogout(MouseEvent event) {
+    @FXML void handleLogout(MouseEvent event) {
         if (LightDialog.showConfirmation("Déconnexion", "Voulez-vous vraiment quitter ?", "👋")) {
             try {
                 Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
