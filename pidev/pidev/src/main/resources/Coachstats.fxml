@@ -1,179 +1,152 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
+<?import javafx.scene.web.*?>
 <?import javafx.geometry.*?>
-
-<VBox spacing="0" xmlns="http://javafx.com/javafx/21"
+<VBox spacing="0"
+      xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="controllers.Coachstats"
-      style="-fx-background-color: #F2F0EC;">
+      style="-fx-background-color:#F2F0EC;">
 
-    <!-- Top bar -->
-    <HBox alignment="CENTER_LEFT" spacing="15"
-          style="-fx-padding: 22 30; -fx-background-color: white;
-                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);">
-        <StackPane prefWidth="44" prefHeight="44">
-            <Circle radius="22" fill="#EBF4FF"/>
-            <Label text="📊" style="-fx-font-size: 22px;"/>
+    <HBox alignment="CENTER_LEFT" spacing="16"
+          style="-fx-padding:18 28;-fx-background-color:white;
+                 -fx-border-color:transparent transparent #F0EDE8 transparent;-fx-border-width:1;
+                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);">
+        <StackPane prefWidth="40" prefHeight="40">
+            <Circle radius="20" fill="#4A6FA5"/>
+            <Label text="📊" style="-fx-font-size:17px;"/>
         </StackPane>
-        <VBox spacing="3">
+        <VBox spacing="2">
             <Label text="Statistiques Patients"
-                   style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #2D3748;"/>
+                   style="-fx-font-size:18px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
             <Label text="Vue d'ensemble de l'état de vos patients"
-                   style="-fx-font-size: 12px; -fx-text-fill: #718096;"/>
+                   style="-fx-font-size:11px;-fx-text-fill:#A0AEC0;"/>
         </VBox>
         <Region HBox.hgrow="ALWAYS"/>
-        <Button text="🔄  Rafraîchir" onAction="#handleRefresh"
-                style="-fx-background-color: #E8956D; -fx-text-fill: white;
-                       -fx-font-size: 12px; -fx-padding: 9 20; -fx-background-radius: 8; -fx-cursor: hand;
-                       -fx-effect: dropshadow(gaussian, rgba(232,149,109,0.35), 8, 0, 0, 3);"/>
+        <Button text="Rafraichir" onAction="#handleRefresh"
+                style="-fx-background-color:#E8956D;-fx-text-fill:white;
+                       -fx-font-size:12px;-fx-font-weight:600;
+                       -fx-padding:9 18;-fx-background-radius:10;-fx-cursor:hand;"/>
     </HBox>
 
     <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
-                style="-fx-background: transparent; -fx-background-color: transparent;">
-        <VBox spacing="20" style="-fx-padding: 25 30;">
+                style="-fx-background:#F2F0EC;-fx-background-color:#F2F0EC;">
+        <VBox spacing="18" style="-fx-padding:22 28;">
 
-            <!-- ── Insight Banner ── -->
-            <HBox spacing="12" alignment="CENTER_LEFT"
-                  style="-fx-background-color: white; -fx-padding: 18 22; -fx-background-radius: 14;
-                         -fx-border-color: #E8956D; -fx-border-radius: 14; -fx-border-width: 2;
-                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
-                <Label text="🧠" style="-fx-font-size: 24px;"/>
-                <Label fx:id="lblInsight" wrapText="true"
-                       text="Analyse en cours..."
-                       style="-fx-font-size: 13px; -fx-text-fill: #2D3748; -fx-font-weight: 600;"/>
-            </HBox>
-
-            <!-- ── 4 stat cards ── -->
-            <HBox spacing="16">
-                <!-- Total patients -->
-                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="6"
-                      style="-fx-background-color: white; -fx-padding: 22; -fx-background-radius: 14;
-                             -fx-border-color: #4A6FA5; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;
-                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
-                    <Label text="👥" style="-fx-font-size: 26px;"/>
-                    <Label text="TOTAL" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
-                    <Label fx:id="lblTotalPatients" text="—"
-                           style="-fx-font-size: 30px; -fx-font-weight: 700; -fx-text-fill: #4A6FA5;"/>
-                    <Label text="patients" style="-fx-font-size: 10px; -fx-text-fill: #CBD5E0;"/>
+            <HBox spacing="14">
+                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                      style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:20 16;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,2);">
+                    <Label text="Total" style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;-fx-font-weight:700;"/>
+                    <Label fx:id="lblTotalPatients" text="0"
+                           style="-fx-font-size:32px;-fx-font-weight:700;-fx-text-fill:#4A6FA5;"/>
+                    <Label text="patients" style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;"/>
                 </VBox>
-
-                <!-- Humeur moyenne -->
-                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="6"
-                      style="-fx-background-color: white; -fx-padding: 22; -fx-background-radius: 14;
-                             -fx-border-color: #F5C87A; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;
-                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
-                    <Label fx:id="lblMoyEmoji" text="😐" style="-fx-font-size: 26px;"/>
-                    <Label text="HUMEUR MOY." style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
-                    <HBox alignment="CENTER" spacing="4">
-                        <Label fx:id="lblMoyHumeur" text="—"
-                               style="-fx-font-size: 30px; -fx-font-weight: 700; -fx-text-fill: #C8960A;"/>
-                        <Label text="/10" style="-fx-font-size: 14px; -fx-text-fill: #CBD5E0;"/>
-                    </HBox>
-                    <Label text="score moyen" style="-fx-font-size: 10px; -fx-text-fill: #CBD5E0;"/>
+                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                      style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:20 16;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,2);">
+                    <Label fx:id="lblMoyEmoji" text="😐" style="-fx-font-size:24px;"/>
+                    <Label fx:id="lblMoyHumeur" text="—"
+                           style="-fx-font-size:32px;-fx-font-weight:700;-fx-text-fill:#E8956D;"/>
+                    <Label text="humeur moy." style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;"/>
                 </VBox>
-
-                <!-- En forme -->
-                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="6"
-                      style="-fx-background-color: white; -fx-padding: 22; -fx-background-radius: 14;
-                             -fx-border-color: #52B788; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;
-                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
-                    <Label text="😄" style="-fx-font-size: 26px;"/>
-                    <Label text="EN FORME" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
-                    <Label fx:id="lblPatientsBien" text="—"
-                           style="-fx-font-size: 30px; -fx-font-weight: 700; -fx-text-fill: #52B788;"/>
-                    <Label text="score ≥ 7" style="-fx-font-size: 10px; -fx-text-fill: #CBD5E0;"/>
+                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                      style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:20 16;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,2);">
+                    <Label text="😄" style="-fx-font-size:20px;"/>
+                    <Label fx:id="lblPatientsBien" text="0"
+                           style="-fx-font-size:32px;-fx-font-weight:700;-fx-text-fill:#52B788;"/>
+                    <Label text="en forme" style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;"/>
                 </VBox>
-
-                <!-- Bas moral -->
-                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="6"
-                      style="-fx-background-color: white; -fx-padding: 22; -fx-background-radius: 14;
-                             -fx-border-color: #E07070; -fx-border-width: 0 0 3 0; -fx-border-radius: 14;
-                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
-                    <Label text="😢" style="-fx-font-size: 26px;"/>
-                    <Label text="BAS MORAL" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
-                    <Label fx:id="lblPatientsBas" text="—"
-                           style="-fx-font-size: 30px; -fx-font-weight: 700; -fx-text-fill: #E07070;"/>
-                    <Label text="score &lt; 4" style="-fx-font-size: 10px; -fx-text-fill: #CBD5E0;"/>
+                <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="5"
+                      style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:20 16;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,2);">
+                    <Label text="😢" style="-fx-font-size:20px;"/>
+                    <Label fx:id="lblPatientsBas" text="0"
+                           style="-fx-font-size:32px;-fx-font-weight:700;-fx-text-fill:#E07070;"/>
+                    <Label text="bas moral" style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;"/>
                 </VBox>
             </HBox>
 
-            <!-- ── Distribution humeur (progress bars) ── -->
-            <VBox spacing="16"
-                  style="-fx-background-color: white; -fx-padding: 24; -fx-background-radius: 14;
-                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
-                <HBox alignment="CENTER_LEFT" spacing="10">
-                    <Label text="📈" style="-fx-font-size: 18px;"/>
-                    <Label text="Distribution de l'état des patients"
-                           style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #2D3748;"/>
+            <VBox spacing="10"
+                  style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:18 20;
+                         -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,2);">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="Visualisation graphique"
+                           style="-fx-font-size:14px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+                    <Label text="(necessite internet · Google Charts)"
+                           style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;-fx-font-style:italic;"/>
                 </HBox>
+                <WebView fx:id="wvChart" prefHeight="260" maxHeight="260"/>
+            </VBox>
 
-                <!-- En forme -->
-                <VBox spacing="6">
+            <VBox spacing="16"
+                  style="-fx-background-color:white;-fx-padding:20;-fx-background-radius:14;
+                         -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,2);">
+                <Label text="Distribution de l'etat des patients"
+                       style="-fx-font-size:14px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+
+                <VBox spacing="5">
                     <HBox alignment="CENTER_LEFT">
-                        <Label text="😄  En forme  (score 7-10)"
-                               style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #52B788;"/>
+                        <Label text="En forme (score 7-10)"
+                               style="-fx-font-size:12px;-fx-text-fill:#52B788;-fx-font-weight:600;"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <Label fx:id="lblPctBien" text="0%"
-                               style="-fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #52B788;"/>
+                               style="-fx-font-size:12px;-fx-font-weight:700;-fx-text-fill:#52B788;"/>
                     </HBox>
                     <ProgressBar fx:id="pbBien" progress="0" maxWidth="Infinity" prefHeight="10"
-                                 style="-fx-accent: #52B788; -fx-background-color: #D0F0E0; -fx-background-radius: 5;"/>
+                                 style="-fx-accent:#52B788;"/>
                 </VBox>
 
-                <!-- Moyen -->
-                <VBox spacing="6">
+                <VBox spacing="5">
                     <HBox alignment="CENTER_LEFT">
-                        <Label text="😐  État moyen  (score 4-6)"
-                               style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #C8960A;"/>
+                        <Label text="Etat moyen (score 4-6)"
+                               style="-fx-font-size:12px;-fx-text-fill:#D4A820;-fx-font-weight:600;"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <Label fx:id="lblPctMoyen" text="0%"
-                               style="-fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #C8960A;"/>
+                               style="-fx-font-size:12px;-fx-font-weight:700;-fx-text-fill:#D4A820;"/>
                     </HBox>
                     <ProgressBar fx:id="pbMoyen" progress="0" maxWidth="Infinity" prefHeight="10"
-                                 style="-fx-accent: #F5C87A; -fx-background-color: #FFFCE8; -fx-background-radius: 5;"/>
+                                 style="-fx-accent:#F5C87A;"/>
                 </VBox>
 
-                <!-- Bas -->
-                <VBox spacing="6">
+                <VBox spacing="5">
                     <HBox alignment="CENTER_LEFT">
-                        <Label text="😢  Moral bas  (score 0-3)"
-                               style="-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #E07070;"/>
+                        <Label text="Moral bas (score 0-3)"
+                               style="-fx-font-size:12px;-fx-text-fill:#E07070;-fx-font-weight:600;"/>
                         <Region HBox.hgrow="ALWAYS"/>
                         <Label fx:id="lblPctBas" text="0%"
-                               style="-fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #E07070;"/>
+                               style="-fx-font-size:12px;-fx-font-weight:700;-fx-text-fill:#E07070;"/>
                     </HBox>
                     <ProgressBar fx:id="pbBas" progress="0" maxWidth="Infinity" prefHeight="10"
-                                 style="-fx-accent: #E07070; -fx-background-color: #FFE8E8; -fx-background-radius: 5;"/>
+                                 style="-fx-accent:#E07070;"/>
                 </VBox>
+
+                <Label fx:id="lblInsight" text="" wrapText="true" maxWidth="Infinity"
+                       style="-fx-background-color:#EBF4FF;-fx-padding:10 14;
+                              -fx-background-radius:8;-fx-font-size:12px;-fx-text-fill:#2D3748;"/>
             </VBox>
 
-            <!-- ── Liste patients filtrée ── -->
             <VBox spacing="12"
-                  style="-fx-background-color: white; -fx-padding: 24; -fx-background-radius: 14;
-                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 10, 0, 0, 2);">
+                  style="-fx-background-color:white;-fx-padding:20;-fx-background-radius:14;
+                         -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,2);">
                 <HBox alignment="CENTER_LEFT" spacing="12">
-                    <Label text="👥" style="-fx-font-size: 18px;"/>
                     <Label text="Liste des patients"
-                           style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #2D3748;"/>
+                           style="-fx-font-size:14px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <ComboBox fx:id="cbFiltreEtat" prefWidth="160"
-                              style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF;
-                                     -fx-border-radius: 8; -fx-background-radius: 8;
-                                     -fx-font-size: 12px;"/>
+                    <ComboBox fx:id="cbFilter" prefWidth="160"/>
                 </HBox>
-                <TextField fx:id="tfSearchPatient" promptText="🔍  Rechercher un patient..."
-                           style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF;
-                                  -fx-border-radius: 8; -fx-background-radius: 8;
-                                  -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
-                <ListView fx:id="listPatients" prefHeight="240"
-                          style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF;
-                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-font-size: 13px;"/>
+                <TextField fx:id="tfSearch" promptText="Rechercher un patient..."
+                           style="-fx-background-color:#F7F5F2;-fx-border-color:#E8E4DF;
+                                  -fx-border-radius:8;-fx-background-radius:8;
+                                  -fx-border-width:1.5;-fx-padding:9 14;-fx-font-size:12px;"/>
+                <ListView fx:id="lvPatients" prefHeight="200"
+                          style="-fx-font-size:12px;"/>
             </VBox>
 
-            <VBox style="-fx-padding: 5 0;"/>
+            <Label text=" " style="-fx-padding:8 0;"/>
         </VBox>
     </ScrollPane>
 </VBox>
