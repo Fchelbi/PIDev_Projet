@@ -70,6 +70,11 @@
                 <HBox spacing="12" alignment="CENTER_LEFT">
                     <Label text="💬" style="-fx-font-size:16px;"/>
                     <Label text="Messagerie" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblMessagesBadge" text="0" visible="false" managed="false"
+                           style="-fx-background-color:#E8956D;-fx-text-fill:white;
+                                  -fx-font-size:9px;-fx-font-weight:700;
+                                  -fx-padding:2 6;-fx-background-radius:10;"/>
                 </HBox>
             </VBox>
         </HBox>

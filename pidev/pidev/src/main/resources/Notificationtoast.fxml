@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.Notificationtoastcontroller"
+           style="-fx-background-color: transparent;"
+           prefWidth="340">
+
+    <HBox fx:id="toastRoot" spacing="12" alignment="CENTER_LEFT"
+          style="-fx-background-color: #1C2B4A;
+                 -fx-padding: 14 18;
+                 -fx-background-radius: 14;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 20, 0, 0, 8);
+                 -fx-cursor: hand;"
+          onMouseClicked="#handleAction">
+
+        <!-- Icon circle -->
+        <StackPane minWidth="40" minHeight="40" maxWidth="40" maxHeight="40">
+            <Circle radius="20" fill="rgba(74,111,165,0.3)"/>
+            <Label fx:id="lblIcon" text="💬"
+                   style="-fx-font-size: 18px;"/>
+        </StackPane>
+
+        <!-- Content -->
+        <VBox HBox.hgrow="ALWAYS" spacing="3">
+            <Label fx:id="lblTitle" text="Nouveau message"
+                   style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+            <Label fx:id="lblBody" text="..." wrapText="true" maxWidth="220"
+                   style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.6);"/>
+        </VBox>
+
+        <!-- Close -->
+        <Label text="✕" onMouseClicked="#handleDismiss"
+               style="-fx-text-fill: rgba(255,255,255,0.3); -fx-font-size: 12px;
+                      -fx-cursor: hand; -fx-padding: 4;"/>
+    </HBox>
+</StackPane>

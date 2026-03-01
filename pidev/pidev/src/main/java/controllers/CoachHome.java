@@ -15,7 +15,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import entities.User;
+import entities.Call;
 import services.serviceUser;
+import services.Notificationservice;
 import utils.LightDialog;
 
 import java.io.File;
@@ -32,6 +34,7 @@ public class CoachHome {
 
     // Sidebar nav
     @FXML private VBox navAccueil, navProfil, navRapport, navStats, navMessages;
+    @FXML private Label lblMessagesBadge; // badge rouge non-lu
     @FXML private HBox indicAccueil, indicProfil, indicRapport, indicStats, indicMessages;
 
     private User currentUser;
@@ -53,6 +56,7 @@ public class CoachHome {
         this.currentUser = user;
         refreshUserData();
         setActiveNav(navAccueil, indicAccueil);
+        startNotifications();
     }
 
     public void refreshUserData() {
@@ -168,18 +172,63 @@ public class CoachHome {
     @FXML void onNavMessagesEnter(MouseEvent e) { if(navMessages!=currentActiveNav) navMessages.setStyle(NAV_ACTIVE); }
     @FXML void onNavMessagesExit(MouseEvent e)  { if(navMessages!=currentActiveNav) navMessages.setStyle(NAV_NORMAL); }
 
-    @FXML void showMessages(MouseEvent event) {
+    @FXML void showMessages(MouseEvent event) { openMessagerie(); }
+
+    private void startNotifications() {
+        services.Notificationservice ns = services.Notificationservice.INSTANCE;
+        ns.start(currentUser);
+
+        // Badge messages non lus
+        ns.setOnUnreadCountChanged(count -> {
+            if (lblMessagesBadge == null) return;
+            if (count > 0) {
+                lblMessagesBadge.setText(String.valueOf(count));
+                lblMessagesBadge.setVisible(true);
+                lblMessagesBadge.setManaged(true);
+            } else {
+                lblMessagesBadge.setVisible(false);
+                lblMessagesBadge.setManaged(false);
+            }
+        });
+
+        // Toast nouveau message
+        ns.setOnNewMessage(() ->
+                utils.Notificationhelper.show("💬", "Nouveau message",
+                        "Vous avez reçu un nouveau message", this::openMessagerie));
+
+        // Appel entrant
+        ns.setOnIncomingCall(call -> {
+            // Chercher l'appelant
+            try {
+                entities.User caller = us.getUserById(call.getId_caller());
+                if (caller == null) return;
+                utils.Notificationhelper.show("📞", "Appel entrant",
+                        caller.getPrenom() + " " + caller.getNom() + " vous appelle",
+                        () -> openCallScreen(caller, call));
+            } catch (Exception e) { e.printStackTrace(); }
+        });
+    }
+
+    private void openMessagerie() {
         try {
             setActiveNav(navMessages, indicMessages);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Messagerie.fxml"));
-            HBox page = loader.load();
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/Messagerie.fxml"));
+            javafx.scene.layout.HBox page = loader.load();
             Messageriecontroller ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
             contentArea.getChildren().setAll(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LightDialog.showError("Erreur", "Impossible de charger la messagerie.");
-        }
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    private void openCallScreen(entities.User caller, entities.Call call) {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/Messagerie.fxml"));
+            javafx.scene.layout.HBox page = loader.load();
+            Messageriecontroller ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
+            contentArea.getChildren().setAll(page);
+            ctrl.openCallScreen(true, call, call.getId_call());
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     @FXML void handleLogout(MouseEvent event) {

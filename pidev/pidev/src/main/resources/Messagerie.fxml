@@ -79,6 +79,13 @@
                 <Region HBox.hgrow="ALWAYS"/>
                 <Circle radius="5" fill="#52B788"/>
                 <Label text="En ligne" style="-fx-font-size: 11px; -fx-text-fill: #52B788;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <!-- Bouton Appel -->
+                <StackPane prefWidth="40" prefHeight="40" style="-fx-cursor: hand;"
+                           onMouseClicked="#handleCall">
+                    <Circle radius="20" fill="#EBF4FF"/>
+                    <Label text="📞" style="-fx-font-size: 18px;"/>
+                </StackPane>
             </HBox>
 
             <!-- Messages scroll area -->
