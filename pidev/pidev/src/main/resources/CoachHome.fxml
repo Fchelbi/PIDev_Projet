@@ -12,16 +12,18 @@
       prefWidth="1100" prefHeight="750"
       style="-fx-background-color: #FAF8F4;">
 
-    <!-- ══ SIDEBAR ══ -->
+    <!-- ══════════════════════════ SIDEBAR ══════════════════════════ -->
     <VBox prefWidth="240" minWidth="240"
-          style="-fx-background-color: linear-gradient(to bottom, #3A5A90, #2E4A7A);
+          style="-fx-background-color: linear-gradient(to bottom, #2E6B5E, #1F4D44);
                  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 15, 0, 3, 0);">
 
         <!-- Logo -->
         <VBox alignment="CENTER" spacing="6"
-              style="-fx-padding: 30 20 20 20;-fx-border-color:transparent transparent rgba(255,255,255,0.1) transparent;-fx-border-width:1;">
+              style="-fx-padding: 30 20 20 20;
+                     -fx-border-color: transparent transparent rgba(255,255,255,0.1) transparent;
+                     -fx-border-width: 1;">
             <StackPane prefWidth="60" prefHeight="60" alignment="CENTER">
-                <Circle radius="22" fill="#4A6FA5" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" translateX="-8"/>
+                <Circle radius="22" fill="#3A8A7A" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" translateX="-8"/>
                 <Circle radius="22" fill="#E8956D" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" translateX="8"/>
                 <Circle radius="3" fill="white" translateX="-14" translateY="-3"/>
                 <Circle radius="3" fill="white" translateX="-6"  translateY="-3"/>
@@ -29,173 +31,349 @@
                 <Circle radius="3" fill="white" translateX="12"  translateY="-3"/>
             </StackPane>
             <Label text="EchoCare" style="-fx-font-size:20px;-fx-font-weight:700;-fx-text-fill:white;"/>
-            <Label text="COACH" style="-fx-font-size:10px;-fx-font-weight:600;-fx-text-fill:#F5C87A;-fx-letter-spacing:2;"/>
+            <Label text="COACH"    style="-fx-font-size:10px;-fx-font-weight:600;-fx-text-fill:#E8956D;-fx-letter-spacing:2;"/>
         </VBox>
 
-        <!-- User Card -->
+        <!-- Avatar -->
         <HBox alignment="CENTER_LEFT" spacing="12"
               style="-fx-padding:15 20;-fx-background-color:rgba(255,255,255,0.1);-fx-background-radius:12;">
             <VBox.margin><Insets top="15" left="15" right="15" bottom="5"/></VBox.margin>
             <StackPane prefWidth="40" prefHeight="40">
-                <Circle radius="20" fill="#F5C87A"/>
-                <Label fx:id="lblAvatarHeader" style="-fx-text-fill:white;-fx-font-size:16px;-fx-font-weight:700;"/>
-                <ImageView fx:id="imgHeaderPhoto" fitWidth="40" fitHeight="40" preserveRatio="false" visible="false">
+                <Circle radius="20" fill="#E8956D"/>
+                <Label fx:id="lblAvatarHeader"
+                       style="-fx-text-fill:white;-fx-font-size:16px;-fx-font-weight:700;"/>
+                <ImageView fx:id="imgHeaderPhoto"
+                           fitWidth="40" fitHeight="40" preserveRatio="false" visible="false">
                     <clip><Circle radius="20" centerX="20" centerY="20"/></clip>
                 </ImageView>
             </StackPane>
             <VBox spacing="2">
-                <Label fx:id="lblWelcome" style="-fx-text-fill:white;-fx-font-size:12px;-fx-font-weight:600;" wrapText="true" maxWidth="130"/>
-                <Label text="Coach Psychologue" style="-fx-text-fill:rgba(255,255,255,0.6);-fx-font-size:10px;"/>
+                <Label fx:id="lblWelcome"
+                       style="-fx-text-fill:white;-fx-font-size:12px;-fx-font-weight:600;"
+                       wrapText="true" maxWidth="140"/>
+                <Label text="Coach"
+                       style="-fx-text-fill:rgba(255,255,255,0.6);-fx-font-size:10px;"/>
             </VBox>
         </HBox>
 
         <Label text="NAVIGATION"
-               style="-fx-text-fill:rgba(255,255,255,0.4);-fx-font-size:9px;-fx-letter-spacing:2;-fx-padding:20 20 8 25;-fx-font-weight:600;"/>
+               style="-fx-text-fill:rgba(255,255,255,0.4);-fx-font-size:9px;
+                      -fx-letter-spacing:2;-fx-padding:20 20 8 25;-fx-font-weight:600;"/>
 
-        <!-- Accueil -->
+        <!-- ─── Dashboard ─── -->
         <HBox alignment="CENTER_LEFT" spacing="0">
-            <HBox fx:id="indicAccueil" prefWidth="4" prefHeight="42"
-                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:#E8956D;-fx-background-radius:0 2 2 0;"/>
-            <VBox fx:id="navAccueil" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
-                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:rgba(255,255,255,0.13);-fx-background-radius:0 10 10 0;"
-                  onMouseClicked="#showAccueil" onMouseEntered="#onNavAccueilEnter" onMouseExited="#onNavAccueilExit">
+            <HBox fx:id="indicDashboard" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width:4;-fx-max-width:4;
+                         -fx-background-color:#E8956D;-fx-background-radius:0 2 2 0;"/>
+            <VBox fx:id="navDashboard" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;
+                         -fx-background-color:rgba(255,255,255,0.13);-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showDashboard"
+                  onMouseEntered="#onNavDashboardEnter"
+                  onMouseExited="#onNavDashboardExit">
                 <HBox spacing="12" alignment="CENTER_LEFT">
                     <Label text="⊞" style="-fx-font-size:16px;-fx-text-fill:#F5C87A;"/>
-                    <Label text="Accueil" style="-fx-text-fill:white;-fx-font-size:13px;-fx-font-weight:500;"/>
+                    <Label text="Tableau de Bord"
+                           style="-fx-text-fill:white;-fx-font-size:13px;-fx-font-weight:500;"/>
                 </HBox>
             </VBox>
         </HBox>
 
-        <!-- Mon Profil -->
+        <!-- ─── Formations ─── -->
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <HBox fx:id="indicFormations" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width:4;-fx-max-width:4;
+                         -fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
+            <VBox fx:id="navFormations" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;
+                         -fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showFormations"
+                  onMouseEntered="#onNavFormationsEnter"
+                  onMouseExited="#onNavFormationsExit">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="📚" style="-fx-font-size:15px;"/>
+                    <Label text="Formations"
+                           style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- ─── Résultats ─── -->
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <HBox fx:id="indicResultats" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width:4;-fx-max-width:4;
+                         -fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
+            <VBox fx:id="navResultats" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;
+                         -fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showResultats"
+                  onMouseEntered="#onNavResultatsEnter"
+                  onMouseExited="#onNavResultatsExit">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="📊" style="-fx-font-size:15px;"/>
+                    <Label text="Résultats"
+                           style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- ─── Suivi Patients ─── -->
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <HBox fx:id="indicPatients" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width:4;-fx-max-width:4;
+                         -fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
+            <VBox fx:id="navPatients" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;
+                         -fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showPatients"
+                  onMouseEntered="#onNavPatientsEnter"
+                  onMouseExited="#onNavPatientsExit">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="👥" style="-fx-font-size:15px;"/>
+                    <Label text="Suivi Patients"
+                           style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- ─── Profil ─── -->
         <HBox alignment="CENTER_LEFT" spacing="0">
             <HBox fx:id="indicProfil" prefWidth="4" prefHeight="42"
-                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
+                  style="-fx-min-width:4;-fx-max-width:4;
+                         -fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
             <VBox fx:id="navProfil" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
-                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
-                  onMouseClicked="#showProfil" onMouseEntered="#onNavProfilEnter" onMouseExited="#onNavProfilExit">
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;
+                         -fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showProfil"
+                  onMouseEntered="#onNavProfilEnter"
+                  onMouseExited="#onNavProfilExit">
                 <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="👤" style="-fx-font-size:16px;"/>
-                    <Label text="Mon Profil" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
-                </HBox>
-            </VBox>
-        </HBox>
-
-        <!-- Rapport PDF -->
-        <HBox alignment="CENTER_LEFT" spacing="0">
-            <HBox fx:id="indicRapport" prefWidth="4" prefHeight="42"
-                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
-            <VBox fx:id="navRapport" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
-                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
-                  onMouseClicked="#showRapport" onMouseEntered="#onNavRapportEnter" onMouseExited="#onNavRapportExit">
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="📄" style="-fx-font-size:16px;"/>
-                    <Label text="Rapport PDF" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
-                </HBox>
-            </VBox>
-        </HBox>
-
-        <!-- Statistiques Patients -->
-        <HBox alignment="CENTER_LEFT" spacing="0">
-            <HBox fx:id="indicStats" prefWidth="4" prefHeight="42"
-                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
-            <VBox fx:id="navStats" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
-                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
-                  onMouseClicked="#showStats" onMouseEntered="#onNavStatsEnter" onMouseExited="#onNavStatsExit">
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="📊" style="-fx-font-size:16px;"/>
-                    <Label text="Stats Patients" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
+                    <Label text="👤" style="-fx-font-size:15px;"/>
+                    <Label text="Mon Profil"
+                           style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
                 </HBox>
             </VBox>
         </HBox>
 
         <Region VBox.vgrow="ALWAYS"/>
 
-        <!-- Logout -->
+        <!-- Footer -->
         <VBox spacing="10"
-              style="-fx-padding:15;-fx-border-color:rgba(255,255,255,0.1) transparent transparent transparent;-fx-border-width:1;">
+              style="-fx-padding:15;
+                     -fx-border-color:rgba(255,255,255,0.1) transparent transparent transparent;
+                     -fx-border-width:1;">
             <HBox spacing="8" alignment="CENTER_LEFT">
                 <Circle radius="5" fill="#6BCB77"/>
-                <Label text="Système opérationnel" style="-fx-text-fill:rgba(255,255,255,0.5);-fx-font-size:10px;"/>
+                <Label text="Système opérationnel"
+                       style="-fx-text-fill:rgba(255,255,255,0.5);-fx-font-size:10px;"/>
             </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-cursor:hand;" onMouseClicked="#handleLogout">
+            <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-cursor:hand;"
+                  onMouseClicked="#handleLogout">
                 <Label text="⎋" style="-fx-font-size:14px;-fx-text-fill:#E8956D;"/>
-                <Label text="Déconnexion" style="-fx-text-fill:rgba(255,255,255,0.6);-fx-font-size:12px;"/>
+                <Label text="Déconnexion"
+                       style="-fx-text-fill:rgba(255,255,255,0.6);-fx-font-size:12px;"/>
             </HBox>
         </VBox>
     </VBox>
 
-    <!-- ══ MAIN CONTENT ══ -->
-    <StackPane fx:id="contentArea" HBox.hgrow="ALWAYS" style="-fx-background-color: #F2F0EC;">
+    <!-- ══════════════════════════ MAIN CONTENT ══════════════════════════ -->
+    <StackPane fx:id="contentArea" HBox.hgrow="ALWAYS"
+               style="-fx-background-color: #F2F0EC;">
 
-        <ScrollPane fx:id="accueilPane" fitToWidth="true" hbarPolicy="NEVER"
+        <ScrollPane fx:id="dashboardPane" fitToWidth="true" hbarPolicy="NEVER"
                     style="-fx-background:transparent;-fx-background-color:transparent;">
             <VBox spacing="0">
+
                 <!-- Top bar -->
                 <HBox alignment="CENTER_LEFT" spacing="15"
-                      style="-fx-padding:22 30;-fx-background-color:white;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);">
+                      style="-fx-padding:22 30;-fx-background-color:white;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);">
                     <VBox spacing="3">
-                        <Label text="Espace Coach"
+                        <Label text="Tableau de Bord Coach"
                                style="-fx-font-size:22px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
-                        <Label text="Gérez vos patients et suivez leur progression"
+                        <Label text="Vue d'ensemble de vos formations et patients"
                                style="-fx-font-size:12px;-fx-text-fill:#718096;"/>
                     </VBox>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <StackPane prefWidth="44" prefHeight="44">
-                        <Circle radius="22" fill="#FFFCE8"/>
-                        <Label text="🎓" style="-fx-font-size:22px;"/>
-                    </StackPane>
+                    <VBox spacing="1" alignment="CENTER_RIGHT">
+                        <Label fx:id="lblNom"   text="—"
+                               style="-fx-font-size:13px;-fx-font-weight:600;-fx-text-fill:#2D3748;"/>
+                        <Label fx:id="lblEmail" text="—"
+                               style="-fx-font-size:11px;-fx-text-fill:#A0AEC0;"/>
+                    </VBox>
                 </HBox>
 
                 <VBox spacing="20" style="-fx-padding:25 30;">
-                    <!-- Stat cards -->
+
+                    <!-- ── Stat cards ── -->
                     <HBox spacing="16">
+                        <!-- Formations -->
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
-                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
+                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
+                                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);
+                                     -fx-border-color:#E2E8F0;-fx-border-width:1;-fx-border-radius:14;">
                             <HBox alignment="CENTER_LEFT" spacing="12">
-                                <StackPane prefWidth="44" prefHeight="44"><Circle radius="22" fill="#FFF0E8"/><Label text="🧑" style="-fx-font-size:20px;"/></StackPane>
+                                <StackPane prefWidth="44" prefHeight="44">
+                                    <Circle radius="22" fill="#E8F4F8"/>
+                                    <Label text="📚" style="-fx-font-size:20px;"/>
+                                </StackPane>
                                 <VBox spacing="2">
-                                    <Label text="PATIENTS" style="-fx-font-size:10px;-fx-letter-spacing:1;-fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
-                                    <Label fx:id="lblNbPatients" text="0" style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:#E8956D;"/>
+                                    <Label text="FORMATIONS"
+                                           style="-fx-font-size:10px;-fx-letter-spacing:1;
+                                                  -fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
+                                    <Label fx:id="lblNbFormations" text="—"
+                                           style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:#3A8A7A;"/>
                                 </VBox>
                             </HBox>
-                            <Label text="patients sur la plateforme" style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
+                            <Label text="formations assignées"
+                                   style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
                         </VBox>
+
+                        <!-- Patients -->
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
-                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
+                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
+                                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);
+                                     -fx-border-color:#E2E8F0;-fx-border-width:1;-fx-border-radius:14;">
                             <HBox alignment="CENTER_LEFT" spacing="12">
-                                <StackPane prefWidth="44" prefHeight="44"><Circle radius="22" fill="#FFFCE8"/><Label text="📅" style="-fx-font-size:20px;"/></StackPane>
+                                <StackPane prefWidth="44" prefHeight="44">
+                                    <Circle radius="22" fill="#F0FFF4"/>
+                                    <Label text="👥" style="-fx-font-size:20px;"/>
+                                </StackPane>
                                 <VBox spacing="2">
-                                    <Label text="SÉANCES" style="-fx-font-size:10px;-fx-letter-spacing:1;-fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
-                                    <Label fx:id="lblNbSeances" text="0" style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:#C8960A;"/>
+                                    <Label text="PATIENTS"
+                                           style="-fx-font-size:10px;-fx-letter-spacing:1;
+                                                  -fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
+                                    <Label fx:id="lblNbPatients" text="—"
+                                           style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:#00B894;"/>
                                 </VBox>
                             </HBox>
-                            <Label text="séances effectuées" style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
+                            <Label text="patients inscrits"
+                                   style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
                         </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="6"
-                              style="-fx-background-color:linear-gradient(to right, #4A6FA5, #3A5A90);-fx-padding:22;-fx-background-radius:14;-fx-effect:dropshadow(gaussian,rgba(74,111,165,0.4),12,0,0,4);">
-                            <Label text="MON PROFIL" style="-fx-font-size:10px;-fx-letter-spacing:1;-fx-text-fill:rgba(255,255,255,0.7);-fx-font-weight:600;"/>
-                            <Label fx:id="lblNom" text="—" style="-fx-font-size:15px;-fx-font-weight:700;-fx-text-fill:white;" wrapText="true"/>
-                            <Label fx:id="lblEmail" text="—" style="-fx-font-size:11px;-fx-text-fill:rgba(255,255,255,0.75);" wrapText="true"/>
-                            <Label fx:id="lblTel" text="—" style="-fx-font-size:11px;-fx-text-fill:rgba(255,255,255,0.6);"/>
+
+                        <!-- Résultats -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
+                                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);
+                                     -fx-border-color:#E2E8F0;-fx-border-width:1;-fx-border-radius:14;">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <StackPane prefWidth="44" prefHeight="44">
+                                    <Circle radius="22" fill="#FFFCE8"/>
+                                    <Label text="📋" style="-fx-font-size:20px;"/>
+                                </StackPane>
+                                <VBox spacing="2">
+                                    <Label text="RÉSULTATS"
+                                           style="-fx-font-size:10px;-fx-letter-spacing:1;
+                                                  -fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
+                                    <Label fx:id="lblNbResultats" text="—"
+                                           style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:#C8960A;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="tentatives de quiz"
+                                   style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
+                        </VBox>
+
+                        <!-- Taux réussite -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color:linear-gradient(to right,#2E6B5E,#3A8A7A);
+                                     -fx-padding:22;-fx-background-radius:14;
+                                     -fx-effect:dropshadow(gaussian,rgba(46,107,94,0.35),12,0,0,4);">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <StackPane prefWidth="44" prefHeight="44">
+                                    <Circle radius="22" fill="rgba(255,255,255,0.15)"/>
+                                    <Label text="🏆" style="-fx-font-size:20px;"/>
+                                </StackPane>
+                                <VBox spacing="2">
+                                    <Label text="TAUX RÉUSSITE"
+                                           style="-fx-font-size:10px;-fx-letter-spacing:1;
+                                                  -fx-text-fill:rgba(255,255,255,0.7);-fx-font-weight:600;"/>
+                                    <Label fx:id="lblTauxReussite" text="—"
+                                           style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:white;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="taux global de réussite"
+                                   style="-fx-font-size:11px;-fx-text-fill:rgba(255,255,255,0.5);"/>
                         </VBox>
                     </HBox>
 
-                    <!-- Quick nav cards -->
-                    <Label text="ACCÈS RAPIDE" style="-fx-font-size:10px;-fx-font-weight:600;-fx-letter-spacing:2;-fx-text-fill:#A0AEC0;"/>
+                    <!-- ── Quote card ── -->
+                    <VBox spacing="14"
+                          style="-fx-background-color:white;-fx-padding:25;-fx-background-radius:14;
+                                 -fx-border-color:#E8956D;-fx-border-radius:14;-fx-border-width:2;
+                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane prefWidth="38" prefHeight="38">
+                                <Circle radius="19" fill="#2E6B5E"/>
+                                <Label text="💬" style="-fx-font-size:17px;"/>
+                            </StackPane>
+                            <VBox spacing="2">
+                                <Label fx:id="lblQuoteStatus" text="💬 Inspiration du jour"
+                                       style="-fx-font-size:11px;-fx-font-weight:700;
+                                              -fx-text-fill:#2E6B5E;-fx-letter-spacing:1;"/>
+                                <Label text="quotable.io · Inspirations pour les coachs"
+                                       style="-fx-font-size:9px;-fx-text-fill:#A0AEC0;"/>
+                            </VBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="🔄" style="-fx-font-size:18px;-fx-cursor:hand;"
+                                   onMouseClicked="#refreshQuote"/>
+                        </HBox>
+                        <Label fx:id="lblQuote" wrapText="true" text="Chargement..."
+                               style="-fx-font-size:14px;-fx-text-fill:#2D3748;
+                                      -fx-font-style:italic;-fx-line-spacing:5;"/>
+                    </VBox>
+
+                    <!-- ── Quick access ── -->
+                    <Label text="ACCÈS RAPIDE"
+                           style="-fx-font-size:10px;-fx-font-weight:600;
+                                  -fx-letter-spacing:2;-fx-text-fill:#A0AEC0;"/>
                     <HBox spacing="14">
-                        <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER"
-                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);"
-                              onMouseClicked="#showRapport">
-                            <Label text="📄" style="-fx-font-size:28px;"/>
-                            <Label text="Générer un Rapport" style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
-                            <Label text="PDF de suivi patient" style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;"/>
+                        <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="10"
+                              style="-fx-background-color:white;-fx-padding:20;-fx-background-radius:14;
+                                     -fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);"
+                              onMouseClicked="#showFormations"
+                              onMouseEntered="#onCardFormationsEnter"
+                              onMouseExited="#onCardFormationsExit">
+                            <Label text="📚" style="-fx-font-size:26px;"/>
+                            <Label text="Formations"
+                                   style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+                            <Label text="Gérer les formations"
+                                   style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;" wrapText="true"/>
                         </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER"
-                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);"
-                              onMouseClicked="#showStats">
-                            <Label text="📊" style="-fx-font-size:28px;"/>
-                            <Label text="Statistiques Patients" style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
-                            <Label text="Humeur · Séances · Évolution" style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;"/>
+                        <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="10"
+                              style="-fx-background-color:white;-fx-padding:20;-fx-background-radius:14;
+                                     -fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);"
+                              onMouseClicked="#showResultats"
+                              onMouseEntered="#onCardResultatsEnter"
+                              onMouseExited="#onCardResultatsExit">
+                            <Label text="📊" style="-fx-font-size:26px;"/>
+                            <Label text="Résultats"
+                                   style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+                            <Label text="Scores des patients"
+                                   style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;" wrapText="true"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="10"
+                              style="-fx-background-color:white;-fx-padding:20;-fx-background-radius:14;
+                                     -fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);"
+                              onMouseClicked="#showPatients"
+                              onMouseEntered="#onCardPatientsEnter"
+                              onMouseExited="#onCardPatientsExit">
+                            <Label text="👥" style="-fx-font-size:26px;"/>
+                            <Label text="Suivi Patients"
+                                   style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+                            <Label text="Suivre la progression"
+                                   style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;" wrapText="true"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="10"
+                              style="-fx-background-color:white;-fx-padding:20;-fx-background-radius:14;
+                                     -fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);"
+                              onMouseClicked="#showProfil"
+                              onMouseEntered="#onCardProfilEnter"
+                              onMouseExited="#onCardProfilExit">
+                            <Label text="👤" style="-fx-font-size:26px;"/>
+                            <Label text="Mon Profil"
+                                   style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+                            <Label text="Mes informations"
+                                   style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;" wrapText="true"/>
                         </VBox>
                     </HBox>
 

@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="">
+    <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/services/YouTubeAPIService.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/services/YouTubeAPIService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/utils/MyDBConnexion.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/MyDBConnexion.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/utils/VideoPlayerUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/VideoPlayerUtil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/FormationView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/FormationView.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -296,7 +294,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772365515939</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="crud formation done&#10;interface done&#10;crud quiz done&#10;patient interface done">
+      <option name="closed" value="true" />
+      <created>1772432850319</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1772432850319</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
