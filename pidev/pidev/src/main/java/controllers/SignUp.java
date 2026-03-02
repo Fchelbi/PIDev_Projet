@@ -32,6 +32,7 @@ public class SignUp {
     @FXML private ImageView imgSignUpPhoto;
     @FXML private Label lblPhotoPlaceholder;
     @FXML private StackPane photoContainer;
+    @FXML private Label lblStrength;    // indicateur force mdp (optionnel, null-safe)
 
     private final serviceUser us = new serviceUser();
     private String selectedPhotoPath = null;
@@ -40,12 +41,32 @@ public class SignUp {
     private static final Pattern EMAIL_P = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
     private static final Pattern PHONE_P = Pattern.compile("^[0-9]{8}$");
     private static final Pattern NAME_P  = Pattern.compile("^[a-zA-ZÀ-ÿ\\s'-]+$");
+    // Fort: min 8 chars, 1 maj, 1 chiffre, 1 spécial
+    private static final Pattern PWD_P   = Pattern.compile(
+            "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\\-\\[\\]{}|;:,.<>?]).{8,}$");
 
     @FXML
     void initialize() {
         cbRole.setItems(FXCollections.observableArrayList("PATIENT", "COACH", "ADMIN"));
         cbRole.setValue("PATIENT");
         new File(PHOTOS_DIR).mkdirs();
+
+        // Indicateur force mot de passe (temps réel)
+        pfMdp.textProperty().addListener((obs, old, text) -> {
+            if (lblStrength == null) return;
+            int score = 0;
+            if (text.length() >= 8) score++;
+            if (text.matches(".*[A-Z].*")) score++;
+            if (text.matches(".*[0-9].*")) score++;
+            if (text.matches(".*[!@#$%^&*()_+\\-\\[\\]{}|;:,.<>?].*")) score++;
+            switch (score) {
+                case 0,1 -> { lblStrength.setText("🔴  Très faible"); lblStrength.setStyle("-fx-text-fill:#E07070;-fx-font-size:11px;"); }
+                case 2   -> { lblStrength.setText("🟠  Faible");      lblStrength.setStyle("-fx-text-fill:#E8956D;-fx-font-size:11px;"); }
+                case 3   -> { lblStrength.setText("🟡  Moyen");       lblStrength.setStyle("-fx-text-fill:#D4A820;-fx-font-size:11px;"); }
+                case 4   -> { lblStrength.setText("🟢  Fort ✓");      lblStrength.setStyle("-fx-text-fill:#52B788;-fx-font-size:11px;-fx-font-weight:700;"); }
+            }
+            lblStrength.setVisible(!text.isEmpty());
+        });
     }
 
     @FXML
@@ -90,8 +111,13 @@ public class SignUp {
         if (!EMAIL_P.matcher(email).matches()) {
             LightDialog.showError("Email invalide", "Format email non valide."); return;
         }
-        if (mdp.length() < 6) {
-            LightDialog.showError("Mot de passe", "Minimum 6 caractères."); return;
+        if (!PWD_P.matcher(mdp).matches()) {
+            LightDialog.showError("Mot de passe faible",
+                    "Le mot de passe doit contenir au moins :\n" +
+                            "  • 8 caractères minimum\n" +
+                            "  • 1 lettre majuscule (A-Z)\n" +
+                            "  • 1 chiffre (0-9)\n" +
+                            "  • 1 caractère spécial (!@#$%...)"); return;
         }
         if (!mdp.equals(mdp2)) {
             LightDialog.showError("Confirmation", "Les mots de passe ne correspondent pas."); return;
