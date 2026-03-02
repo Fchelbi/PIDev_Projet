@@ -7,7 +7,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
@@ -34,10 +33,7 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+
 public class AdminHome {
 
     // ── User stats ──────────────────────────────────────────────────────────
@@ -320,7 +316,6 @@ public class AdminHome {
 
     // ════════════════════════════════════════════════════════════════════════
     //  NAVIGATION — hover handlers
-    //  These MUST match exactly what is in AdminHome.fxml onMouseEntered/Exited
     // ════════════════════════════════════════════════════════════════════════
 
     @FXML void onNavDashboardEnter(MouseEvent e) {
@@ -378,60 +373,14 @@ public class AdminHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+
+    // ════════════════════════════════════════════════════════════════════════
+    //  CHART — commented out until Participant & QuizResult entities exist
+    // ════════════════════════════════════════════════════════════════════════
+    /*
     private VBox buildFormationChart() throws SQLException {
-        VBox chartBox = new VBox(10);
-        chartBox.setStyle("-fx-background-color:white;-fx-padding:20;-fx-background-radius:14;" +
-                "-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);");
-
-        Label title = new Label("📊 Inscriptions par Formation");
-        title.setStyle("-fx-font-size:15px;-fx-font-weight:700;-fx-text-fill:#2D3748;");
-
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Formation");
-        yAxis.setLabel("Inscrits");
-
-        BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
-        chart.setTitle(null);
-        chart.setLegendVisible(false);
-        chart.setPrefHeight(300);
-        chart.setStyle("-fx-background-color:transparent;");
-
-        XYChart.Series<String, Number> series = new XYChart.Series<>();
-
-        List<Formation> formations = formationService.selectALL();
-        List<Participant> participants = participantService.selectALL();
-
-        for (Formation f : formations) {
-            long count = participants.stream()
-                    .filter(p -> p.getFormationId() == f.getId()).count();
-            // Truncate long names
-            String name = f.getTitle().length() > 15
-                    ? f.getTitle().substring(0, 12) + "..."
-                    : f.getTitle();
-            series.getData().add(new XYChart.Data<>(name, count));
-        }
-
-        chart.getData().add(series);
-
-        // Color the bars
-        for (XYChart.Data<String, Number> d : series.getData()) {
-            d.nodeProperty().addListener((obs, o, node) -> {
-                if (node != null)
-                    node.setStyle("-fx-bar-fill: #E8956D;");
-            });
-        }
-
-        // Summary label
-        long totalEnrollments = participants.size();
-        double avgScore = quizResultService.selectALL().stream()
-                .mapToDouble(QuizResult::getPercentage).average().orElse(0);
-        Label summary = new Label(String.format(
-                "Total inscriptions: %d  |  Score moyen quiz: %.0f%%",
-                totalEnrollments, avgScore));
-        summary.setStyle("-fx-font-size:11px;-fx-text-fill:#A0AEC0;");
-
-        chartBox.getChildren().addAll(title, chart, summary);
-        return chartBox;
+        // TODO: Uncomment when Participant and QuizResult entities/services are created
+        // Requires: participantService, quizResultService, Participant entity, QuizResult entity
     }
+    */
 }

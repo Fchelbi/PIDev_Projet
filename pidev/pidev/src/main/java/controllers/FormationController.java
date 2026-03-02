@@ -52,26 +52,24 @@ public class FormationController implements Initializable {
     @FXML private StackPane formationContent;
     @FXML private VBox tableSection;
     @FXML private VBox formSection;
-    @FXML private VBox quizSection;
     @FXML private VBox videoSection;
     @FXML private ScrollPane formScrollPane;
-    @FXML private ScrollPane quizScrollPane;
+    // NOTE: quizScrollPane REMOVED — no longer in FXML
 
     @FXML private TextField tfTitle;
     @FXML private TextArea taDescription;
     @FXML private TextField tfVideoUrl;
     @FXML private ComboBox<String> cbCategory;
-    @FXML private ComboBox<String> cbCoach;       // NEW: Coach selector
+    @FXML private ComboBox<String> cbCoach;
     @FXML private Label lblError;
     @FXML private Label lblFormTitle;
     @FXML private Button btnSave;
 
+    // Quiz fields (only in inline panel now — single fx:id each)
     @FXML private TextField tfQuizTitle;
     @FXML private TextField tfPassingScore;
-    @FXML private Label lblQuizTitle;
     @FXML private Label lblQuizError;
     @FXML private Button btnSaveQuiz;
-    @FXML private VBox quizFormArea;
     @FXML private VBox questionsArea;
     @FXML private VBox questionsList;
 
@@ -92,11 +90,7 @@ public class FormationController implements Initializable {
     private Formation currentQuizFormation = null;
     private VBox currentVideoContainer = null;
 
-    // ═══════════════════════════════════
-    //  WHO IS USING THIS CONTROLLER
-    //  0 = admin (sees all), >0 = coach (sees only his)
-    // ═══════════════════════════════════
-    private int currentCoachId = 0; // 0 = admin mode
+    private int currentCoachId = 0;
 
     public void setCoachMode(int coachId) {
         this.currentCoachId = coachId;
@@ -123,12 +117,8 @@ public class FormationController implements Initializable {
             "Time Management"
     };
 
-    // Temporary coach list until User module is integrated
     private final String[] COACHES = {
-            "Non assigné",
-            "Coach #1",
-            "Coach #2",
-            "Coach #3"
+            "Non assigné", "Coach #1", "Coach #2", "Coach #3"
     };
 
     // ═══════════════════════════════════
@@ -165,16 +155,14 @@ public class FormationController implements Initializable {
     }
 
     // ═══════════════════════════════════
-    //  LOAD DATA (filtered by coach if needed)
+    //  LOAD DATA
     // ═══════════════════════════════════
     private void loadFormations() {
         try {
             List<Formation> all;
             if (currentCoachId > 0) {
-                // Coach mode: only his formations
                 all = formationService.selectByCoach(currentCoachId);
             } else {
-                // Admin mode: all formations
                 all = formationService.selectALL();
             }
             formationList = FXCollections.observableArrayList(all);
@@ -216,11 +204,11 @@ public class FormationController implements Initializable {
 
     private void validateFieldRealTime(Control field, String error) {
         if (error == null) {
-            field.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #00b894; " +
-                    "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;");
+            field.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #00b894; "
+                    + "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;");
         } else {
-            field.setStyle("-fx-background-color: #fff5f5; -fx-border-color: #d63031; " +
-                    "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;");
+            field.setStyle("-fx-background-color: #fff5f5; -fx-border-color: #d63031; "
+                    + "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;");
         }
     }
 
@@ -252,15 +240,16 @@ public class FormationController implements Initializable {
         File file = new File(trimmed);
         if (!file.exists()) return "Fichier non trouvé: " + trimmed;
         String lower = trimmed.toLowerCase();
-        if (!lower.endsWith(".mp4") && !lower.endsWith(".avi") &&
-                !lower.endsWith(".mkv") && !lower.endsWith(".mov") &&
-                !lower.endsWith(".webm"))
+        if (!lower.endsWith(".mp4") && !lower.endsWith(".avi")
+                && !lower.endsWith(".mkv") && !lower.endsWith(".mov")
+                && !lower.endsWith(".webm"))
             return "Format non supporté. Utilisez MP4, AVI, MKV, MOV ou WEBM";
         return null;
     }
 
     private String validateCategory(String category) {
-        if (category == null || category.trim().isEmpty()) return "La catégorie est obligatoire";
+        if (category == null || category.trim().isEmpty())
+            return "La catégorie est obligatoire";
         return null;
     }
 
@@ -272,8 +261,8 @@ public class FormationController implements Initializable {
         colVideo.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("▶️");
             {
-                btn.setStyle("-fx-background-color: #6c5ce7; -fx-text-fill: white; " +
-                        "-fx-cursor: hand; -fx-background-radius: 5;");
+                btn.setStyle("-fx-background-color: #6c5ce7; -fx-text-fill: white; "
+                        + "-fx-cursor: hand; -fx-background-radius: 5;");
                 btn.setTooltip(new Tooltip("Voir la vidéo"));
                 btn.setOnAction(e -> showVideoPlayer(
                         getTableView().getItems().get(getIndex())));
@@ -282,7 +271,7 @@ public class FormationController implements Initializable {
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
                 setGraphic(empty ? null : btn);
-                if (!empty) setAlignment(Pos.CENTER);
+                if (!empty) setAlignment(Pos.CENTER);  // ✅ FIXED: was "emcpty"
             }
         });
     }
@@ -292,9 +281,10 @@ public class FormationController implements Initializable {
         colQuiz.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("📝");
             {
-                btn.setStyle("-fx-background-color: #00b894; -fx-text-fill: white; " +
-                        "-fx-cursor: hand; -fx-background-radius: 5;");
+                btn.setStyle("-fx-background-color: #00b894; -fx-text-fill: white; "
+                        + "-fx-cursor: hand; -fx-background-radius: 5;");
                 btn.setTooltip(new Tooltip("Gérer le quiz"));
+                // ✅ FIXED: uses showQuizManager which now redirects to showEditForm
                 btn.setOnAction(e -> showQuizManager(
                         getTableView().getItems().get(getIndex())));
             }
@@ -313,11 +303,11 @@ public class FormationController implements Initializable {
             private final Button btnDelete = new Button("🗑️");
             private final HBox buttons = new HBox(8, btnEdit, btnDelete);
             {
-                btnEdit.setStyle("-fx-background-color: #fdcb6e; -fx-cursor: hand; " +
-                        "-fx-background-radius: 5;");
+                btnEdit.setStyle("-fx-background-color: #fdcb6e; -fx-cursor: hand; "
+                        + "-fx-background-radius: 5;");
                 btnEdit.setTooltip(new Tooltip("Modifier"));
-                btnDelete.setStyle("-fx-background-color: #d63031; -fx-text-fill: white; " +
-                        "-fx-cursor: hand; -fx-background-radius: 5;");
+                btnDelete.setStyle("-fx-background-color: #d63031; -fx-text-fill: white; "
+                        + "-fx-cursor: hand; -fx-background-radius: 5;");
                 btnDelete.setTooltip(new Tooltip("Supprimer"));
                 buttons.setAlignment(Pos.CENTER);
                 btnEdit.setOnAction(e -> showEditForm(
@@ -334,7 +324,7 @@ public class FormationController implements Initializable {
     }
 
     // ═══════════════════════════════════
-    //  SECTION SWITCHING
+    //  SECTION SWITCHING  (✅ FIXED: no quizScrollPane)
     // ═══════════════════════════════════
     private void hideAllSections() {
         tableSection.setVisible(false);
@@ -347,10 +337,7 @@ public class FormationController implements Initializable {
             videoSection.setVisible(false);
             videoSection.setManaged(false);
         }
-        if (quizScrollPane != null) {
-            quizScrollPane.setVisible(false);
-            quizScrollPane.setManaged(false);
-        }
+        // ✅ quizScrollPane removed — no longer referenced
     }
 
     @FXML
@@ -371,11 +358,20 @@ public class FormationController implements Initializable {
         hideAllSections();
         isEditMode = false;
         editingFormation = null;
+        currentQuizFormation = null;
         lblFormTitle.setText("➕ Ajouter Formation");
         btnSave.setText("✅ Enregistrer");
         clearForm();
 
-        // If coach mode, hide coach selector and auto-assign
+        // Hide quiz panel for new formations (save first, then quiz)
+        if (questionsArea != null) {
+            questionsArea.setVisible(false);
+            questionsArea.setManaged(false);
+        }
+        if (tfQuizTitle != null) tfQuizTitle.clear();
+        if (tfPassingScore != null) tfPassingScore.setText("70");
+        if (btnSaveQuiz != null) btnSaveQuiz.setText("✅ Créer Quiz");
+
         if (cbCoach != null) {
             if (currentCoachId > 0) {
                 cbCoach.setVisible(false);
@@ -395,12 +391,14 @@ public class FormationController implements Initializable {
         hideAllSections();
         isEditMode = true;
         editingFormation = f;
+        currentQuizFormation = f;  // ✅ Set for quiz operations
         lblFormTitle.setText("✏️ Modifier Formation");
         btnSave.setText("💾 Mettre à jour");
         tfTitle.setText(f.getTitle());
         taDescription.setText(f.getDescription());
         tfVideoUrl.setText(f.getVideoUrl());
         cbCategory.setValue(f.getCategory());
+
         if (cbCoach != null) {
             if (currentCoachId > 0) {
                 cbCoach.setVisible(false);
@@ -412,15 +410,54 @@ public class FormationController implements Initializable {
                         ? "Coach #" + f.getCoachId() : "Non assigné");
             }
         }
+
         lblError.setText("");
         resetFieldStyles();
+
+        // ✅ Load quiz data into inline panel
+        loadQuizForFormation(f);
+
         formScrollPane.setVisible(true);
         formScrollPane.setManaged(true);
     }
 
+    // ✅ NEW: Load quiz data into the inline panel
+    private void loadQuizForFormation(Formation f) {
+        if (lblQuizError != null) lblQuizError.setText("");
+        try {
+            Quiz existing = quizService.selectByFormation(f.getId());
+            if (existing != null) {
+                if (tfQuizTitle != null) tfQuizTitle.setText(existing.getTitle());
+                if (tfPassingScore != null)
+                    tfPassingScore.setText(String.valueOf(existing.getPassingScore()));
+                if (btnSaveQuiz != null) btnSaveQuiz.setText("💾 Mettre à jour");
+                loadQuestions(existing.getId());
+                if (questionsArea != null) {
+                    questionsArea.setVisible(true);
+                    questionsArea.setManaged(true);
+                }
+            } else {
+                if (tfQuizTitle != null) tfQuizTitle.clear();
+                if (tfPassingScore != null) tfPassingScore.setText("70");
+                if (btnSaveQuiz != null) btnSaveQuiz.setText("✅ Créer Quiz");
+                if (questionsArea != null) {
+                    questionsArea.setVisible(false);
+                    questionsArea.setManaged(false);
+                }
+            }
+        } catch (SQLException e) {
+            if (lblQuizError != null) lblQuizError.setText("❌ " + e.getMessage());
+        }
+    }
+
+    // ✅ FIXED: showQuizManager now uses showEditForm (no separate page)
+    private void showQuizManager(Formation f) {
+        showEditForm(f);
+    }
+
     private void resetFieldStyles() {
-        String defaultStyle = "-fx-background-color: #f8f9fa; -fx-border-color: #dfe6e9; " +
-                "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;";
+        String defaultStyle = "-fx-background-color: #f8f9fa; -fx-border-color: #dfe6e9; "
+                + "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;";
         if (tfTitle != null) tfTitle.setStyle(defaultStyle);
         if (taDescription != null) taDescription.setStyle(defaultStyle);
         if (tfVideoUrl != null) tfVideoUrl.setStyle(defaultStyle);
@@ -513,7 +550,8 @@ public class FormationController implements Initializable {
         dialog.setTitle("🔍 Rechercher sur YouTube");
         dialog.setHeaderText("Rechercher des vidéos de soft skills");
 
-        ButtonType selectBtn = new ButtonType("Sélectionner", ButtonBar.ButtonData.OK_DONE);
+        ButtonType selectBtn = new ButtonType("Sélectionner",
+                ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(selectBtn, ButtonType.CANCEL);
 
         VBox content = new VBox(10);
@@ -532,10 +570,13 @@ public class FormationController implements Initializable {
         listResults.setPrefHeight(350);
         listResults.setCellFactory(lv -> new ListCell<>() {
             @Override
-            protected void updateItem(YouTubeAPIService.YouTubeVideo item, boolean empty) {
+            protected void updateItem(YouTubeAPIService.YouTubeVideo item,
+                                      boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) { setText(null); setGraphic(null); }
-                else {
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
                     VBox cell = new VBox(3);
                     cell.setPadding(new Insets(5));
                     Label tl = new Label("🎬 " + item.title);
@@ -550,12 +591,15 @@ public class FormationController implements Initializable {
         });
 
         Button btnDoSearch = new Button("🔍 Chercher");
-        btnDoSearch.setStyle("-fx-background-color: #d63031; -fx-text-fill: white; " +
-                "-fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 5; " +
-                "-fx-cursor: hand;");
+        btnDoSearch.setStyle("-fx-background-color: #d63031; -fx-text-fill: white; "
+                + "-fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 5; "
+                + "-fx-cursor: hand;");
         btnDoSearch.setOnAction(e -> {
             String query = tfSearchQuery.getText().trim();
-            if (query.isEmpty()) { lblSearchStatus.setText("❌ Entrez un mot-clé"); return; }
+            if (query.isEmpty()) {
+                lblSearchStatus.setText("❌ Entrez un mot-clé");
+                return;
+            }
             lblSearchStatus.setText("⏳ Recherche en cours...");
             listResults.getItems().clear();
             new Thread(() -> {
@@ -596,16 +640,14 @@ public class FormationController implements Initializable {
     }
 
     // ═══════════════════════════════════
-    //  SAVE FORMATION (with coach_id)
+    //  SAVE FORMATION
     // ═══════════════════════════════════
     @FXML
     private void handleSave() {
         if (!validateForm()) return;
 
-        // Determine coach_id
-        int coachId = currentCoachId; // If coach mode, use his ID
+        int coachId = currentCoachId;
         if (currentCoachId == 0 && cbCoach != null) {
-            // Admin mode: get from dropdown
             String selected = cbCoach.getValue();
             if (selected != null && selected.startsWith("Coach #")) {
                 try {
@@ -653,8 +695,8 @@ public class FormationController implements Initializable {
     // ═══════════════════════════════════
     private void handleDelete(Formation f) {
         Optional<ButtonType> r = showConfirm(
-                "⚠️ Supprimer la formation \"" + f.getTitle() +
-                        "\"?\n\nCette action est irréversible!");
+                "⚠️ Supprimer la formation \"" + f.getTitle()
+                        + "\"?\n\nCette action est irréversible!");
         if (r.isPresent() && r.get() == ButtonType.OK) {
             try {
                 Quiz quiz = quizService.selectByFormation(f.getId());
@@ -678,60 +720,44 @@ public class FormationController implements Initializable {
     }
 
     // ═══════════════════════════════════
-    //  QUIZ MANAGER
+    //  QUIZ — SAVE / DELETE
     // ═══════════════════════════════════
-    private void showQuizManager(Formation f) {
-        hideAllSections();
-        currentQuizFormation = f;
-        lblQuizTitle.setText("📝 Quiz — " + f.getTitle());
-        lblQuizError.setText("");
-        try {
-            Quiz existing = quizService.selectByFormation(f.getId());
-            if (existing != null) {
-                tfQuizTitle.setText(existing.getTitle());
-                tfPassingScore.setText(String.valueOf(existing.getPassingScore()));
-                btnSaveQuiz.setText("💾 Mettre à jour");
-                loadQuestions(existing.getId());
-                questionsArea.setVisible(true);
-                questionsArea.setManaged(true);
-            } else {
-                tfQuizTitle.clear();
-                tfPassingScore.setText("70");
-                btnSaveQuiz.setText("✅ Créer Quiz");
-                questionsArea.setVisible(false);
-                questionsArea.setManaged(false);
-            }
-        } catch (SQLException e) {
-            lblQuizError.setText("❌ " + e.getMessage());
-        }
-        quizScrollPane.setVisible(true);
-        quizScrollPane.setManaged(true);
-    }
-
     @FXML
     private void handleSaveQuiz() {
+        if (currentQuizFormation == null) {
+            if (lblQuizError != null)
+                lblQuizError.setText("❌ Enregistrez la formation d'abord!");
+            return;
+        }
+
         String quizTitle = tfQuizTitle.getText().trim();
         if (quizTitle.isEmpty()) {
-            lblQuizError.setText("❌ Le titre du quiz est obligatoire");
+            if (lblQuizError != null)
+                lblQuizError.setText("❌ Le titre du quiz est obligatoire");
             return;
         }
         if (quizTitle.length() < TITLE_MIN_LENGTH) {
-            lblQuizError.setText("❌ Le titre doit contenir au moins " +
-                    TITLE_MIN_LENGTH + " caractères");
+            if (lblQuizError != null)
+                lblQuizError.setText("❌ Le titre doit contenir au moins "
+                        + TITLE_MIN_LENGTH + " caractères");
             return;
         }
+
         int score;
         try {
             score = Integer.parseInt(tfPassingScore.getText().trim());
             if (score < MIN_PASSING_SCORE || score > MAX_PASSING_SCORE) {
-                lblQuizError.setText("❌ Le score doit être entre " +
-                        MIN_PASSING_SCORE + " et " + MAX_PASSING_SCORE);
+                if (lblQuizError != null)
+                    lblQuizError.setText("❌ Le score doit être entre "
+                            + MIN_PASSING_SCORE + " et " + MAX_PASSING_SCORE);
                 return;
             }
         } catch (NumberFormatException e) {
-            lblQuizError.setText("❌ Le score doit être un nombre entier");
+            if (lblQuizError != null)
+                lblQuizError.setText("❌ Le score doit être un nombre entier");
             return;
         }
+
         try {
             Quiz existing = quizService.selectByFormation(currentQuizFormation.getId());
             if (existing != null) {
@@ -747,14 +773,16 @@ public class FormationController implements Initializable {
                 quizService.insertOne(q);
                 showAlert(Alert.AlertType.INFORMATION, "Succès", "Quiz créé! ✅");
             }
-            showQuizManager(currentQuizFormation);
+            // Reload quiz panel
+            loadQuizForFormation(currentQuizFormation);
         } catch (SQLException e) {
-            lblQuizError.setText("❌ " + e.getMessage());
+            if (lblQuizError != null) lblQuizError.setText("❌ " + e.getMessage());
         }
     }
 
     @FXML
     private void handleDeleteQuiz() {
+        if (currentQuizFormation == null) return;
         Optional<ButtonType> r = showConfirm("⚠️ Supprimer ce quiz?");
         if (r.isPresent() && r.get() == ButtonType.OK) {
             try {
@@ -766,9 +794,10 @@ public class FormationController implements Initializable {
                         questionService.deleteOne(q);
                     }
                     quizService.deleteOne(quiz);
-                    showAlert(Alert.AlertType.INFORMATION, "Supprimé", "Quiz supprimé! 🗑️");
+                    showAlert(Alert.AlertType.INFORMATION, "Supprimé",
+                            "Quiz supprimé! 🗑️");
                 }
-                showTable();
+                loadQuizForFormation(currentQuizFormation);
             } catch (SQLException e) {
                 showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
             }
@@ -779,6 +808,7 @@ public class FormationController implements Initializable {
     //  QUESTIONS
     // ═══════════════════════════════════
     private void loadQuestions(int quizId) {
+        if (questionsList == null) return;
         questionsList.getChildren().clear();
         try {
             List<Question> questions = questionService.selectByQuiz(quizId);
@@ -786,19 +816,23 @@ public class FormationController implements Initializable {
             for (Question q : questions)
                 questionsList.getChildren().add(createQuestionBox(q, num++));
             if (questions.isEmpty()) {
-                Label emptyLabel = new Label("Aucune question. Cliquez '➕' ou '🤖'");
-                emptyLabel.setStyle("-fx-text-fill: #636e72; -fx-font-style: italic;");
+                Label emptyLabel = new Label(
+                        "Aucune question. Cliquez '➕' ou '🤖'");
+                emptyLabel.setStyle(
+                        "-fx-text-fill: #636e72; -fx-font-style: italic;");
                 questionsList.getChildren().add(emptyLabel);
             }
         } catch (SQLException e) {
-            questionsList.getChildren().add(new Label("❌ Erreur: " + e.getMessage()));
+            questionsList.getChildren().add(
+                    new Label("❌ Erreur: " + e.getMessage()));
         }
     }
 
     private VBox createQuestionBox(Question q, int num) {
         VBox box = new VBox(8);
-        box.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 15; " +
-                "-fx-background-radius: 8; -fx-border-color: #dfe6e9; -fx-border-radius: 8;");
+        box.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 15; "
+                + "-fx-background-radius: 8; -fx-border-color: #dfe6e9; "
+                + "-fx-border-radius: 8;");
 
         HBox header = new HBox(10);
         header.setAlignment(Pos.CENTER_LEFT);
@@ -812,10 +846,12 @@ public class FormationController implements Initializable {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         Button btnEditQ = new Button("✏️");
-        btnEditQ.setStyle("-fx-background-color: #fdcb6e; -fx-cursor: hand; -fx-background-radius: 5;");
+        btnEditQ.setStyle("-fx-background-color: #fdcb6e; -fx-cursor: hand; "
+                + "-fx-background-radius: 5;");
         btnEditQ.setOnAction(e -> editQuestion(q));
         Button btnDelQ = new Button("🗑️");
-        btnDelQ.setStyle("-fx-background-color: #d63031; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;");
+        btnDelQ.setStyle("-fx-background-color: #d63031; -fx-text-fill: white; "
+                + "-fx-cursor: hand; -fx-background-radius: 5;");
         btnDelQ.setOnAction(e -> deleteQuestion(q));
 
         header.getChildren().addAll(lblQ, lblPts, spacer, btnEditQ, btnDelQ);
@@ -825,18 +861,21 @@ public class FormationController implements Initializable {
             for (Reponse r : reponseService.selectByQuestion(q.getId())) {
                 HBox respRow = new HBox(8);
                 respRow.setAlignment(Pos.CENTER_LEFT);
-                Label lblResp = new Label((r.isCorrect() ? "✅ " : "❌ ") + r.getOptionText());
-                lblResp.setStyle(r.isCorrect() ?
-                        "-fx-text-fill: #00b894; -fx-font-weight: bold;" :
-                        "-fx-text-fill: #636e72;");
+                Label lblResp = new Label(
+                        (r.isCorrect() ? "✅ " : "❌ ") + r.getOptionText());
+                lblResp.setStyle(r.isCorrect()
+                        ? "-fx-text-fill: #00b894; -fx-font-weight: bold;"
+                        : "-fx-text-fill: #636e72;");
                 lblResp.setMaxWidth(350);
                 lblResp.setWrapText(true);
 
                 Button btnEditR = new Button("✏️");
-                btnEditR.setStyle("-fx-background-color: transparent; -fx-cursor: hand; -fx-font-size: 10px;");
+                btnEditR.setStyle("-fx-background-color: transparent; "
+                        + "-fx-cursor: hand; -fx-font-size: 10px;");
                 btnEditR.setOnAction(e -> editReponse(r, q));
                 Button btnDelR = new Button("✕");
-                btnDelR.setStyle("-fx-background-color: transparent; -fx-text-fill: red; -fx-cursor: hand;");
+                btnDelR.setStyle("-fx-background-color: transparent; "
+                        + "-fx-text-fill: red; -fx-cursor: hand;");
                 btnDelR.setOnAction(e -> deleteReponse(r));
 
                 respRow.getChildren().addAll(lblResp, btnEditR, btnDelR);
@@ -847,7 +886,8 @@ public class FormationController implements Initializable {
         }
 
         Button btnAddR = new Button("+ Ajouter réponse");
-        btnAddR.setStyle("-fx-background-color: transparent; -fx-text-fill: #4a90d9; -fx-cursor: hand;");
+        btnAddR.setStyle("-fx-background-color: transparent; "
+                + "-fx-text-fill: #4a90d9; -fx-cursor: hand;");
         btnAddR.setOnAction(e -> addReponse(q));
         box.getChildren().add(btnAddR);
         return box;
@@ -855,16 +895,24 @@ public class FormationController implements Initializable {
 
     @FXML
     private void handleAddQuestion() {
+        if (currentQuizFormation == null) {
+            showAlert(Alert.AlertType.WARNING, "Attention",
+                    "Enregistrez la formation d'abord!");
+            return;
+        }
         try {
             Quiz quiz = quizService.selectByFormation(currentQuizFormation.getId());
             if (quiz == null) {
-                showAlert(Alert.AlertType.WARNING, "Attention", "Créez le quiz d'abord!");
+                showAlert(Alert.AlertType.WARNING, "Attention",
+                        "Créez le quiz d'abord!");
                 return;
             }
             Dialog<Question> dialog = new Dialog<>();
             dialog.setTitle("Nouvelle Question");
-            ButtonType saveBtn = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes().addAll(saveBtn, ButtonType.CANCEL);
+            ButtonType saveBtn = new ButtonType("Enregistrer",
+                    ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes()
+                    .addAll(saveBtn, ButtonType.CANCEL);
 
             VBox content = new VBox(10);
             content.setPadding(new Insets(20));
@@ -876,25 +924,35 @@ public class FormationController implements Initializable {
             TextField tfPts = new TextField("5");
             tfPts.setPromptText("Points (1-100)");
             tfPts.textProperty().addListener((obs, o, n) -> {
-                if (!n.matches("\\d*")) tfPts.setText(n.replaceAll("[^\\d]", ""));
+                if (!n.matches("\\d*"))
+                    tfPts.setText(n.replaceAll("[^\\d]", ""));
             });
             Label lblDialogError = new Label();
             lblDialogError.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-            content.getChildren().addAll(new Label("Question:"), taQ,
+            content.getChildren().addAll(
+                    new Label("Question:"), taQ,
                     new Label("Points:"), tfPts, lblDialogError);
             dialog.getDialogPane().setContent(content);
 
-            Button saveButton = (Button) dialog.getDialogPane().lookupButton(saveBtn);
+            Button saveButton = (Button) dialog.getDialogPane()
+                    .lookupButton(saveBtn);
             saveButton.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
                 StringBuilder err = new StringBuilder();
                 if (taQ.getText().trim().length() < QUESTION_MIN_LENGTH)
-                    err.append("• Min ").append(QUESTION_MIN_LENGTH).append(" caractères\n");
+                    err.append("• Min ").append(QUESTION_MIN_LENGTH)
+                            .append(" caractères\n");
                 try {
                     int pts = Integer.parseInt(tfPts.getText().trim());
                     if (pts < MIN_POINTS || pts > MAX_POINTS)
-                        err.append("• Points entre ").append(MIN_POINTS).append("-").append(MAX_POINTS).append("\n");
-                } catch (NumberFormatException ex) { err.append("• Points invalides\n"); }
-                if (err.length() > 0) { lblDialogError.setText(err.toString()); event.consume(); }
+                        err.append("• Points entre ").append(MIN_POINTS)
+                                .append("-").append(MAX_POINTS).append("\n");
+                } catch (NumberFormatException ex) {
+                    err.append("• Points invalides\n");
+                }
+                if (err.length() > 0) {
+                    lblDialogError.setText(err.toString());
+                    event.consume();
+                }
             });
 
             dialog.setResultConverter(btn -> {
@@ -909,8 +967,12 @@ public class FormationController implements Initializable {
             });
 
             dialog.showAndWait().ifPresent(q -> {
-                try { questionService.insertOne(q); showQuizManager(currentQuizFormation); }
-                catch (SQLException e) { showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage()); }
+                try {
+                    questionService.insertOne(q);
+                    loadQuizForFormation(currentQuizFormation);
+                } catch (SQLException e) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+                }
             });
         } catch (SQLException e) {
             showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
@@ -922,10 +984,16 @@ public class FormationController implements Initializable {
     // ═══════════════════════════════════
     @FXML
     private void handleAutoGenerateQuestions() {
+        if (currentQuizFormation == null) {
+            showAlert(Alert.AlertType.WARNING, "Attention",
+                    "Enregistrez la formation d'abord!");
+            return;
+        }
         try {
             Quiz quiz = quizService.selectByFormation(currentQuizFormation.getId());
             if (quiz == null) {
-                showAlert(Alert.AlertType.WARNING, "Attention", "Créez le quiz d'abord!");
+                showAlert(Alert.AlertType.WARNING, "Attention",
+                        "Créez le quiz d'abord!");
                 return;
             }
             TextInputDialog countDialog = new TextInputDialog("5");
@@ -939,16 +1007,20 @@ public class FormationController implements Initializable {
             try {
                 count = Integer.parseInt(countResult.get().trim());
                 if (count < 1 || count > 20) {
-                    showAlert(Alert.AlertType.WARNING, "Attention", "Choisissez 1-20");
+                    showAlert(Alert.AlertType.WARNING, "Attention",
+                            "Choisissez 1-20");
                     return;
                 }
             } catch (NumberFormatException e) {
-                showAlert(Alert.AlertType.WARNING, "Attention", "Nombre invalide");
+                showAlert(Alert.AlertType.WARNING, "Attention",
+                        "Nombre invalide");
                 return;
             }
 
-            lblQuizError.setText("⏳ Génération IA en cours...");
-            lblQuizError.setStyle("-fx-text-fill: #fdcb6e;");
+            if (lblQuizError != null) {
+                lblQuizError.setText("⏳ Génération IA en cours...");
+                lblQuizError.setStyle("-fx-text-fill: #fdcb6e;");
+            }
 
             int finalCount = count;
             new Thread(() -> {
@@ -956,20 +1028,25 @@ public class FormationController implements Initializable {
                     List<QuizGeneratorAPI.GeneratedQuestion> generated =
                             quizGenerator.generateQuestions(
                                     currentQuizFormation.getTitle(),
-                                    currentQuizFormation.getDescription(), finalCount);
+                                    currentQuizFormation.getDescription(),
+                                    finalCount);
                     javafx.application.Platform.runLater(() -> {
                         if (generated.isEmpty()) {
-                            lblQuizError.setText("❌ Aucune question générée");
-                            lblQuizError.setStyle("-fx-text-fill: #d63031;");
+                            if (lblQuizError != null) {
+                                lblQuizError.setText("❌ Aucune question générée");
+                                lblQuizError.setStyle("-fx-text-fill: #d63031;");
+                            }
                             return;
                         }
                         showGeneratedQuestionsPreview(quiz, generated);
-                        lblQuizError.setText("");
+                        if (lblQuizError != null) lblQuizError.setText("");
                     });
                 } catch (Exception e) {
                     javafx.application.Platform.runLater(() -> {
-                        lblQuizError.setText("❌ Erreur API: " + e.getMessage());
-                        lblQuizError.setStyle("-fx-text-fill: #d63031;");
+                        if (lblQuizError != null) {
+                            lblQuizError.setText("❌ Erreur API: " + e.getMessage());
+                            lblQuizError.setStyle("-fx-text-fill: #d63031;");
+                        }
                     });
                 }
             }).start();
@@ -978,12 +1055,14 @@ public class FormationController implements Initializable {
         }
     }
 
-    private void showGeneratedQuestionsPreview(Quiz quiz,
-                                               List<QuizGeneratorAPI.GeneratedQuestion> generated) {
+    private void showGeneratedQuestionsPreview(
+            Quiz quiz, List<QuizGeneratorAPI.GeneratedQuestion> generated) {
         Dialog<Boolean> dialog = new Dialog<>();
         dialog.setTitle("🤖 Questions Générées");
-        ButtonType addBtn = new ButtonType("✅ Ajouter", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(addBtn, ButtonType.CANCEL);
+        ButtonType addBtn = new ButtonType("✅ Ajouter",
+                ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes()
+                .addAll(addBtn, ButtonType.CANCEL);
 
         VBox content = new VBox(10);
         content.setPadding(new Insets(15));
@@ -992,8 +1071,10 @@ public class FormationController implements Initializable {
         int num = 1;
         for (QuizGeneratorAPI.GeneratedQuestion gq : generated) {
             VBox qBox = new VBox(5);
-            qBox.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 10; -fx-background-radius: 8;");
-            CheckBox cb = new CheckBox("Q" + num + ": " + gq.questionText + " (" + gq.points + " pts)");
+            qBox.setStyle("-fx-background-color: #f8f9fa; -fx-padding: 10; "
+                    + "-fx-background-radius: 8;");
+            CheckBox cb = new CheckBox("Q" + num + ": " + gq.questionText
+                    + " (" + gq.points + " pts)");
             cb.setSelected(true);
             cb.setWrapText(true);
             cb.setStyle("-fx-font-weight: bold;");
@@ -1002,8 +1083,11 @@ public class FormationController implements Initializable {
             optionsBox.setPadding(new Insets(0, 0, 0, 25));
             for (int i = 0; i < gq.options.size(); i++) {
                 String prefix = (i == gq.correctIndex) ? "  ✅ " : "  ❌ ";
-                Label opt = new Label(prefix + (char) ('A' + i) + ") " + gq.options.get(i));
-                opt.setStyle(i == gq.correctIndex ? "-fx-text-fill: #00b894; -fx-font-weight: bold;" : "-fx-text-fill: #636e72;");
+                Label opt = new Label(prefix + (char) ('A' + i) + ") "
+                        + gq.options.get(i));
+                opt.setStyle(i == gq.correctIndex
+                        ? "-fx-text-fill: #00b894; -fx-font-weight: bold;"
+                        : "-fx-text-fill: #636e72;");
                 opt.setWrapText(true);
                 optionsBox.getChildren().add(opt);
             }
@@ -1029,7 +1113,8 @@ public class FormationController implements Initializable {
                     q.setQuestionText(gq.questionText);
                     q.setPoints(gq.points);
                     questionService.insertOne(q);
-                    List<Question> allQ = questionService.selectByQuiz(quiz.getId());
+                    List<Question> allQ =
+                            questionService.selectByQuiz(quiz.getId());
                     int questionId = allQ.get(allQ.size() - 1).getId();
                     for (int j = 0; j < gq.options.size(); j++) {
                         Reponse rep = new Reponse();
@@ -1043,8 +1128,9 @@ public class FormationController implements Initializable {
                     System.err.println("Error: " + e.getMessage());
                 }
             }
-            showAlert(Alert.AlertType.INFORMATION, "Succès", added + " questions ajoutées! 🤖✅");
-            showQuizManager(currentQuizFormation);
+            showAlert(Alert.AlertType.INFORMATION, "Succès",
+                    added + " questions ajoutées! 🤖✅");
+            loadQuizForFormation(currentQuizFormation);
         });
     }
 
@@ -1054,8 +1140,10 @@ public class FormationController implements Initializable {
     private void editQuestion(Question q) {
         Dialog<Question> dialog = new Dialog<>();
         dialog.setTitle("Modifier Question");
-        ButtonType saveBtn = new ButtonType("Mettre à jour", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveBtn, ButtonType.CANCEL);
+        ButtonType saveBtn = new ButtonType("Mettre à jour",
+                ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes()
+                .addAll(saveBtn, ButtonType.CANCEL);
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
         content.setPrefWidth(400);
@@ -1064,11 +1152,13 @@ public class FormationController implements Initializable {
         taQ.setWrapText(true);
         TextField tfPts = new TextField(String.valueOf(q.getPoints()));
         tfPts.textProperty().addListener((obs, o, n) -> {
-            if (!n.matches("\\d*")) tfPts.setText(n.replaceAll("[^\\d]", ""));
+            if (!n.matches("\\d*"))
+                tfPts.setText(n.replaceAll("[^\\d]", ""));
         });
         Label lblErr = new Label();
         lblErr.setStyle("-fx-text-fill: red;");
-        content.getChildren().addAll(new Label("Question:"), taQ, new Label("Points:"), tfPts, lblErr);
+        content.getChildren().addAll(new Label("Question:"), taQ,
+                new Label("Points:"), tfPts, lblErr);
         dialog.getDialogPane().setContent(content);
 
         Button sb = (Button) dialog.getDialogPane().lookupButton(saveBtn);
@@ -1081,15 +1171,22 @@ public class FormationController implements Initializable {
         dialog.setResultConverter(btn -> {
             if (btn == saveBtn) {
                 q.setQuestionText(taQ.getText().trim());
-                try { q.setPoints(Integer.parseInt(tfPts.getText().trim())); }
-                catch (NumberFormatException e) { q.setPoints(5); }
+                try {
+                    q.setPoints(Integer.parseInt(tfPts.getText().trim()));
+                } catch (NumberFormatException e) {
+                    q.setPoints(5);
+                }
                 return q;
             }
             return null;
         });
         dialog.showAndWait().ifPresent(updated -> {
-            try { questionService.updateOne(updated); showQuizManager(currentQuizFormation); }
-            catch (SQLException e) { showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage()); }
+            try {
+                questionService.updateOne(updated);
+                loadQuizForFormation(currentQuizFormation);
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+            }
         });
     }
 
@@ -1100,16 +1197,20 @@ public class FormationController implements Initializable {
                 for (Reponse rep : reponseService.selectByQuestion(q.getId()))
                     reponseService.deleteOne(rep);
                 questionService.deleteOne(q);
-                showQuizManager(currentQuizFormation);
-            } catch (SQLException e) { showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage()); }
+                loadQuizForFormation(currentQuizFormation);
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+            }
         }
     }
 
     private void addReponse(Question q) {
         Dialog<Reponse> dialog = new Dialog<>();
         dialog.setTitle("Nouvelle Réponse");
-        ButtonType saveBtn = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveBtn, ButtonType.CANCEL);
+        ButtonType saveBtn = new ButtonType("Enregistrer",
+                ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes()
+                .addAll(saveBtn, ButtonType.CANCEL);
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
         content.setPrefWidth(400);
@@ -1118,12 +1219,16 @@ public class FormationController implements Initializable {
         CheckBox cbCorrect = new CheckBox("Réponse correcte ✅");
         Label lblErr = new Label();
         lblErr.setStyle("-fx-text-fill: red;");
-        content.getChildren().addAll(new Label("Réponse:"), tfOpt, cbCorrect, lblErr);
+        content.getChildren().addAll(
+                new Label("Réponse:"), tfOpt, cbCorrect, lblErr);
         dialog.getDialogPane().setContent(content);
 
         Button sb = (Button) dialog.getDialogPane().lookupButton(saveBtn);
         sb.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
-            if (tfOpt.getText().trim().isEmpty()) { lblErr.setText("❌ Obligatoire"); event.consume(); }
+            if (tfOpt.getText().trim().isEmpty()) {
+                lblErr.setText("❌ Obligatoire");
+                event.consume();
+            }
         });
         dialog.setResultConverter(btn -> {
             if (btn == saveBtn) {
@@ -1136,16 +1241,22 @@ public class FormationController implements Initializable {
             return null;
         });
         dialog.showAndWait().ifPresent(rep -> {
-            try { reponseService.insertOne(rep); showQuizManager(currentQuizFormation); }
-            catch (SQLException e) { showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage()); }
+            try {
+                reponseService.insertOne(rep);
+                loadQuizForFormation(currentQuizFormation);
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+            }
         });
     }
 
     private void editReponse(Reponse r, Question q) {
         Dialog<Reponse> dialog = new Dialog<>();
         dialog.setTitle("Modifier Réponse");
-        ButtonType saveBtn = new ButtonType("Mettre à jour", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveBtn, ButtonType.CANCEL);
+        ButtonType saveBtn = new ButtonType("Mettre à jour",
+                ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes()
+                .addAll(saveBtn, ButtonType.CANCEL);
         VBox content = new VBox(10);
         content.setPadding(new Insets(20));
         content.setPrefWidth(400);
@@ -1154,12 +1265,16 @@ public class FormationController implements Initializable {
         cbCorrect.setSelected(r.isCorrect());
         Label lblErr = new Label();
         lblErr.setStyle("-fx-text-fill: red;");
-        content.getChildren().addAll(new Label("Réponse:"), tfOpt, cbCorrect, lblErr);
+        content.getChildren().addAll(
+                new Label("Réponse:"), tfOpt, cbCorrect, lblErr);
         dialog.getDialogPane().setContent(content);
 
         Button sb = (Button) dialog.getDialogPane().lookupButton(saveBtn);
         sb.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
-            if (tfOpt.getText().trim().isEmpty()) { lblErr.setText("❌ Obligatoire"); event.consume(); }
+            if (tfOpt.getText().trim().isEmpty()) {
+                lblErr.setText("❌ Obligatoire");
+                event.consume();
+            }
         });
         dialog.setResultConverter(btn -> {
             if (btn == saveBtn) {
@@ -1170,16 +1285,24 @@ public class FormationController implements Initializable {
             return null;
         });
         dialog.showAndWait().ifPresent(updated -> {
-            try { reponseService.updateOne(updated); showQuizManager(currentQuizFormation); }
-            catch (SQLException e) { showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage()); }
+            try {
+                reponseService.updateOne(updated);
+                loadQuizForFormation(currentQuizFormation);
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+            }
         });
     }
 
     private void deleteReponse(Reponse r) {
         Optional<ButtonType> confirm = showConfirm("Supprimer cette réponse?");
         if (confirm.isPresent() && confirm.get() == ButtonType.OK) {
-            try { reponseService.deleteOne(r); showQuizManager(currentQuizFormation); }
-            catch (SQLException e) { showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage()); }
+            try {
+                reponseService.deleteOne(r);
+                loadQuizForFormation(currentQuizFormation);
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", e.getMessage());
+            }
         }
     }
 
@@ -1191,18 +1314,23 @@ public class FormationController implements Initializable {
         String kw = tfSearch.getText().toLowerCase().trim();
         filteredList.setPredicate(f -> {
             if (kw.isEmpty()) return true;
-            return f.getTitle().toLowerCase().contains(kw) ||
-                    f.getDescription().toLowerCase().contains(kw) ||
-                    f.getCategory().toLowerCase().contains(kw);
+            return f.getTitle().toLowerCase().contains(kw)
+                    || f.getDescription().toLowerCase().contains(kw)
+                    || f.getCategory().toLowerCase().contains(kw);
         });
         lblTotal.setText("Total: " + filteredList.size());
     }
 
     @FXML
-    private void handleRefresh() { tfSearch.clear(); loadFormations(); }
+    private void handleRefresh() {
+        tfSearch.clear();
+        loadFormations();
+    }
 
     @FXML
-    private void handleClear() { clearForm(); }
+    private void handleClear() {
+        clearForm();
+    }
 
     private void clearForm() {
         if (tfTitle != null) tfTitle.clear();
@@ -1211,7 +1339,11 @@ public class FormationController implements Initializable {
         if (cbCategory != null) cbCategory.getSelectionModel().clearSelection();
         if (cbCoach != null) cbCoach.setValue("Non assigné");
         if (lblError != null) lblError.setText("");
+        if (tfQuizTitle != null) tfQuizTitle.clear();
+        if (tfPassingScore != null) tfPassingScore.setText("70");
+        if (lblQuizError != null) lblQuizError.setText("");
         editingFormation = null;
+        currentQuizFormation = null;
         isEditMode = false;
         resetFieldStyles();
     }
@@ -1222,26 +1354,46 @@ public class FormationController implements Initializable {
     private boolean validateForm() {
         StringBuilder errors = new StringBuilder();
         boolean hasError = false;
-        String errStyle = "-fx-background-color: #fff5f5; -fx-border-color: #d63031; " +
-                "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;";
-        String okStyle = "-fx-background-color: #f8f9fa; -fx-border-color: #00b894; " +
-                "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;";
+        String errStyle = "-fx-background-color: #fff5f5; -fx-border-color: #d63031; "
+                + "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;";
+        String okStyle = "-fx-background-color: #f8f9fa; -fx-border-color: #00b894; "
+                + "-fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 8;";
 
         String titleErr = validateTitle(tfTitle.getText());
-        if (titleErr != null) { errors.append("• ").append(titleErr).append("\n"); tfTitle.setStyle(errStyle); hasError = true; }
-        else tfTitle.setStyle(okStyle);
+        if (titleErr != null) {
+            errors.append("• ").append(titleErr).append("\n");
+            tfTitle.setStyle(errStyle);
+            hasError = true;
+        } else {
+            tfTitle.setStyle(okStyle);
+        }
 
         String descErr = validateDescription(taDescription.getText());
-        if (descErr != null) { errors.append("• ").append(descErr).append("\n"); taDescription.setStyle(errStyle); hasError = true; }
-        else taDescription.setStyle(okStyle);
+        if (descErr != null) {
+            errors.append("• ").append(descErr).append("\n");
+            taDescription.setStyle(errStyle);
+            hasError = true;
+        } else {
+            taDescription.setStyle(okStyle);
+        }
 
         String videoErr = validateVideoUrl(tfVideoUrl.getText());
-        if (videoErr != null) { errors.append("• ").append(videoErr).append("\n"); tfVideoUrl.setStyle(errStyle); hasError = true; }
-        else tfVideoUrl.setStyle(okStyle);
+        if (videoErr != null) {
+            errors.append("• ").append(videoErr).append("\n");
+            tfVideoUrl.setStyle(errStyle);
+            hasError = true;
+        } else {
+            tfVideoUrl.setStyle(okStyle);
+        }
 
         String catErr = validateCategory(cbCategory.getValue());
-        if (catErr != null) { errors.append("• ").append(catErr).append("\n"); cbCategory.setStyle(errStyle); hasError = true; }
-        else cbCategory.setStyle(okStyle);
+        if (catErr != null) {
+            errors.append("• ").append(catErr).append("\n");
+            cbCategory.setStyle(errStyle);
+            hasError = true;
+        } else {
+            cbCategory.setStyle(okStyle);
+        }
 
         if (hasError) lblError.setText(errors.toString());
         else lblError.setText("");

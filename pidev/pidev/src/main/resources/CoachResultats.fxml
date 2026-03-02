@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.CoachResultatsController"
+      spacing="0" style="-fx-background-color:#F2F0EC;">
+
+    <HBox alignment="CENTER_LEFT" spacing="15"
+          style="-fx-padding:22 30;-fx-background-color:white;
+                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);">
+        <VBox spacing="3">
+            <Label text="📊 Résultats des Patients"
+                   style="-fx-font-size:22px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+            <Label fx:id="lblCount" text="Chargement..."
+                   style="-fx-font-size:12px;-fx-text-fill:#718096;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <ComboBox fx:id="cbFilter" prefWidth="150"
+                  style="-fx-background-color:#F7FAFC;-fx-border-color:#E2E8F0;
+                         -fx-border-radius:8;-fx-background-radius:8;"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
+                style="-fx-background:transparent;-fx-background-color:transparent;">
+        <VBox fx:id="resultsList" spacing="10" style="-fx-padding:25 30;"/>
+    </ScrollPane>
+</VBox>
