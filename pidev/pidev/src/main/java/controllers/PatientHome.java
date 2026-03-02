@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import entities.User;
+import entities.Call;
 import services.serviceUser;
 import utils.LightDialog;
 
@@ -33,10 +34,12 @@ public class PatientHome {
     @FXML private Label lblNbRdv, lblNbSeances;
     @FXML private Label lblNom, lblEmail, lblTel;
     @FXML private Label lblAffirmation, lblAffirmStatus;
-    @FXML private Label lblAdvice, lblAdviceStatus;
     @FXML private ImageView imgHeaderPhoto;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane accueilPane;
+    @FXML private VBox navAccueil, navMessages;
+    @FXML private HBox indicAccueil, indicMessages;
+    @FXML private Label lblMessagesBadge;
     @FXML private VBox navAccueil, navFormations, navMesFormations, navResultats, navProfil;
     @FXML private HBox indicAccueil, indicFormations, indicMesFormations, indicResultats, indicProfil;
 
@@ -57,6 +60,10 @@ public class PatientHome {
         this.currentUser = user;
         refreshUserData();
         loadAffirmation();
+        startNotifications();
+        if (navAccueil   != null) navAccueil.setStyle(NAV_ACTIVE);
+        if (indicAccueil != null) indicAccueil.setStyle(INDIC_VISIBLE);
+        currentActiveNav = navAccueil;
         loadAdvice();
         setActiveNav(navAccueil, indicAccueil);
     }
@@ -113,6 +120,30 @@ public class PatientHome {
         if (lblAdvice == null) return;
         Platform.runLater(() -> { if (lblAdviceStatus != null) lblAdviceStatus.setText("⏳ Chargement..."); lblAdvice.setText(""); });
         Thread t = new Thread(() -> {
+
+
+    private void startNotifications() {
+        services.Notificationservice ns = services.Notificationservice.INSTANCE;
+        ns.start(currentUser);
+
+        // Badge total non lus
+        ns.setOnUnreadCountChanged(count -> {
+            if (lblMessagesBadge == null) return;
+            if (count > 0) {
+                lblMessagesBadge.setText(count > 9 ? "9+" : String.valueOf(count));
+                lblMessagesBadge.setVisible(true);
+                lblMessagesBadge.setManaged(true);
+            } else {
+                lblMessagesBadge.setVisible(false);
+                lblMessagesBadge.setManaged(false);
+            }
+        });
+
+        // Toast — NotificationService gère le nom de l'expéditeur
+        ns.setOnNewMessage(this::openMessagerie);
+
+        // Appel entrant
+        ns.setOnIncomingCall(call -> {
             try {
                 HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
                 HttpRequest r = HttpRequest.newBuilder().uri(URI.create("https://api.adviceslip.com/advice")).timeout(Duration.ofSeconds(8)).header("User-Agent","EchoCare/1.0").GET().build();
@@ -124,17 +155,63 @@ public class PatientHome {
             }
         });
         t.setDaemon(true); t.start();
+                entities.User caller = us.getUserById(call.getId_caller());
+                if (caller == null) return;
+                utils.Notificationhelper.show("📞",
+                        caller.getPrenom() + " " + caller.getNom() + " · " + caller.getRole(),
+                        "Appel entrant — Appuyez pour répondre",
+                        () -> openCallScreen(caller, call));
+            } catch (Exception e) { e.printStackTrace(); }
+        });
+    }
+
+    private void openMessagerie() {
+        try {
+            if (navMessages != null) navMessages.setStyle(NAV_ACTIVE);
+            if (indicMessages != null) indicMessages.setStyle(INDIC_VISIBLE);
+            currentActiveNav = navMessages;
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Messagerie.fxml"));
+            HBox page = loader.load();
+            Messageriecontroller ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
+            contentArea.getChildren().setAll(page);
+        } catch (IOException e) { e.printStackTrace(); }
+    }
+
+    private void openCallScreen(entities.User caller, entities.Call call) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Messagerie.fxml"));
+            HBox page = loader.load();
+            Messageriecontroller ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
+            ctrl.setSelectedContact(caller);
+            contentArea.getChildren().setAll(page);
+            ctrl.openCallScreen(true, call, call.getId_call());
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private String extractValue(String json, String key) {
         String s = "\"" + key + "\":\""; int i = json.indexOf(s); if (i < 0) return "";
         i += s.length(); int end = json.indexOf("\"", i); return end < 0 ? "" : json.substring(i, end).replace("\\n"," ").replace("\\'","'");
+        String s = "\"" + key + "\":\"";
+        int i = json.indexOf(s);
+        if (i < 0) return "";
+        i += s.length();
+        int end = json.indexOf("\"", i);
+        return end < 0 ? "" : json.substring(i, end).replace("\\n", " ").replace("\\'", "'");
     }
 
     @FXML void refreshAffirmation(MouseEvent e) { loadAffirmation(); }
-    @FXML void refreshAdvice(MouseEvent e)      { loadAdvice(); }
 
     // ── Navigation click handlers ────────────────────────────────────────
+
+    // ─── Navigation ───────────────────────────────────────────
+    private void showAccueilFromProfil() {
+        if (navAccueil   != null) navAccueil.setStyle(NAV_ACTIVE);
+        if (indicAccueil != null) indicAccueil.setStyle(INDIC_VISIBLE);
+        currentActiveNav = navAccueil;
+        contentArea.getChildren().setAll(accueilPane);
+    }
 
     @FXML void showAccueil(MouseEvent event) {
         setActiveNav(navAccueil, indicAccueil);
@@ -164,6 +241,7 @@ public class PatientHome {
             Profil ctrl = loader.getController();
             ctrl.setCurrentUser(currentUser);
             ctrl.setOnPhotoChanged(this::refreshUserData);
+            ctrl.setOnBackToAccueil(this::showAccueilFromProfil);
             contentArea.getChildren().setAll(page);
         } catch (IOException e) { e.printStackTrace(); LightDialog.showError("Erreur","Impossible de charger le profil."); }
     }
@@ -230,6 +308,10 @@ public class PatientHome {
     }
 
     // ── Logout ───────────────────────────────────────────────────────────
+
+    @FXML void showMessages(MouseEvent event) { openMessagerie(); }
+    @FXML void onNavMessagesEnter(MouseEvent e) { if(navMessages!=currentActiveNav) navMessages.setStyle(NAV_ACTIVE); }
+    @FXML void onNavMessagesExit(MouseEvent e)  { if(navMessages!=currentActiveNav) navMessages.setStyle(NAV_NORMAL); }
 
     @FXML void handleLogout(MouseEvent event) {
         if (LightDialog.showConfirmation("Déconnexion","Voulez-vous vraiment quitter ?","👋")) {

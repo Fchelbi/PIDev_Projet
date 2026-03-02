@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="controllers.Callcontroller"
+           prefWidth="400" prefHeight="520"
+           style="-fx-background-color: #1C2B4A;">
+
+    <!-- Background circles décoratifs -->
+    <Circle radius="300" fill="rgba(74,111,165,0.12)" translateX="100" translateY="-120"/>
+    <Circle radius="200" fill="rgba(232,149,109,0.08)" translateX="-100" translateY="200"/>
+
+    <!-- ══ APPEL SORTANT ══ -->
+    <VBox fx:id="paneCallingOut" alignment="CENTER" spacing="28"
+          visible="true" managed="true"
+          style="-fx-padding: 50 40;">
+
+        <!-- Avatar pulsant -->
+        <StackPane alignment="CENTER">
+            <!-- Anneaux de pulse -->
+            <Circle radius="80" fill="rgba(74,111,165,0.1)" strokeWidth="1"
+                    stroke="rgba(74,111,165,0.3)"/>
+            <Circle radius="64" fill="rgba(74,111,165,0.15)" strokeWidth="1"
+                    stroke="rgba(74,111,165,0.4)"/>
+            <!-- Avatar -->
+            <Circle radius="48" fill="#4A6FA5"
+                    style="-fx-effect: dropshadow(gaussian, rgba(74,111,165,0.5), 20, 0, 0, 0);"/>
+            <Label fx:id="lblCallingInitial" text="?"
+                   style="-fx-font-size: 32px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+        </StackPane>
+
+        <!-- Info -->
+        <VBox alignment="CENTER" spacing="8">
+            <Label text="Appel en cours..."
+                   style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.55); -fx-letter-spacing: 2;"/>
+            <Label fx:id="lblCallingName" text="..."
+                   style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+            <Label fx:id="lblCallingStatus" text="Sonnerie..."
+                   style="-fx-font-size: 13px; -fx-text-fill: rgba(255,200,100,0.85); -fx-font-style: italic;"/>
+        </VBox>
+
+        <!-- Bouton Annuler -->
+        <StackPane alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+            <Circle radius="32" fill="#E07070"
+                    style="-fx-effect: dropshadow(gaussian, rgba(224,112,112,0.5), 15, 0, 0, 0);"/>
+            <Label text="📵" style="-fx-font-size: 22px; -fx-cursor: hand;"
+                   onMouseClicked="#handleCancelOutgoing"/>
+        </StackPane>
+        <Label text="Annuler" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.4);"/>
+    </VBox>
+
+    <!-- ══ APPEL ENTRANT ══ -->
+    <VBox fx:id="paneIncoming" alignment="CENTER" spacing="28"
+          visible="false" managed="false"
+          style="-fx-padding: 50 40;">
+
+        <!-- Header -->
+        <Label text="📞  Appel entrant"
+               style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.55); -fx-letter-spacing: 2;"/>
+
+        <!-- Avatar avec ring animé -->
+        <StackPane alignment="CENTER">
+            <Circle radius="80" fill="rgba(232,149,109,0.1)" strokeWidth="2"
+                    stroke="rgba(232,149,109,0.3)"/>
+            <Circle radius="64" fill="rgba(232,149,109,0.18)" strokeWidth="1"
+                    stroke="rgba(232,149,109,0.4)"/>
+            <Circle radius="48" fill="#E8956D"
+                    style="-fx-effect: dropshadow(gaussian, rgba(232,149,109,0.6), 20, 0, 0, 0);"/>
+            <Label fx:id="lblCallInitial" text="?"
+                   style="-fx-font-size: 32px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+        </StackPane>
+
+        <!-- Info appelant -->
+        <VBox alignment="CENTER" spacing="6">
+            <Label fx:id="lblIncomingName" text="..."
+                   style="-fx-font-size: 24px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+            <Label fx:id="lblIncomingRole" text=""
+                   style="-fx-font-size: 12px; -fx-text-fill: rgba(255,255,255,0.5);
+                          -fx-background-color: rgba(255,255,255,0.1); -fx-padding: 3 12;
+                          -fx-background-radius: 20;"/>
+        </VBox>
+
+        <!-- Boutons Accepter / Refuser -->
+        <HBox alignment="CENTER" spacing="60" style="-fx-padding: 20 0 0 0;">
+            <!-- Refuser -->
+            <VBox alignment="CENTER" spacing="8" style="-fx-cursor: hand;" onMouseClicked="#handleReject">
+                <StackPane alignment="CENTER">
+                    <Circle radius="32" fill="#E07070"
+                            style="-fx-effect: dropshadow(gaussian, rgba(224,112,112,0.5), 15, 0, 0, 0);"/>
+                    <Label text="📵" style="-fx-font-size: 22px;"/>
+                </StackPane>
+                <Label text="Refuser" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.5);"/>
+            </VBox>
+
+            <!-- Accepter -->
+            <VBox alignment="CENTER" spacing="8" style="-fx-cursor: hand;" onMouseClicked="#handleAccept">
+                <StackPane alignment="CENTER">
+                    <Circle radius="32" fill="#52B788"
+                            style="-fx-effect: dropshadow(gaussian, rgba(82,183,136,0.5), 15, 0, 0, 0);"/>
+                    <Label text="📞" style="-fx-font-size: 22px;"/>
+                </StackPane>
+                <Label text="Accepter" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.5);"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <!-- ══ EN COMMUNICATION ══ -->
+    <VBox fx:id="paneInCall" alignment="CENTER" spacing="24"
+          visible="false" managed="false"
+          style="-fx-padding: 50 40;">
+
+        <!-- Indicateur vert -->
+        <HBox alignment="CENTER" spacing="8">
+            <Circle radius="6" fill="#52B788"/>
+            <Label text="En communication"
+                   style="-fx-font-size: 12px; -fx-text-fill: #52B788; -fx-font-weight: 600;"/>
+        </HBox>
+
+        <!-- Avatar -->
+        <StackPane alignment="CENTER">
+            <Circle radius="60" fill="#4A6FA5"
+                    style="-fx-effect: dropshadow(gaussian, rgba(74,111,165,0.5), 20, 0, 0, 0);"/>
+            <Label fx:id="lblInCallInitial" text="?"
+                   style="-fx-font-size: 36px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+        </StackPane>
+
+        <!-- Nom + timer -->
+        <VBox alignment="CENTER" spacing="8">
+            <Label fx:id="lblInCallName" text="..."
+                   style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+            <Label fx:id="lblCallDuration" text="00:00"
+                   style="-fx-font-size: 28px; -fx-font-weight: 300; -fx-text-fill: rgba(255,255,255,0.7);
+                          -fx-font-family: 'Courier New';"/>
+        </VBox>
+
+        <!-- Bouton Raccrocher -->
+        <VBox alignment="CENTER" spacing="8" style="-fx-padding: 20 0 0 0; -fx-cursor: hand;"
+              onMouseClicked="#handleHangup">
+            <StackPane alignment="CENTER">
+                <Circle radius="36" fill="#E07070"
+                        style="-fx-effect: dropshadow(gaussian, rgba(224,112,112,0.5), 15, 0, 0, 0);"/>
+                <Label text="📵" style="-fx-font-size: 24px;"/>
+            </StackPane>
+            <Label text="Raccrocher" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.5);"/>
+        </VBox>
+    </VBox>
+
+</StackPane>

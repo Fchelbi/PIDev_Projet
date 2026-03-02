@@ -155,36 +155,3 @@ public class MapController {
         if (s == null) { LightDialog.showError("Erreur", "Sélectionnez un lieu!"); return; }
         openGoogleMapsForPlace(s);
     }
-
-    @FXML void filterOpen() {
-        if (currentPlaces == null) return;
-        var f = currentPlaces.stream().filter(Place::isOpen).toList();
-        listPlaces.setItems(FXCollections.observableArrayList(f));
-        lblResultCount.setText(f.size() + " ouvert(s)");
-    }
-
-    @FXML void filterTopRated() {
-        if (currentPlaces == null) return;
-        var s = currentPlaces.stream().sorted((a, b) -> Double.compare(b.getRating(), a.getRating())).toList();
-        listPlaces.setItems(FXCollections.observableArrayList(s));
-        lblResultCount.setText(s.size() + " résultat(s)");
-    }
-
-    @FXML void resetFilters() { tfSearch.clear(); loadPlaces(); }
-
-    private void updatePlacesList() {
-        listPlaces.setItems(FXCollections.observableArrayList(currentPlaces));
-        lblResultCount.setText(currentPlaces.size() + " psychologue(s) trouvé(s)");
-    }
-
-    private void showPlaceDetail(Place place) {
-        if (detailCard == null) return;
-        detailCard.setVisible(true); detailCard.setManaged(true);
-        lblSelectedName.setText(place.getName());
-        lblSelectedAddress.setText("📍 " + place.getAddress());
-        lblSelectedRating.setText("⭐ " + String.format("%.1f", place.getRating()) + " / 5");
-        lblSelectedStatus.setText(place.isOpen() ? "✅ Ouvert maintenant" : "❌ Fermé");
-        lblSelectedStatus.setStyle("-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: " +
-                (place.isOpen() ? "#4A8A5A" : "#C07050") + ";");
-    }
-}
