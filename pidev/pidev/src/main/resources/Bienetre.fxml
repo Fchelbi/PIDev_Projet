@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<!--
+    ✅ BienEtre.fxml — Page "Bien-être du Jour"
+    Aztro API (horoscope) + Articles santé mentale
+    Palette EchoCare: #4A6FA5 bleu · #E8956D corail · #52B788 vert · #F2EDE8 cream
+-->
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.Bienetrecontroller"
+            style="-fx-background: #F8F4EF; -fx-background-color: #F8F4EF;">
+
+    <VBox fx:id="rootContainer" spacing="0"
+          style="-fx-background-color: #F8F4EF; -fx-padding: 0 0 40 0;">
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- HEADER BANNER                                       -->
+        <!-- ══════════════════════════════════════════════════ -->
+        <VBox style="-fx-background-color: linear-gradient(to bottom right, #3D5A8A, #4A6FA5);
+                     -fx-padding: 28 32 24 32;"
+              spacing="6">
+
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="✨ Bien-être du Jour"
+                           style="-fx-font-size: 24px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                    <Label fx:id="lblDate" text="Chargement..."
+                           style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.7);"/>
+                </VBox>
+
+                <!-- Refresh + source badge -->
+                <VBox spacing="8" alignment="CENTER_RIGHT">
+                    <Button text="↻  Actualiser" onAction="#handleRefresh"
+                            style="-fx-background-color: rgba(255,255,255,0.15);
+                                   -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: 600;
+                                   -fx-padding: 8 18; -fx-background-radius: 20; -fx-cursor: hand;
+                                   -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 20;"/>
+                    <Label fx:id="lblSignDisplay" text="⏳ Chargement API..."
+                           style="-fx-font-size: 10px; -fx-text-fill: rgba(255,255,255,0.6);"/>
+                </VBox>
+            </HBox>
+
+            <!-- Signe sélecteur -->
+            <HBox spacing="12" alignment="CENTER_LEFT" style="-fx-padding: 8 0 0 0;">
+                <Label text="Votre signe :"
+                       style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8); -fx-font-weight: 600;"/>
+                <ComboBox fx:id="cbSign" prefWidth="180"
+                          style="-fx-background-color: rgba(255,255,255,0.15);
+                                 -fx-text-fill: white; -fx-font-size: 13px;
+                                 -fx-background-radius: 20; -fx-border-radius: 20;
+                                 -fx-border-color: rgba(255,255,255,0.3); -fx-cursor: hand;"/>
+                <ProgressIndicator fx:id="loadingHoro" prefWidth="20" prefHeight="20"
+                                   visible="false" managed="false"
+                                   style="-fx-progress-color: white;"/>
+            </HBox>
+        </VBox>
+
+        <!-- ══════════════════════════════════════════════════ -->
+        <!-- CONTENT AREA                                        -->
+        <!-- ══════════════════════════════════════════════════ -->
+        <HBox spacing="20" style="-fx-padding: 24 28;">
+            HBox.hgrow="ALWAYS"
+
+            <!-- LEFT COLUMN: Horoscope -->
+            <VBox spacing="16" prefWidth="420" HBox.hgrow="SOMETIMES">
+
+                <!-- ── Carte principale horoscope ── -->
+                <VBox spacing="0"
+                      style="-fx-background-color: white; -fx-background-radius: 16;
+                             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 14, 0, 0, 3);">
+
+                    <!-- Header corail -->
+                    <HBox style="-fx-background-color: linear-gradient(to right, #E8956D, #F0A882);
+                                 -fx-background-radius: 16 16 0 0; -fx-padding: 16 20;"
+                          spacing="14" alignment="CENTER_LEFT">
+                        <Label fx:id="lblSignEmoji" text="♏"
+                               style="-fx-font-size: 36px;"/>
+                        <VBox spacing="3">
+                            <Label fx:id="lblSignName" text="Scorpion"
+                                   style="-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                            <Label fx:id="lblSignRange" text="23 Oct. – 21 Nov."
+                                   style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <VBox alignment="CENTER_RIGHT" spacing="2">
+                            <Label text="HOROSCOPE"
+                                   style="-fx-font-size: 9px; -fx-font-weight: 700;
+                                          -fx-text-fill: rgba(255,255,255,0.7); -fx-letter-spacing: 1;"/>
+                            <Label text="Aujourd'hui"
+                                   style="-fx-font-size: 11px; -fx-text-fill: white; -fx-font-weight: 600;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Description -->
+                    <VBox spacing="12" style="-fx-padding: 18 20;">
+                        <Label fx:id="lblHoroDesc"
+                               text="Chargement de votre horoscope..."
+                               wrapText="true"
+                               style="-fx-font-size: 13px; -fx-text-fill: #4A5568;
+                                      -fx-line-spacing: 3;"/>
+                    </VBox>
+                </VBox>
+
+                <!-- ── Mini stats 2x2 ── -->
+                <GridPane hgap="12" vgap="12">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                    </columnConstraints>
+
+                    <!-- Humeur -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-padding: 14 16;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);"
+                          spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Humeur du jour"
+                               style="-fx-font-size: 10px; -fx-text-fill: #A0AEC0; -fx-font-weight: 600;"/>
+                        <Label fx:id="lblMood" text="—"
+                               style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #E8956D;"/>
+                    </VBox>
+
+                    <!-- Couleur -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-padding: 14 16;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);"
+                          spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Couleur porte-bonheur"
+                               style="-fx-font-size: 10px; -fx-text-fill: #A0AEC0; -fx-font-weight: 600;"/>
+                        <Label fx:id="lblColor" text="—"
+                               style="-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #4A6FA5;"/>
+                    </VBox>
+
+                    <!-- Chiffre chanceux -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-padding: 14 16;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);"
+                          spacing="5" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="N° chanceux  •  Heure"
+                               style="-fx-font-size: 10px; -fx-text-fill: #A0AEC0; -fx-font-weight: 600;"/>
+                        <Label fx:id="lblLucky" text="—"
+                               style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #52B788;"/>
+                    </VBox>
+
+                    <!-- Compatibilité -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                                 -fx-padding: 14 16;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);"
+                          spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="Compatibilité"
+                               style="-fx-font-size: 10px; -fx-text-fill: #A0AEC0; -fx-font-weight: 600;"/>
+                        <Label fx:id="lblCompatibility" text="—"
+                               style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #7B9ED9;"/>
+                    </VBox>
+                </GridPane>
+
+                <!-- ── Conseil bien-être EchoCare ── -->
+                <VBox spacing="10"
+                      style="-fx-background-color: linear-gradient(to bottom right, #EAF7EF, #F0FAF4);
+                             -fx-background-radius: 14; -fx-padding: 18 20;
+                             -fx-border-color: #B8E8CE; -fx-border-radius: 14; -fx-border-width: 1;">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="💚" style="-fx-font-size: 20px;"/>
+                        <Label text="Conseil bien-être EchoCare"
+                               style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #276749;"/>
+                    </HBox>
+                    <Label fx:id="lblWellbeingTip"
+                           text="Chargement de votre conseil personnalisé..."
+                           wrapText="true"
+                           style="-fx-font-size: 12.5px; -fx-text-fill: #2F855A; -fx-line-spacing: 3;"/>
+                </VBox>
+
+            </VBox>
+
+            <!-- RIGHT COLUMN: Actualités -->
+            <VBox spacing="14" HBox.hgrow="ALWAYS">
+
+                <!-- Header actualités -->
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label text="📰 Actualités Santé Mentale"
+                           style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: #2D3748;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <ProgressIndicator fx:id="loadingNews" prefWidth="18" prefHeight="18"
+                                       visible="false" managed="false"
+                                       style="-fx-progress-color: #4A6FA5;"/>
+                    <Label text="Sélection du jour"
+                           style="-fx-font-size: 11px; -fx-text-fill: #A0AEC0; -fx-font-style: italic;"/>
+                </HBox>
+
+                <!-- Articles container — rempli dynamiquement par le controller -->
+                <VBox fx:id="newsContainer" spacing="12">
+                    <!-- Placeholder pendant chargement -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 14;
+                                 -fx-padding: 30;" alignment="CENTER">
+                        <Label text="⏳ Chargement des articles..."
+                               style="-fx-font-size: 13px; -fx-text-fill: #A0AEC0;"/>
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </HBox>
+
+    </VBox>
+</ScrollPane>
