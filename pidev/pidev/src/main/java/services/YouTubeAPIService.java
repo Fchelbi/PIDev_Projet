@@ -10,102 +10,102 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * YouTubeAPIService — Recherche de vidéos YouTube
+ * YouTubeAPIService — Recherche de vidéos YouTube via YouTube Data API v3
  *
- * API utilisée : YouTube Data API v3
- * Endpoint : https://www.googleapis.com/youtube/v3/search
+ * IMPORTANT: Replace API_KEY with your own key from Google Cloud Console:
+ *   1. Go to https://console.cloud.google.com/
+ *   2. Enable "YouTube Data API v3"
+ *   3. Create an API Key under Credentials
+ *   4. Paste it below
  *
- * CONTRÔLE DE SAISIE :
- *   - query ne doit pas être vide ni trop courte (min 2 caractères)
- *   - maxResults entre 1 et 20
- *
- * FIX PARSING :
- *   Avant : parsing fragile avec split("\"videoId\"") → cassé si YouTube
- *           change l'ordre des champs JSON.
- *   Après : extraction par champ nommé, robuste au reformatage.
+ * The API key in the original code may be expired or quota-exceeded.
  */
 public class YouTubeAPIService {
 
+    // ⚠️ Replace this with your own valid YouTube Data API v3 key
     private static final String API_KEY    = "AIzaSyDf3mR2KnGmiyuf39uYW9PqOGRaaTflHAY";
     private static final String SEARCH_URL = "https://www.googleapis.com/youtube/v3/search";
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  MÉTHODE PRINCIPALE
+    //  MAIN SEARCH METHOD
     // ══════════════════════════════════════════════════════════════════════════
 
     /**
-     * Recherche des vidéos YouTube.
-     *
-     * Contrôle de saisie :
-     *  - query null ou vide → IllegalArgumentException
-     *  - query < 2 caractères → IllegalArgumentException
-     *  - maxResults hors [1, 20] → corrigé silencieusement
+     * Search YouTube videos.
+     * Returns a list of YouTubeVideo results, or throws Exception on failure.
      */
     public List<YouTubeVideo> searchVideos(String query, int maxResults) throws Exception {
 
-        // ── Validation des entrées ──────────────────────────────────────────
-        if (query == null || query.trim().isEmpty()) {
+        // Validate inputs
+        if (query == null || query.trim().isEmpty())
             throw new IllegalArgumentException("Le terme de recherche ne peut pas être vide.");
-        }
-        if (query.trim().length() < 2) {
+        if (query.trim().length() < 2)
             throw new IllegalArgumentException("Le terme de recherche doit contenir au moins 2 caractères.");
-        }
+
         maxResults = Math.max(1, Math.min(20, maxResults));
 
         String encoded = URLEncoder.encode(query.trim(), StandardCharsets.UTF_8);
         String urlStr  = SEARCH_URL
                 + "?part=snippet"
-                + "&q=" + encoded
+                + "&q="          + encoded
                 + "&type=video"
                 + "&maxResults=" + maxResults
-                + "&relevanceLanguage=fr"
-                + "&key=" + API_KEY;
+                + "&key="        + API_KEY;
 
-        URL url = new URL(urlStr);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(10000);
+        HttpURLConnection conn = null;
+        try {
+            URL url = new URL(urlStr);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(10_000);
+            conn.setReadTimeout(15_000);
+            conn.setRequestProperty("User-Agent", "EchoCare/1.0");
 
-        int code = conn.getResponseCode();
-        if (code != 200) {
-            // Lire le message d'erreur
-            BufferedReader err = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = err.readLine()) != null) sb.append(line);
-            throw new Exception("YouTube API erreur HTTP " + code + " — " + parseError(sb.toString()));
+            int code = conn.getResponseCode();
+            if (code != 200) {
+                // Read error body
+                String errBody = readStream(conn.getErrorStream());
+                String reason  = parseError(errBody);
+                throw new Exception("YouTube API erreur HTTP " + code + ": " + reason);
+            }
+
+            String responseBody = readStream(conn.getInputStream());
+            return parseResults(responseBody);
+
+        } finally {
+            if (conn != null) conn.disconnect();
         }
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder response = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) response.append(line).append('\n');
-        reader.close();
-        conn.disconnect();
-
-        return parseResults(response.toString());
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  PARSING (robuste)
+    //  STREAM READER
     // ══════════════════════════════════════════════════════════════════════════
 
-    /**
-     * FIX : Au lieu de split("\"videoId\"") qui casse si YouTube réorganise
-     * les champs, on découpe par "items" puis lit chaque item séparément.
-     */
+    private String readStream(java.io.InputStream stream) throws Exception {
+        if (stream == null) return "";
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(stream, StandardCharsets.UTF_8))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) sb.append(line).append('\n');
+            return sb.toString();
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════════════════════
+    //  JSON PARSING
+    // ══════════════════════════════════════════════════════════════════════════
+
     private List<YouTubeVideo> parseResults(String json) {
         List<YouTubeVideo> results = new ArrayList<>();
 
-        // Trouver le tableau "items"
         int itemsIdx = json.indexOf("\"items\"");
         if (itemsIdx == -1) return results;
 
         int arrStart = json.indexOf('[', itemsIdx);
         if (arrStart == -1) return results;
 
-        // Découper chaque objet item { ... }
+        // Walk through each { } block at the top level of the items array
         int depth = 0, start = -1;
         for (int i = arrStart; i < json.length(); i++) {
             char c = json.charAt(i);
@@ -127,8 +127,8 @@ public class YouTubeAPIService {
 
     private YouTubeVideo parseItem(String block) {
         try {
-            // videoId dans "videoId":{"kind":"...","videoId":"XXXX"}
-            String videoId = extractNestedField(block, "videoId", "videoId");
+            // videoId lives inside "id":{"kind":"...","videoId":"XXXX"}
+            String videoId = extractNestedField(block, "id", "videoId");
             if (videoId == null || videoId.length() < 5) return null;
 
             String title   = extractField(block, "title");
@@ -143,20 +143,22 @@ public class YouTubeAPIService {
             v.youtubeUrl   = "https://www.youtube.com/watch?v=" + videoId;
             return v;
         } catch (Exception e) {
+            System.err.println("parseItem error: " + e.getMessage());
             return null;
         }
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  HELPERS JSON (sans dépendance externe)
+    //  JSON HELPERS (no external dependencies)
     // ══════════════════════════════════════════════════════════════════════════
 
-    /** Extrait la valeur d'un champ JSON simple "key":"value" */
+    /** Extract value of a simple JSON string field: "key":"value" */
     private String extractField(String json, String key) {
         String search = "\"" + key + "\"";
         int idx = json.indexOf(search);
         if (idx == -1) return null;
         idx += search.length();
+        // Skip whitespace and colon
         while (idx < json.length() && (json.charAt(idx) == ' ' || json.charAt(idx) == ':')) idx++;
         if (idx >= json.length() || json.charAt(idx) != '"') return null;
         idx++;
@@ -165,10 +167,13 @@ public class YouTubeAPIService {
             if (json.charAt(idx) == '\\' && idx + 1 < json.length()) {
                 idx++;
                 char next = json.charAt(idx);
-                if (next == 'n') sb.append(' ');
-                else if (next == '"') sb.append('"');
-                else if (next == '\\') sb.append('\\');
-                else sb.append(next);
+                switch (next) {
+                    case 'n'  -> sb.append(' ');
+                    case '"'  -> sb.append('"');
+                    case '\\' -> sb.append('\\');
+                    case 'r'  -> { /* skip */ }
+                    default   -> sb.append(next);
+                }
             } else {
                 sb.append(json.charAt(idx));
             }
@@ -177,15 +182,11 @@ public class YouTubeAPIService {
         return sb.toString();
     }
 
-    /**
-     * Extrait un champ dans un sous-objet : ex chercher "videoId" dans "videoId":{"videoId":"..."}
-     * On cherche d'abord le bloc de l'objet parent, puis le champ enfant.
-     */
+    /** Extract child field from a named sub-object: parentKey.childKey */
     private String extractNestedField(String json, String parentKey, String childKey) {
         String search = "\"" + parentKey + "\"";
         int idx = json.indexOf(search);
         if (idx == -1) return null;
-        // Trouver le sous-objet { ... }
         int objStart = json.indexOf('{', idx + search.length());
         if (objStart == -1) return null;
         int objEnd = findClosingBrace(json, objStart);
@@ -197,16 +198,14 @@ public class YouTubeAPIService {
     private int findClosingBrace(String s, int start) {
         int depth = 0;
         for (int i = start; i < s.length(); i++) {
-            if (s.charAt(i) == '{') depth++;
-            else if (s.charAt(i) == '}') {
-                depth--;
-                if (depth == 0) return i;
-            }
+            if      (s.charAt(i) == '{') depth++;
+            else if (s.charAt(i) == '}') { depth--; if (depth == 0) return i; }
         }
         return -1;
     }
 
     private String unescapeJson(String s) {
+        if (s == null) return "";
         return s.replace("\\u0026", "&")
                 .replace("\\u0027", "'")
                 .replace("\\u003c", "<")
@@ -215,12 +214,13 @@ public class YouTubeAPIService {
     }
 
     private String parseError(String errorJson) {
+        if (errorJson == null || errorJson.isEmpty()) return "Erreur inconnue";
         String msg = extractField(errorJson, "message");
-        return msg != null ? msg : errorJson.substring(0, Math.min(100, errorJson.length()));
+        return msg != null ? msg : errorJson.substring(0, Math.min(200, errorJson.length()));
     }
 
     // ══════════════════════════════════════════════════════════════════════════
-    //  CLASSE RÉSULTAT
+    //  RESULT CLASS
     // ══════════════════════════════════════════════════════════════════════════
 
     public static class YouTubeVideo {

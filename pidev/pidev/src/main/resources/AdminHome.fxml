@@ -49,6 +49,7 @@
         <Label text="NAVIGATION"
                style="-fx-text-fill: rgba(255,255,255,0.4); -fx-font-size: 9px; -fx-letter-spacing: 2; -fx-padding: 20 20 8 25; -fx-font-weight: 600;"/>
 
+        <!-- Dashboard -->
         <HBox alignment="CENTER_LEFT" spacing="0">
             <HBox fx:id="indicDashboard" prefWidth="4" prefHeight="42"
                   style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:#E8956D;-fx-background-radius:0 2 2 0;"/>
@@ -61,6 +62,8 @@
                 </HBox>
             </VBox>
         </HBox>
+
+        <!-- Utilisateurs -->
         <HBox alignment="CENTER_LEFT" spacing="0">
             <HBox fx:id="indicUtilisateurs" prefWidth="4" prefHeight="42"
                   style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
@@ -73,6 +76,22 @@
                 </HBox>
             </VBox>
         </HBox>
+
+        <!-- Formations -->
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <HBox fx:id="indicFormations" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
+            <VBox fx:id="navFormations" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showFormations" onMouseEntered="#onNavFormationsEnter" onMouseExited="#onNavFormationsExit">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="📚" style="-fx-font-size:16px;"/>
+                    <Label text="Les Formations" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- Profil -->
         <HBox alignment="CENTER_LEFT" spacing="0">
             <HBox fx:id="indicProfil" prefWidth="4" prefHeight="42"
                   style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
@@ -84,26 +103,8 @@
                     <Label text="Mon Profil" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
                 </HBox>
             </VBox>
-        <HBox alignment="CENTER_LEFT" spacing="0">
-            <!-- This is the small vertical indicator bar on the left -->
-            <HBox fx:id="indicFormations" prefWidth="4" prefHeight="42"
-                  style="-fx-min-width: 4; -fx-max-width: 4; -fx-background-color: transparent; -fx-background-radius: 0 2 2 0;"/>
-
-            <!-- The actual clickable VBox -->
-            <VBox fx:id="navFormations" alignment="CENTER_LEFT"
-                  style="-fx-padding: 12 20 12 16; -fx-cursor: hand; -fx-background-color: transparent; -fx-background-radius: 0 10 10 0;"
-                  onMouseClicked="#showFormations"
-                  onMouseEntered="#onNavFormationsEnter"
-                  onMouseExited="#onNavFormationsExit"
-                  HBox.hgrow="ALWAYS">
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <!-- UPDATED SYMBOL HERE -->
-                    <Label text="📚" style="-fx-font-size: 16px;"/>
-                    <Label text="Formations"
-                           style="-fx-text-fill: rgba(255,255,255,0.75); -fx-font-size: 13px; -fx-font-weight: bold;"/>
-                </HBox>
-            </VBox>
         </HBox>
+
         <Region VBox.vgrow="ALWAYS"/>
         <VBox spacing="10" style="-fx-padding:15;-fx-border-color:rgba(255,255,255,0.1) transparent transparent transparent;-fx-border-width:1;">
             <HBox spacing="8" alignment="CENTER_LEFT">
@@ -144,7 +145,11 @@
 
                 <VBox spacing="20" style="-fx-padding: 25 30 30 30;">
 
-                    <!-- ── 4 Stat Cards ── -->
+                    <!-- ── Section label: Utilisateurs ── -->
+                    <Label text="👥  Statistiques Utilisateurs"
+                           style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #4A5568;"/>
+
+                    <!-- ── 4 User Stat Cards ── -->
                     <HBox spacing="16">
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
                               style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
@@ -220,6 +225,78 @@
                             <Label text="TOTAL" style="-fx-font-size:10px;-fx-letter-spacing:1;-fx-text-fill:rgba(255,255,255,0.7);-fx-font-weight:600;"/>
                             <Label fx:id="lblNbTotal" text="—" style="-fx-font-size:32px;-fx-font-weight:700;-fx-text-fill:white;"/>
                             <Label text="utilisateurs enregistrés" style="-fx-font-size:11px;-fx-text-fill:rgba(255,255,255,0.6);"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- ── Section label: Formations ── -->
+                    <Label text="📚  Statistiques Formations"
+                           style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #4A5568;"/>
+
+                    <!-- ── 4 Formation Stat Cards ── -->
+                    <HBox spacing="16">
+                        <!-- Total Formations -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
+                                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <StackPane prefWidth="44" prefHeight="44">
+                                    <Circle radius="22" fill="#F0E6FF"/>
+                                    <Label text="📚" style="-fx-font-size:20px;"/>
+                                </StackPane>
+                                <VBox spacing="2">
+                                    <Label text="TOTAL" style="-fx-font-size:10px;-fx-letter-spacing:1;-fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
+                                    <Label fx:id="lblNbFormations" text="—" style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:#6C5CE7;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="formations disponibles" style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
+                        </VBox>
+
+                        <!-- Avec Vidéo -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
+                                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <StackPane prefWidth="44" prefHeight="44">
+                                    <Circle radius="22" fill="#E8F8F5"/>
+                                    <Label text="🎬" style="-fx-font-size:20px;"/>
+                                </StackPane>
+                                <VBox spacing="2">
+                                    <Label text="AVEC VIDÉO" style="-fx-font-size:10px;-fx-letter-spacing:1;-fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
+                                    <Label fx:id="lblNbAvecVideo" text="—" style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:#00B894;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="formations avec vidéo" style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
+                        </VBox>
+
+                        <!-- Avec Quiz -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
+                                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <StackPane prefWidth="44" prefHeight="44">
+                                    <Circle radius="22" fill="#FFF3E0"/>
+                                    <Label text="📝" style="-fx-font-size:20px;"/>
+                                </StackPane>
+                                <VBox spacing="2">
+                                    <Label text="AVEC QUIZ" style="-fx-font-size:10px;-fx-letter-spacing:1;-fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
+                                    <Label fx:id="lblNbAvecQuiz" text="—" style="-fx-font-size:28px;-fx-font-weight:700;-fx-text-fill:#E67E22;"/>
+                                </VBox>
+                            </HBox>
+                            <Label text="formations avec quiz" style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
+                        </VBox>
+
+                        <!-- Catégories -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color: linear-gradient(to bottom, #6C5CE7, #5A4BD1);
+                                     -fx-padding:22;-fx-background-radius:14;
+                                     -fx-effect:dropshadow(gaussian,rgba(108,92,231,0.4),12,0,0,4);">
+                            <StackPane prefWidth="44" prefHeight="44">
+                                <Circle radius="22" fill="rgba(255,255,255,0.2)"/>
+                                <Label text="🗂️" style="-fx-font-size:20px;"/>
+                            </StackPane>
+                            <Label text="CATÉGORIES" style="-fx-font-size:10px;-fx-letter-spacing:1;-fx-text-fill:rgba(255,255,255,0.7);-fx-font-weight:600;"/>
+                            <Label fx:id="lblNbCategories" text="—" style="-fx-font-size:32px;-fx-font-weight:700;-fx-text-fill:white;"/>
+                            <Label text="catégories distinctes" style="-fx-font-size:11px;-fx-text-fill:rgba(255,255,255,0.6);"/>
                         </VBox>
                     </HBox>
 

@@ -41,12 +41,13 @@ public class VideoPlayerUtil {
         } catch (Exception e) {
             return "";
         }
-        return id;
+        return id.trim();
     }
 
     /**
-     * YouTube Player — loads full watch page with CSS injection
-     * to hide everything except the video player
+     * YouTube Player — uses embed iframe HTML loaded directly into WebView.
+     * This is the ONLY reliable way to play YouTube inside a JavaFX WebView.
+     * The watch page blocks embedding; the embed URL works perfectly.
      */
     public static VBox createYouTubePlayer(String url) {
         VBox container = new VBox(0);
@@ -58,6 +59,8 @@ public class VideoPlayerUtil {
             return createErrorMessage("URL YouTube invalide", url);
         }
 
+        String embedUrl = "https://www.youtube.com/embed/" + videoId
+                + "?autoplay=0&rel=0&modestbranding=1";
         String watchUrl = "https://www.youtube.com/watch?v=" + videoId;
 
         try {
@@ -69,64 +72,35 @@ public class VideoPlayerUtil {
             WebEngine engine = webView.getEngine();
             engine.setJavaScriptEnabled(true);
 
-            // Chrome user-agent so YouTube serves modern page
-            engine.setUserAgent(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                            "AppleWebKit/537.36 (KHTML, like Gecko) " +
-                            "Chrome/120.0.0.0 Safari/537.36"
-            );
+            // Build a simple HTML page that embeds the YouTube iframe
+            String html = "<!DOCTYPE html>"
+                    + "<html>"
+                    + "<head>"
+                    + "<meta charset='UTF-8'/>"
+                    + "<style>"
+                    + "  * { margin: 0; padding: 0; box-sizing: border-box; }"
+                    + "  body { background: #000; width: 100%; height: 100vh;"
+                    + "         display: flex; flex-direction: column;"
+                    + "         align-items: center; justify-content: center; }"
+                    + "  .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; }"
+                    + "  .video-wrapper iframe {"
+                    + "    position: absolute; top: 0; left: 0;"
+                    + "    width: 100%; height: 100%; border: 0;"
+                    + "  }"
+                    + "</style>"
+                    + "</head>"
+                    + "<body>"
+                    + "  <div class='video-wrapper'>"
+                    + "    <iframe src='" + embedUrl + "'"
+                    + "      allow='accelerometer; autoplay; clipboard-write;"
+                    + "             encrypted-media; gyroscope; picture-in-picture'"
+                    + "      allowfullscreen>"
+                    + "    </iframe>"
+                    + "  </div>"
+                    + "</body>"
+                    + "</html>";
 
-            // After page loads, inject CSS to hide everything except video
-            engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-                if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-                    // Hide comments, sidebar, header, etc — keep only the player
-                    engine.executeScript(
-                            "try {" +
-                                    "  var style = document.createElement('style');" +
-                                    "  style.textContent = '" +
-                                    "    #masthead-container, #header, ytd-masthead," +
-                                    "    #related, #comments, #meta, #info," +
-                                    "    #secondary, #below, #bottom-grid," +
-                                    "    ytd-comments, #subscribe-button," +
-                                    "    .ytp-chrome-top, #owner," +
-                                    "    ytd-merch-shelf-renderer," +
-                                    "    #description, #actions," +
-                                    "    tp-yt-app-header-layout," +
-                                    "    #chips-wrapper, #header-bar," +
-                                    "    #guide-button, #buttons," +
-                                    "    ytd-mini-guide-renderer," +
-                                    "    #guide-content, #page-header," +
-                                    "    ytd-engagement-panel-section-list-renderer," +
-                                    "    #cinematics, #clarify-box," +
-                                    "    .ytd-watch-flexy #panels," +
-                                    "    #chat, #ticket-shelf," +
-                                    "    ytd-watch-metadata," +
-                                    "    #above-the-fold, #top-row" +
-                                    "    { display: none !important; }" +
-                                    "    body { background: #000 !important; overflow: hidden !important; }" +
-                                    "    ytd-page-manager { margin-top: 0 !important; }" +
-                                    "    #page-manager { margin-top: 0 !important; }" +
-                                    "    #primary { max-width: 100% !important; }" +
-                                    "    .html5-video-player { width: 100% !important; height: 100vh !important; }" +
-                                    "    video { width: 100% !important; height: 100% !important; object-fit: contain !important; }" +
-                                    "    #movie_player { width: 100% !important; height: 100vh !important; }" +
-                                    "    .ytd-watch-flexy[flexy] #primary.ytd-watch-flexy { max-width: 100% !important; }" +
-                                    "    ytd-watch-flexy { --ytd-watch-flexy-panel-max-height: 100vh !important; }" +
-                                    "  ';" +
-                                    "  document.head.appendChild(style);" +
-                                    "  window.scrollTo(0, 0);" +
-                                    "} catch(e) {}"
-                    );
-                } else if (newState == javafx.concurrent.Worker.State.FAILED) {
-                    javafx.application.Platform.runLater(() -> {
-                        container.getChildren().clear();
-                        container.getChildren().add(createYouTubeFallback(videoId, url));
-                    });
-                }
-            });
-
-            // Load the watch page
-            engine.load(watchUrl);
+            engine.loadContent(html, "text/html");
 
             engine.setOnError(event ->
                     System.err.println("WebView error: " + event.getMessage()));
@@ -139,18 +113,11 @@ public class VideoPlayerUtil {
             controlsBar.setPadding(new Insets(8, 15, 8, 15));
             controlsBar.setStyle("-fx-background-color: #2d3436;");
 
-            Button btnReload = new Button("🔄 Recharger");
-            btnReload.setStyle(
-                    "-fx-background-color: #636e72; -fx-text-fill: white; " +
-                            "-fx-cursor: hand; -fx-background-radius: 5; -fx-padding: 8 15;"
-            );
-            btnReload.setOnAction(e -> engine.reload());
-
             Button btnBrowser = new Button("🌐 Ouvrir dans le navigateur");
             btnBrowser.setStyle(
-                    "-fx-background-color: #d63031; -fx-text-fill: white; " +
-                            "-fx-font-weight: bold; -fx-cursor: hand; " +
-                            "-fx-background-radius: 5; -fx-padding: 8 15;"
+                    "-fx-background-color: #d63031; -fx-text-fill: white; "
+                            + "-fx-font-weight: bold; -fx-cursor: hand; "
+                            + "-fx-background-radius: 5; -fx-padding: 8 15;"
             );
             btnBrowser.setOnAction(e -> openInBrowser(watchUrl));
 
@@ -160,7 +127,7 @@ public class VideoPlayerUtil {
             Label lblInfo = new Label("🎬 YouTube — " + videoId);
             lblInfo.setStyle("-fx-text-fill: #b2bec3; -fx-font-size: 11px;");
 
-            controlsBar.getChildren().addAll(btnReload, btnBrowser, spacer, lblInfo);
+            controlsBar.getChildren().addAll(btnBrowser, spacer, lblInfo);
 
             container.getChildren().addAll(webView, controlsBar);
             container.setUserData(webView);
@@ -173,9 +140,6 @@ public class VideoPlayerUtil {
         return container;
     }
 
-    /**
-     * Fallback when WebView cannot load YouTube
-     */
     private static VBox createYouTubeFallback(String videoId, String originalUrl) {
         VBox fallback = new VBox(15);
         fallback.setAlignment(Pos.CENTER);
@@ -193,8 +157,7 @@ public class VideoPlayerUtil {
         idLabel.setStyle("-fx-text-fill: #b2bec3; -fx-font-size: 13px;");
 
         Label explanation = new Label(
-                "Le lecteur intégré ne peut pas charger cette vidéo.\n" +
-                        "Cliquez ci-dessous pour l'ouvrir dans votre navigateur."
+                "Cliquez ci-dessous pour ouvrir la vidéo dans votre navigateur."
         );
         explanation.setStyle(
                 "-fx-text-fill: #dfe6e9; -fx-font-size: 13px; -fx-text-alignment: center;"
@@ -204,9 +167,9 @@ public class VideoPlayerUtil {
 
         Button btnOpen = new Button("▶️ Ouvrir dans le Navigateur");
         btnOpen.setStyle(
-                "-fx-background-color: #d63031; -fx-text-fill: white; " +
-                        "-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 12 30; " +
-                        "-fx-background-radius: 10; -fx-cursor: hand;"
+                "-fx-background-color: #d63031; -fx-text-fill: white; "
+                        + "-fx-font-size: 16px; -fx-font-weight: bold; -fx-padding: 12 30; "
+                        + "-fx-background-radius: 10; -fx-cursor: hand;"
         );
         btnOpen.setOnAction(e -> openInBrowser(
                 "https://www.youtube.com/watch?v=" + videoId));
@@ -215,9 +178,6 @@ public class VideoPlayerUtil {
         return fallback;
     }
 
-    /**
-     * Open URL in system browser
-     */
     private static void openInBrowser(String url) {
         try {
             java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
@@ -225,8 +185,7 @@ public class VideoPlayerUtil {
             try {
                 String os = System.getProperty("os.name").toLowerCase();
                 if (os.contains("win")) {
-                    Runtime.getRuntime().exec(
-                            "rundll32 url.dll,FileProtocolHandler " + url);
+                    Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
                 } else if (os.contains("mac")) {
                     Runtime.getRuntime().exec(new String[]{"open", url});
                 } else {
@@ -239,7 +198,7 @@ public class VideoPlayerUtil {
     }
 
     /**
-     * Local MP4 player
+     * Local MP4 player using JavaFX MediaPlayer
      */
     public static VBox createLocalPlayer(String filePath) {
         VBox container = new VBox(0);
@@ -250,12 +209,10 @@ public class VideoPlayerUtil {
 
         try {
             Media media = new Media(file.toURI().toString());
-            media.setOnError(() -> {
-                javafx.application.Platform.runLater(() -> {
-                    container.getChildren().clear();
-                    container.getChildren().add(createWebViewLocalPlayer(filePath));
-                });
-            });
+            media.setOnError(() -> javafx.application.Platform.runLater(() -> {
+                container.getChildren().clear();
+                container.getChildren().add(createWebViewLocalPlayer(filePath));
+            }));
 
             MediaPlayer mediaPlayer = new MediaPlayer(media);
             MediaView mediaView = new MediaView(mediaPlayer);
@@ -271,25 +228,15 @@ public class VideoPlayerUtil {
             lblLoading.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
             videoPane.getChildren().add(lblLoading);
 
-            videoPane.widthProperty().addListener((o, ov, nv) ->
-                    mediaView.setFitWidth(nv.doubleValue()));
-            videoPane.heightProperty().addListener((o, ov, nv) ->
-                    mediaView.setFitHeight(nv.doubleValue()));
+            videoPane.widthProperty().addListener((o, ov, nv) -> mediaView.setFitWidth(nv.doubleValue()));
+            videoPane.heightProperty().addListener((o, ov, nv) -> mediaView.setFitHeight(nv.doubleValue()));
 
             Button btnPlay = new Button("▶ Lecture");
-            btnPlay.setStyle(
-                    "-fx-background-color: #00b894; -fx-text-fill: white; " +
-                            "-fx-font-size: 14px; -fx-cursor: hand; " +
-                            "-fx-background-radius: 8; -fx-padding: 8 20;"
-            );
+            btnPlay.setStyle("-fx-background-color: #00b894; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 20;");
             btnPlay.setDisable(true);
 
             Button btnStop = new Button("⏹ Stop");
-            btnStop.setStyle(
-                    "-fx-background-color: #d63031; -fx-text-fill: white; " +
-                            "-fx-font-size: 14px; -fx-cursor: hand; " +
-                            "-fx-background-radius: 8; -fx-padding: 8 20;"
-            );
+            btnStop.setStyle("-fx-background-color: #d63031; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 20;");
             btnStop.setDisable(true);
 
             Slider timeSlider = new Slider(0, 100, 0);
@@ -312,8 +259,7 @@ public class VideoPlayerUtil {
                 btnStop.setDisable(false);
                 timeSlider.setDisable(false);
                 timeSlider.setMax(mediaPlayer.getTotalDuration().toSeconds());
-                lblTime.setText("00:00 / " +
-                        formatTime(mediaPlayer.getTotalDuration()));
+                lblTime.setText("00:00 / " + formatTime(mediaPlayer.getTotalDuration()));
                 lblStatus.setText("✅ Prêt");
                 lblStatus.setStyle("-fx-text-fill: #00b894; -fx-font-size: 12px;");
             });
@@ -322,30 +268,18 @@ public class VideoPlayerUtil {
                 if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
                     mediaPlayer.pause();
                     btnPlay.setText("▶ Lecture");
-                    btnPlay.setStyle(
-                            "-fx-background-color: #00b894; -fx-text-fill: white; " +
-                                    "-fx-font-size: 14px; -fx-cursor: hand; " +
-                                    "-fx-background-radius: 8; -fx-padding: 8 20;"
-                    );
+                    btnPlay.setStyle("-fx-background-color: #00b894; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 20;");
                 } else {
                     mediaPlayer.play();
                     btnPlay.setText("⏸ Pause");
-                    btnPlay.setStyle(
-                            "-fx-background-color: #fdcb6e; -fx-text-fill: white; " +
-                                    "-fx-font-size: 14px; -fx-cursor: hand; " +
-                                    "-fx-background-radius: 8; -fx-padding: 8 20;"
-                    );
+                    btnPlay.setStyle("-fx-background-color: #fdcb6e; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 20;");
                 }
             });
 
             btnStop.setOnAction(e -> {
                 mediaPlayer.stop();
                 btnPlay.setText("▶ Lecture");
-                btnPlay.setStyle(
-                        "-fx-background-color: #00b894; -fx-text-fill: white; " +
-                                "-fx-font-size: 14px; -fx-cursor: hand; " +
-                                "-fx-background-radius: 8; -fx-padding: 8 20;"
-                );
+                btnPlay.setStyle("-fx-background-color: #00b894; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 20;");
             });
 
             mediaPlayer.volumeProperty().bind(volumeSlider.valueProperty());
@@ -355,8 +289,7 @@ public class VideoPlayerUtil {
                     Duration totalDur = mediaPlayer.getTotalDuration();
                     if (totalDur != null && !totalDur.isUnknown()) {
                         timeSlider.setValue(nv.toSeconds());
-                        lblTime.setText(
-                                formatTime(nv) + " / " + formatTime(totalDur));
+                        lblTime.setText(formatTime(nv) + " / " + formatTime(totalDur));
                     }
                 }
             });
@@ -370,20 +303,14 @@ public class VideoPlayerUtil {
             mediaPlayer.setOnEndOfMedia(() -> {
                 mediaPlayer.stop();
                 btnPlay.setText("▶ Lecture");
-                btnPlay.setStyle(
-                        "-fx-background-color: #00b894; -fx-text-fill: white; " +
-                                "-fx-font-size: 14px; -fx-cursor: hand; " +
-                                "-fx-background-radius: 8; -fx-padding: 8 20;"
-                );
+                btnPlay.setStyle("-fx-background-color: #00b894; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 8; -fx-padding: 8 20;");
             });
 
-            mediaPlayer.setOnError(() -> {
-                javafx.application.Platform.runLater(() -> {
-                    container.getChildren().clear();
-                    container.getChildren().add(createWebViewLocalPlayer(filePath));
-                    container.setUserData(null);
-                });
-            });
+            mediaPlayer.setOnError(() -> javafx.application.Platform.runLater(() -> {
+                container.getChildren().clear();
+                container.getChildren().add(createWebViewLocalPlayer(filePath));
+                container.setUserData(null);
+            }));
 
             HBox row1 = new HBox(10, btnPlay, btnStop, lblStatus);
             row1.setAlignment(Pos.CENTER);
@@ -468,7 +395,7 @@ public class VideoPlayerUtil {
         if (data instanceof MediaPlayer mp) {
             try { mp.stop(); mp.dispose(); } catch (Exception ignored) {}
         } else if (data instanceof WebView wv) {
-            try { wv.getEngine().load(null); } catch (Exception ignored) {}
+            try { wv.getEngine().loadContent(""); } catch (Exception ignored) {}
         }
         container.getChildren().forEach(node -> {
             if (node instanceof VBox vbox) stopMedia(vbox);
