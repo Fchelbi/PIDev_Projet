@@ -40,7 +40,7 @@ public class QuizGeneratorAPI {
     // ── API 1 : OpenRouter (agrégateur IA gratuit) ─────────────────────────
     private static final String OPENROUTER_URL    = "https://openrouter.ai/api/v1/chat/completions";
     // Clé gratuite — remplacer par votre propre clé sur openrouter.ai (gratuit à créer)
-    private static final String OPENROUTER_KEY    = "sk-or-v1-VOTRE_CLE_OPENROUTER_ICI";
+    private static final String OPENROUTER_KEY    = "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";
     private static final String OPENROUTER_MODEL  = "google/gemma-3-1b-it:free";
 
     // ── API 2 : Ollama local (si installé sur la machine) ─────────────────

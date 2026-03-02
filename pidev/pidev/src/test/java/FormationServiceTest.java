@@ -1,5 +1,6 @@
 import entities.Formation;
 import org.junit.jupiter.api.*;
+import services.FormationService;
 
 import java.sql.SQLException;
 import java.util.List;

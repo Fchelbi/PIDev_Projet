@@ -268,6 +268,7 @@ public class FormationController implements Initializable {
     //  TABLE COLUMNS
     // ═══════════════════════════════════
     private void setupVideoColumn() {
+        if (colVideo == null) return;
         colVideo.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("▶️");
             {
@@ -287,6 +288,7 @@ public class FormationController implements Initializable {
     }
 
     private void setupQuizColumn() {
+        if (colQuiz == null) return;
         colQuiz.setCellFactory(col -> new TableCell<>() {
             private final Button btn = new Button("📝");
             {

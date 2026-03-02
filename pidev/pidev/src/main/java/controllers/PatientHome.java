@@ -37,37 +37,28 @@ public class PatientHome {
     @FXML private ImageView imgHeaderPhoto;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane accueilPane;
-    @FXML private VBox navAccueil;
-    @FXML private HBox indicAccueil;
+    @FXML private VBox navAccueil, navFormations, navMesFormations, navResultats, navProfil;
+    @FXML private HBox indicAccueil, indicFormations, indicMesFormations, indicResultats, indicProfil;
 
     private User currentUser;
     private final serviceUser us = new serviceUser();
     private VBox currentActiveNav;
 
-    private static final String NAV_NORMAL  =
-            "-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;";
-    private static final String NAV_ACTIVE  =
-            "-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:rgba(255,255,255,0.13);-fx-background-radius:0 10 10 0;";
-    private static final String INDIC_HIDDEN  =
-            "-fx-min-width:4;-fx-max-width:4;-fx-min-height:30;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;";
-    private static final String INDIC_VISIBLE =
-            "-fx-min-width:4;-fx-max-width:4;-fx-min-height:30;-fx-background-color:#E8956D;-fx-background-radius:0 2 2 0;";
+    private static final String NAV_NORMAL  = "-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;";
+    private static final String NAV_ACTIVE  = "-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:rgba(255,255,255,0.13);-fx-background-radius:0 10 10 0;";
+    private static final String INDIC_HIDDEN  = "-fx-min-width:4;-fx-max-width:4;-fx-min-height:30;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;";
+    private static final String INDIC_VISIBLE = "-fx-min-width:4;-fx-max-width:4;-fx-min-height:30;-fx-background-color:#E8956D;-fx-background-radius:0 2 2 0;";
+    private static final String CARD_NORMAL = "-fx-background-color:white;-fx-padding:20;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);";
+    private static final String CARD_HOVER  = "-fx-background-color:#FFF8F0;-fx-padding:20;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(232,149,109,0.22),14,0,0,5);";
 
-    private static final String CARD_NORMAL =
-            "-fx-background-color:white;-fx-padding:24;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);";
-    private static final String CARD_HOVER  =
-            "-fx-background-color:#FFF8F0;-fx-padding:24;-fx-background-radius:14;-fx-cursor:hand;-fx-effect:dropshadow(gaussian,rgba(232,149,109,0.18),14,0,0,4);";
-
-    @FXML void initialize() { System.out.println("✅ PatientHome initialized"); }
+    @FXML void initialize() { System.out.println("PatientHome initialized"); }
 
     public void setUser(User user) {
         this.currentUser = user;
         refreshUserData();
         loadAffirmation();
         loadAdvice();
-        if (navAccueil   != null) navAccueil.setStyle(NAV_ACTIVE);
-        if (indicAccueil != null) indicAccueil.setStyle(INDIC_VISIBLE);
-        currentActiveNav = navAccueil;
+        setActiveNav(navAccueil, indicAccueil);
     }
 
     public void refreshUserData() {
@@ -75,13 +66,12 @@ public class PatientHome {
             User updated = us.getUserById(currentUser.getId_user());
             if (updated != null) this.currentUser = updated;
         } catch (SQLException e) { System.err.println("Refresh: " + e.getMessage()); }
-
         lblWelcome.setText("Bonjour, " + currentUser.getPrenom() + " 👋");
         lblAvatarHeader.setText(currentUser.getPrenom().substring(0, 1).toUpperCase());
         if (lblNom   != null) lblNom.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         if (lblEmail != null) lblEmail.setText(currentUser.getEmail());
         if (lblTel   != null) lblTel.setText(currentUser.getNum_tel() != null ? currentUser.getNum_tel() : "—");
-        if (lblNbRdv     != null) lblNbRdv.setText("0");
+        if (lblNbRdv != null) lblNbRdv.setText("0");
         if (lblNbSeances != null) lblNbSeances.setText("0");
         updateHeaderPhoto();
     }
@@ -100,92 +90,74 @@ public class PatientHome {
         lblAvatarHeader.setVisible(true);
     }
 
-    // ─── API 1: Affirmations.dev ──────────────────────────────
+    // ── APIs ─────────────────────────────────────────────────────────────
+
     private void loadAffirmation() {
         if (lblAffirmation == null) return;
-        Platform.runLater(() -> {
-            if (lblAffirmStatus != null) lblAffirmStatus.setText("⏳ Chargement...");
-            lblAffirmation.setText("");
-        });
+        Platform.runLater(() -> { if (lblAffirmStatus != null) lblAffirmStatus.setText("⏳ Chargement..."); lblAffirmation.setText(""); });
         Thread t = new Thread(() -> {
             try {
-                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
-                HttpRequest req = HttpRequest.newBuilder()
-                        .uri(URI.create("https://www.affirmations.dev/"))
-                        .timeout(Duration.ofSeconds(8))
-                        .header("User-Agent", "EchoCare/1.0").GET().build();
-                HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+                HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
+                HttpRequest r = HttpRequest.newBuilder().uri(URI.create("https://www.affirmations.dev/")).timeout(Duration.ofSeconds(8)).header("User-Agent","EchoCare/1.0").GET().build();
+                HttpResponse<String> resp = c.send(r, HttpResponse.BodyHandlers.ofString());
                 String text = extractValue(resp.body(), "affirmation");
-                Platform.runLater(() -> {
-                    if (lblAffirmStatus != null) lblAffirmStatus.setText("✨ Affirmation du jour");
-                    lblAffirmation.setText("❝  " + text + "  ❞");
-                });
+                Platform.runLater(() -> { if (lblAffirmStatus != null) lblAffirmStatus.setText("✨ Affirmation du jour"); lblAffirmation.setText("❝  " + text + "  ❞"); });
             } catch (Exception e) {
-                Platform.runLater(() -> {
-                    if (lblAffirmStatus != null) lblAffirmStatus.setText("✨ Affirmation");
-                    lblAffirmation.setText("❝  Vous avez la force de surmonter tous les défis d'aujourd'hui.  ❞");
-                });
+                Platform.runLater(() -> { if (lblAffirmStatus != null) lblAffirmStatus.setText("✨ Affirmation"); lblAffirmation.setText("❝  Vous avez la force de surmonter tous les défis d'aujourd'hui.  ❞"); });
             }
         });
-        t.setDaemon(true);
-        t.start();
+        t.setDaemon(true); t.start();
     }
 
-    // ─── API 2: Advice Slip ───────────────────────────────────
     private void loadAdvice() {
         if (lblAdvice == null) return;
-        Platform.runLater(() -> {
-            if (lblAdviceStatus != null) lblAdviceStatus.setText("⏳ Chargement...");
-            lblAdvice.setText("");
-        });
+        Platform.runLater(() -> { if (lblAdviceStatus != null) lblAdviceStatus.setText("⏳ Chargement..."); lblAdvice.setText(""); });
         Thread t = new Thread(() -> {
             try {
-                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
-                HttpRequest req = HttpRequest.newBuilder()
-                        .uri(URI.create("https://api.adviceslip.com/advice"))
-                        .timeout(Duration.ofSeconds(8))
-                        .header("User-Agent", "EchoCare/1.0").GET().build();
-                HttpResponse<String> resp = client.send(req, HttpResponse.BodyHandlers.ofString());
+                HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
+                HttpRequest r = HttpRequest.newBuilder().uri(URI.create("https://api.adviceslip.com/advice")).timeout(Duration.ofSeconds(8)).header("User-Agent","EchoCare/1.0").GET().build();
+                HttpResponse<String> resp = c.send(r, HttpResponse.BodyHandlers.ofString());
                 String text = extractValue(resp.body(), "advice");
-                Platform.runLater(() -> {
-                    if (lblAdviceStatus != null) lblAdviceStatus.setText("🌿 Conseil bien-être");
-                    lblAdvice.setText("💡  " + text);
-                });
+                Platform.runLater(() -> { if (lblAdviceStatus != null) lblAdviceStatus.setText("🌿 Conseil bien-être"); lblAdvice.setText("💡  " + text); });
             } catch (Exception e) {
-                Platform.runLater(() -> {
-                    if (lblAdviceStatus != null) lblAdviceStatus.setText("🌿 Conseil");
-                    lblAdvice.setText("💡  Prenez soin de votre santé mentale chaque jour.");
-                });
+                Platform.runLater(() -> { if (lblAdviceStatus != null) lblAdviceStatus.setText("🌿 Conseil"); lblAdvice.setText("💡  Prenez soin de votre santé mentale chaque jour."); });
             }
         });
-        t.setDaemon(true);
-        t.start();
+        t.setDaemon(true); t.start();
     }
 
     private String extractValue(String json, String key) {
-        String s = "\"" + key + "\":\"";
-        int i = json.indexOf(s);
-        if (i < 0) return "";
-        i += s.length();
-        int end = json.indexOf("\"", i);
-        return end < 0 ? "" : json.substring(i, end).replace("\\n"," ").replace("\\'","'");
+        String s = "\"" + key + "\":\""; int i = json.indexOf(s); if (i < 0) return "";
+        i += s.length(); int end = json.indexOf("\"", i); return end < 0 ? "" : json.substring(i, end).replace("\\n"," ").replace("\\'","'");
     }
 
     @FXML void refreshAffirmation(MouseEvent e) { loadAffirmation(); }
     @FXML void refreshAdvice(MouseEvent e)      { loadAdvice(); }
 
-    // ─── Navigation ───────────────────────────────────────────
+    // ── Navigation click handlers ────────────────────────────────────────
+
     @FXML void showAccueil(MouseEvent event) {
-        if (navAccueil   != null) navAccueil.setStyle(NAV_ACTIVE);
-        if (indicAccueil != null) indicAccueil.setStyle(INDIC_VISIBLE);
-        currentActiveNav = navAccueil;
+        setActiveNav(navAccueil, indicAccueil);
         contentArea.getChildren().setAll(accueilPane);
     }
 
-    @FXML void onNavAccueilEnter(MouseEvent e) { if(navAccueil!=currentActiveNav) navAccueil.setStyle(NAV_ACTIVE); }
-    @FXML void onNavAccueilExit(MouseEvent e)  { if(navAccueil!=currentActiveNav) navAccueil.setStyle(NAV_NORMAL); }
+    @FXML void showAllFormations(MouseEvent event) {
+        setActiveNav(navFormations, indicFormations);
+        loadSubPage("PatientFormations.fxml", "Formations");
+    }
+
+    @FXML void showMyFormations(MouseEvent event) {
+        setActiveNav(navMesFormations, indicMesFormations);
+        loadSubPage("PatientMesFormations.fxml", "Mes Formations");
+    }
+
+    @FXML void showMyResults(MouseEvent event) {
+        setActiveNav(navResultats, indicResultats);
+        loadSubPage("PatientResultats.fxml", "Mes Résultats");
+    }
 
     @FXML void showProfil(MouseEvent event) {
+        setActiveNav(navProfil, indicProfil);
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
             ScrollPane page = loader.load();
@@ -193,21 +165,76 @@ public class PatientHome {
             ctrl.setCurrentUser(currentUser);
             ctrl.setOnPhotoChanged(this::refreshUserData);
             contentArea.getChildren().setAll(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LightDialog.showError("Erreur", "Impossible de charger le profil.");
-        }
+        } catch (IOException e) { e.printStackTrace(); LightDialog.showError("Erreur","Impossible de charger le profil."); }
     }
 
-    @FXML void onCardProfilEnter(MouseEvent e) { ((VBox) e.getSource()).setStyle(CARD_HOVER); }
-    @FXML void onCardProfilExit(MouseEvent e)  { ((VBox) e.getSource()).setStyle(CARD_NORMAL); }
+    private void loadSubPage(String fxmlName, String title) {
+        try {
+            java.net.URL res = getClass().getResource("/" + fxmlName);
+            if (res != null) {
+                FXMLLoader loader = new FXMLLoader(res);
+                Parent page = loader.load();
+                Object ctrl = loader.getController();
+                if (ctrl != null) { try { ctrl.getClass().getMethod("setUser",User.class).invoke(ctrl, currentUser); } catch (Exception ignored) {} }
+                contentArea.getChildren().setAll(page);
+            } else {
+                contentArea.getChildren().setAll(buildPlaceholder(title));
+            }
+        } catch (IOException e) { e.printStackTrace(); contentArea.getChildren().setAll(buildPlaceholder(title)); }
+    }
+
+    private ScrollPane buildPlaceholder(String title) {
+        VBox outer = new VBox(0);
+        HBox header = new HBox(); header.setStyle("-fx-padding:22 30;-fx-background-color:white;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),8,0,0,2);");
+        Label h = new Label(title); h.setStyle("-fx-font-size:22px;-fx-font-weight:700;-fx-text-fill:#2D3748;"); header.getChildren().add(h);
+        VBox content = new VBox(16); content.setAlignment(javafx.geometry.Pos.CENTER); content.setStyle("-fx-padding:80;");
+        Label icon = new Label("🚧"); icon.setStyle("-fx-font-size:50px;");
+        Label msg = new Label("Page en cours de développement"); msg.setStyle("-fx-font-size:17px;-fx-font-weight:600;-fx-text-fill:#4A5568;");
+        Label sub = new Label("Bientôt disponible."); sub.setStyle("-fx-font-size:12px;-fx-text-fill:#A0AEC0;");
+        content.getChildren().addAll(icon, msg, sub); outer.getChildren().addAll(header, content);
+        ScrollPane sp = new ScrollPane(outer); sp.setFitToWidth(true); sp.setStyle("-fx-background:transparent;-fx-background-color:#F2F0EC;"); return sp;
+    }
+
+    // ── Hover handlers ───────────────────────────────────────────────────
+
+    @FXML void onNavAccueilEnter(MouseEvent e)       { if (navAccueil       != currentActiveNav) navAccueil.setStyle(NAV_ACTIVE); }
+    @FXML void onNavAccueilExit(MouseEvent e)        { if (navAccueil       != currentActiveNav) navAccueil.setStyle(NAV_NORMAL); }
+    @FXML void onNavFormationsEnter(MouseEvent e)    { if (navFormations    != currentActiveNav) navFormations.setStyle(NAV_ACTIVE); }
+    @FXML void onNavFormationsExit(MouseEvent e)     { if (navFormations    != currentActiveNav) navFormations.setStyle(NAV_NORMAL); }
+    @FXML void onNavMesFormationsEnter(MouseEvent e) { if (navMesFormations != currentActiveNav) navMesFormations.setStyle(NAV_ACTIVE); }
+    @FXML void onNavMesFormationsExit(MouseEvent e)  { if (navMesFormations != currentActiveNav) navMesFormations.setStyle(NAV_NORMAL); }
+    @FXML void onNavResultatsEnter(MouseEvent e)     { if (navResultats     != currentActiveNav) navResultats.setStyle(NAV_ACTIVE); }
+    @FXML void onNavResultatsExit(MouseEvent e)      { if (navResultats     != currentActiveNav) navResultats.setStyle(NAV_NORMAL); }
+    @FXML void onNavProfilEnter(MouseEvent e)        { if (navProfil        != currentActiveNav) navProfil.setStyle(NAV_ACTIVE); }
+    @FXML void onNavProfilExit(MouseEvent e)         { if (navProfil        != currentActiveNav) navProfil.setStyle(NAV_NORMAL); }
+
+    @FXML void onCardFormationsEnter(MouseEvent e)    { ((VBox)e.getSource()).setStyle(CARD_HOVER); }
+    @FXML void onCardFormationsExit(MouseEvent e)     { ((VBox)e.getSource()).setStyle(CARD_NORMAL); }
+    @FXML void onCardMesFormationsEnter(MouseEvent e) { ((VBox)e.getSource()).setStyle(CARD_HOVER); }
+    @FXML void onCardMesFormationsExit(MouseEvent e)  { ((VBox)e.getSource()).setStyle(CARD_NORMAL); }
+    @FXML void onCardResultatsEnter(MouseEvent e)     { ((VBox)e.getSource()).setStyle(CARD_HOVER); }
+    @FXML void onCardResultatsExit(MouseEvent e)      { ((VBox)e.getSource()).setStyle(CARD_NORMAL); }
+    @FXML void onCardProfilEnter(MouseEvent e)        { ((VBox)e.getSource()).setStyle(CARD_HOVER); }
+    @FXML void onCardProfilExit(MouseEvent e)         { ((VBox)e.getSource()).setStyle(CARD_NORMAL); }
+
+    // ── Active nav helper ────────────────────────────────────────────────
+
+    private void setActiveNav(VBox nav, HBox indic) {
+        VBox[] navs   = { navAccueil, navFormations, navMesFormations, navResultats, navProfil };
+        HBox[] indics = { indicAccueil, indicFormations, indicMesFormations, indicResultats, indicProfil };
+        for (VBox n : navs)   if (n != null) n.setStyle(NAV_NORMAL);
+        for (HBox i : indics) if (i != null) i.setStyle(INDIC_HIDDEN);
+        if (nav   != null) nav.setStyle(NAV_ACTIVE);
+        if (indic != null) indic.setStyle(INDIC_VISIBLE);
+        currentActiveNav = nav;
+    }
+
+    // ── Logout ───────────────────────────────────────────────────────────
 
     @FXML void handleLogout(MouseEvent event) {
-        if (LightDialog.showConfirmation("Déconnexion", "Voulez-vous vraiment quitter ?", "👋")) {
-            try {
-                Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml"));
-                ((Stage) lblWelcome.getScene().getWindow()).setScene(new Scene(root));
-            } catch (IOException e) { e.printStackTrace(); }
+        if (LightDialog.showConfirmation("Déconnexion","Voulez-vous vraiment quitter ?","👋")) {
+            try { Parent root = FXMLLoader.load(getClass().getResource("/Login.fxml")); ((Stage)lblWelcome.getScene().getWindow()).setScene(new Scene(root)); }
+            catch (IOException e) { e.printStackTrace(); }
         }
     }
 }
