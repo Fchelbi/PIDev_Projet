@@ -1,6 +1,5 @@
 package controllers;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +10,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.web.WebView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -22,12 +22,7 @@ import utils.LightDialog;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.List;
 
 public class AdminHome {
@@ -40,6 +35,7 @@ public class AdminHome {
 
 
     @FXML private StackPane contentArea;
+    @FXML private WebView wvChartAdmin;
     @FXML private ScrollPane dashboardPane;
     @FXML private ImageView imgHeaderPhoto;
 
@@ -122,6 +118,7 @@ public class AdminHome {
                 if (lblPctCoaches  != null) lblPctCoaches.setText(String.format("%.0f%%", pc * 100));
                 if (lblPctAdmins   != null) lblPctAdmins.setText(String.format("%.0f%%", pa * 100));
             }
+            loadAdminCharts(p, c, a, total);
         } catch (SQLException e) {
             LightDialog.showError("Erreur", "Impossible de charger les stats.");
         }
@@ -195,4 +192,79 @@ public class AdminHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+
+    private void loadAdminCharts(int patients, int coaches, int admins, int total) {
+        if (wvChartAdmin == null) return;
+        if (total == 0) {
+            wvChartAdmin.getEngine().loadContent(
+                    "<html><body style='display:flex;align-items:center;justify-content:center;" +
+                            "height:260px;font-family:sans-serif;color:#A0AEC0;'>" +
+                            "<p>Aucune donnée disponible</p></body></html>");
+            return;
+        }
+        String html = """
+            <!DOCTYPE html><html>
+            <head>
+            <script src="https://www.gstatic.com/charts/loader.js"></script>
+            <script>
+              google.charts.load('current',{packages:['corechart']});
+              google.charts.setOnLoadCallback(draw);
+              function draw() {
+                drawPie(); drawBar();
+              }
+              function drawPie() {
+                var d = google.visualization.arrayToDataTable([
+                  ['Role','Nombre'],
+                  ['Patients',%d],
+                  ['Coaches',%d],
+                  ['Admins',%d]
+                ]);
+                new google.visualization.PieChart(document.getElementById('pie')).draw(d,{
+                  pieHole:0.42,
+                  colors:['#E8956D','#F5C87A','#4A6FA5'],
+                  backgroundColor:'transparent',
+                  legend:{position:'bottom',textStyle:{color:'#718096',fontSize:10}},
+                  chartArea:{width:'90%%',height:'75%%'},
+                  title:'Repartition',
+                  titleTextStyle:{color:'#2D3748',fontSize:12,bold:true}
+                });
+              }
+              function drawBar() {
+                var d = google.visualization.arrayToDataTable([
+                  ['Role','Nombre',{role:'style'},{role:'annotation'}],
+                  ['Patients',%d,'color:#E8956D','%d'],
+                  ['Coaches', %d,'color:#F5C87A','%d'],
+                  ['Admins',  %d,'color:#4A6FA5','%d']
+                ]);
+                new google.visualization.BarChart(document.getElementById('bar')).draw(d,{
+                  legend:{position:'none'},
+                  backgroundColor:'transparent',
+                  hAxis:{minValue:0,textStyle:{color:'#718096',fontSize:10}},
+                  vAxis:{textStyle:{color:'#718096',fontSize:11,bold:true}},
+                  chartArea:{width:'70%%',height:'78%%'},
+                  bar:{groupWidth:'55%%'},
+                  annotations:{alwaysOutside:true,textStyle:{fontSize:11,bold:true}},
+                  title:'Nombre par role',
+                  titleTextStyle:{color:'#2D3748',fontSize:12,bold:true}
+                });
+              }
+            </script>
+            <style>
+              body{margin:0;padding:4px;background:transparent;}
+              .row{display:flex;gap:12px;height:270px;}
+              .box{flex:1;background:white;border-radius:10px;overflow:hidden;
+                   box-shadow:0 1px 6px rgba(0,0,0,0.06);}
+            </style>
+            </head>
+            <body><div class="row">
+              <div class="box" id="pie"></div>
+              <div class="box" id="bar"></div>
+            </div></body></html>
+            """.formatted(
+                patients, coaches, admins,
+                patients, patients, coaches, coaches, admins, admins
+        );
+        wvChartAdmin.getEngine().loadContent(html);
+    }
+
 }

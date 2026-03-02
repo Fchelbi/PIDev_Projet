@@ -5,6 +5,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
+<?import javafx.scene.web.*?>
 
 <HBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
@@ -204,6 +205,19 @@
                             <Label text="utilisateurs enregistrés" style="-fx-font-size:11px;-fx-text-fill:rgba(255,255,255,0.6);"/>
                         </VBox>
                     </HBox>
+
+                    <!-- Google Charts -->
+                    <VBox spacing="10"
+                          style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:18 20;
+                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="Repartition des utilisateurs"
+                                   style="-fx-font-size:15px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+                            <Label text="(necessite internet · Google Charts)"
+                                   style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;-fx-font-style:italic;"/>
+                        </HBox>
+                        <WebView fx:id="wvChartAdmin" prefHeight="280" maxHeight="280"/>
+                    </VBox>
 
                     <VBox style="-fx-padding: 5 0;"/>
                 </VBox>
