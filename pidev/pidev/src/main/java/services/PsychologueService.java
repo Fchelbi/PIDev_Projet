@@ -1,7 +1,7 @@
-package tn.esprit.projet.services;
+package services;
 
-import tn.esprit.projet.entities.Psychologue;
-import tn.esprit.projet.utils.MyDBConnexion;
+import entities.Psychologue;
+import utils.MyDBConnexion;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

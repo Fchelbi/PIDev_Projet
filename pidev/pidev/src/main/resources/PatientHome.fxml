@@ -12,10 +12,10 @@
       prefWidth="1100" prefHeight="750"
       style="-fx-background-color: #FAF8F4;">
 
-    <!-- ══ SIDEBAR ══ -->
     <VBox prefWidth="240" minWidth="240"
           style="-fx-background-color: linear-gradient(to bottom, #3A5A90, #2E4A7A);
-                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 15, 0, 3, 0);">
+             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 15, 0, 3, 0);">
+
         <VBox alignment="CENTER" spacing="6"
               style="-fx-padding: 30 20 20 20;-fx-border-color:transparent transparent rgba(255,255,255,0.1) transparent;-fx-border-width:1;">
             <StackPane prefWidth="60" prefHeight="60" alignment="CENTER">
@@ -29,6 +29,7 @@
             <Label text="EchoCare" style="-fx-font-size:20px;-fx-font-weight:700;-fx-text-fill:white;"/>
             <Label text="PATIENT" style="-fx-font-size:10px;-fx-font-weight:600;-fx-text-fill:#E8956D;-fx-letter-spacing:2;"/>
         </VBox>
+
         <HBox alignment="CENTER_LEFT" spacing="12"
               style="-fx-padding:15 20;-fx-background-color:rgba(255,255,255,0.1);-fx-background-radius:12;">
             <VBox.margin><Insets top="15" left="15" right="15" bottom="5"/></VBox.margin>
@@ -47,6 +48,7 @@
 
         <Label text="NAVIGATION"
                style="-fx-text-fill:rgba(255,255,255,0.4);-fx-font-size:9px;-fx-letter-spacing:2;-fx-padding:20 20 8 25;-fx-font-weight:600;"/>
+
         <HBox alignment="CENTER_LEFT" spacing="0">
             <HBox fx:id="indicAccueil" prefWidth="4" prefHeight="42"
                   style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:#E8956D;-fx-background-radius:0 2 2 0;"/>
@@ -60,7 +62,6 @@
             </VBox>
         </HBox>
 
-        <!-- Messages -->
         <HBox alignment="CENTER_LEFT" spacing="0">
             <HBox fx:id="indicMessages" prefWidth="4" prefHeight="42"
                   style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
@@ -68,18 +69,30 @@
                   style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
                   onMouseClicked="#showMessages" onMouseEntered="#onNavMessagesEnter" onMouseExited="#onNavMessagesExit">
                 <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="💬" style="-fx-font-size:16px;"/>
+                    <Label text="💬" style="-fx-font-size:16px; -fx-text-fill:white;"/>
                     <Label text="Messagerie" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
                     <Region HBox.hgrow="ALWAYS"/>
                     <Label fx:id="lblMessagesBadge" text="0" visible="false" managed="false"
-                           style="-fx-background-color:#E8956D;-fx-text-fill:white;
-                                  -fx-font-size:9px;-fx-font-weight:700;
-                                  -fx-padding:2 6;-fx-background-radius:10;"/>
+                           style="-fx-background-color:#E8956D;-fx-text-fill:white;-fx-font-size:9px;-fx-font-weight:700;-fx-padding:2 6;-fx-background-radius:10;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <HBox fx:id="indicConsultation" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
+            <VBox fx:id="navConsultation" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showConsultation" onMouseEntered="#onNavConsultationEnter" onMouseExited="#onNavConsultationExit">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="📅" style="-fx-font-size:16px; -fx-text-fill:white;"/>
+                    <Label text="Consultations" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
                 </HBox>
             </VBox>
         </HBox>
 
         <Region VBox.vgrow="ALWAYS"/>
+
         <VBox spacing="10" style="-fx-padding:15;-fx-border-color:rgba(255,255,255,0.1) transparent transparent transparent;-fx-border-width:1;">
             <HBox spacing="8" alignment="CENTER_LEFT">
                 <Circle radius="5" fill="#6BCB77"/>

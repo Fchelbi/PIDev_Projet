@@ -8,7 +8,7 @@
 <BorderPane prefHeight="650.0" prefWidth="1100.0"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="tn.esprit.projet.gui.patient.PsyDispoController"
+            fx:controller="controllers.PsyDispoController"
             style="-fx-background-color: #F2F0EC;">
 
     <!-- ═════════ TOP BAR ═════════ -->
@@ -27,13 +27,7 @@
 
             <Region HBox.hgrow="ALWAYS"/>
 
-            <Button text="⬅ Menu"
-                    onAction="#retourMenu"
-                    style="-fx-background-color: #E8956D;
-                           -fx-text-fill: white;
-                           -fx-font-weight: 600;
-                           -fx-padding: 8 18;
-                           -fx-background-radius: 8;"/>
+
         </HBox>
     </top>
 
@@ -87,13 +81,35 @@
                          -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);">
 
                 <TableView fx:id="tableRdv"
-                           prefHeight="350"
-                           style="-fx-background-radius: 10; -fx-border-radius: 10;">
+                           prefHeight="450"
+                           fixedCellSize="65"
+                           style="-fx-background-color: transparent;
+                  -fx-border-color: transparent;
+                  -fx-selection-bar: #EBF4FF;
+                  -fx-selection-bar-non-focused: #F8FAFC;
+                  -fx-padding: 5;">
+
                     <columns>
-                        <TableColumn fx:id="colPatient" text="Patient" prefWidth="200"/>
-                        <TableColumn fx:id="colDate" text="Date prévue" prefWidth="300"/>
-                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="200"/>
+                        <TableColumn fx:id="colPatient" text="PATIENT" prefWidth="250"
+                                     style="-fx-alignment: CENTER-LEFT;
+                            -fx-font-weight: bold;
+                            -fx-text-fill: #2D3748;
+                            -fx-background-color: transparent;
+                            -fx-font-size: 14px;"/>
+
+                        <TableColumn fx:id="colDate" text="DATE PRÉVUE" prefWidth="250"
+                                     style="-fx-alignment: CENTER-LEFT;
+                            -fx-text-fill: #718096;
+                            -fx-background-color: transparent;"/>
+
+                        <TableColumn fx:id="colStatut" text="STATUT" prefWidth="180"
+                                     style="-fx-alignment: CENTER;
+                            -fx-background-color: transparent;"/>
                     </columns>
+
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                    </columnResizePolicy>
                 </TableView>
 
                 <!-- Actions -->

@@ -1,4 +1,4 @@
-package tn.esprit.projet.gui.patient;
+package controllers;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -13,11 +13,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import tn.esprit.projet.entities.Consultation;
-import tn.esprit.projet.entities.Psychologue;
-import tn.esprit.projet.services.ConsultationService;
-import tn.esprit.projet.services.PsychologueService;
-import tn.esprit.projet.utils.AlertUtils;
+import entities.Consultation;
+import entities.Psychologue;
+import services.ConsultationService;
+import services.PsychologueService;
+import utils.AlertUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -39,7 +39,7 @@ public class PatientConsultationController {
 
     private final ConsultationService consultationService = new ConsultationService();
     private final PsychologueService psychologueService = new PsychologueService();
-    private final int CURRENT_USER_ID = 1;
+    private final int CURRENT_USER_ID = 3;
 
     @FXML
     public void initialize() {
@@ -186,13 +186,5 @@ public class PatientConsultationController {
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    @FXML
-    void retourMenu(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/MainMenu.fxml")));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) { e.printStackTrace(); }
-    }
+
 }

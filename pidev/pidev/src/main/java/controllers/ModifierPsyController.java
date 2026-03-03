@@ -1,11 +1,11 @@
-package tn.esprit.projet.gui.patient;
+package controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import tn.esprit.projet.entities.Psychologue;
-import tn.esprit.projet.services.PsychologueService;
-import tn.esprit.projet.utils.AlertUtils;
+import entities.Psychologue;
+import services.PsychologueService;
+import utils.AlertUtils;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 

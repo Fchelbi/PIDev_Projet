@@ -1,7 +1,7 @@
-package tn.esprit.projet.services;
+package services;
 
-import tn.esprit.projet.entities.Consultation;
-import tn.esprit.projet.utils.MyDBConnexion;
+import entities.Consultation;
+import utils.MyDBConnexion;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +104,17 @@ public class ConsultationService {
         String req = "DELETE FROM consultation_en_ligne WHERE id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setInt(1, consultationId);
+            ps.executeUpdate();
+        }
+    }
+
+    public void updateStatutAndLink(int id, String statut, String meetLink) throws SQLException {
+        String req = "UPDATE consultation SET status = ?, meet_link = ? WHERE id_consultation = ?";
+
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setString(1, statut);
+            ps.setString(2, meetLink);
+            ps.setInt(3, id);
             ps.executeUpdate();
         }
     }

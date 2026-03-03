@@ -1,4 +1,5 @@
-package tn.esprit.projet.gui.patient;
+package controllers;
+
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

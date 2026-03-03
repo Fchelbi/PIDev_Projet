@@ -1,4 +1,4 @@
-package tn.esprit.projet.entities;
+package entities;
 
 public class Consultation {
 

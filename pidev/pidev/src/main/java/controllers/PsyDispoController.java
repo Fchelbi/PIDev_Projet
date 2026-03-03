@@ -1,4 +1,4 @@
-package tn.esprit.projet.gui.patient;
+package controllers;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -10,11 +10,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
-import tn.esprit.projet.entities.Consultation;
-import tn.esprit.projet.services.ConsultationService;
-import tn.esprit.projet.services.SmsService;
-import tn.esprit.projet.utils.AlertUtils;
+import services.GoogleMeetService;
+import entities.Consultation;
+import entities.User;
+import services.ConsultationService;
+import services.SmsService;
+import services.serviceUser;
+import utils.AlertUtils;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -26,13 +28,24 @@ public class PsyDispoController {
     @FXML private TableColumn<Consultation, String> colDate, colStatut;
 
     private ConsultationService consultationService = new ConsultationService();
-    private int CURRENT_PSY_ID = 1;
+
+    private final serviceUser us = new serviceUser(); // Ajoute cette ligne ici
+    private int CURRENT_PSY_ID=4;
+
 
     @FXML
     public void initialize() {
         // Affichage personnalisé pour le patient
-        colPatient.setCellValueFactory(cellData ->
-                new SimpleStringProperty("Patient #" + cellData.getValue().getUtilisateurId()));
+        colPatient.setCellValueFactory(cellData -> {
+            int idPatient = cellData.getValue().getUtilisateurId();
+            try {
+                // On utilise ton serviceUser déjà existant pour récupérer les infos
+                User p = us.getUserById(idPatient);
+                return new SimpleStringProperty(p.getPrenom() + " " + p.getNom());
+            } catch (Exception e) {
+                return new SimpleStringProperty("ID: " + idPatient);
+            }
+        });
 
         colDate.setCellValueFactory(new PropertyValueFactory<>("dateConsultation"));
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
@@ -72,6 +85,7 @@ public class PsyDispoController {
 
     @FXML
     public void handleAccepter() {
+
         Consultation selected = tableRdv.getSelectionModel().getSelectedItem();
 
         if (selected == null) {
@@ -80,6 +94,7 @@ public class PsyDispoController {
         }
 
         try {
+
             // 🔥 Vérification conflit AVANT acceptation
             boolean conflit = consultationService.hasConflit(
                     selected.getPsychologueId(),
@@ -95,21 +110,32 @@ public class PsyDispoController {
                 return;
             }
 
-            // ✅ pas de conflit → confirmer
-            consultationService.updateStatut(selected.getId(), "Confirmé");
-            SmsService.envoyerSMS(
-                    "+21642253001", // numéro patient
-                    "Votre consultation a été confirmée par le psychologue."
+            // 🚀 1️⃣ Générer lien Google Meet
+            String meetLink = GoogleMeetService.createMeeting(selected.getDateConsultation());
+            System.out.println("Lien Meet généré : " + meetLink);
+
+            // 🚀 2️⃣ Mettre à jour statut + lien
+            consultationService.updateStatutAndLink(
+                    selected.getId(),
+                    "Confirmé",
+                    meetLink
             );
 
-            // 🚀 HOOK SMS (on branchera après)
-            System.out.println("SMS confirmation envoyé au patient " + selected.getUtilisateurId());
+            // 🚀 3️⃣ Envoyer SMS avec lien
+            SmsService.envoyerSMS(
+                    "+21642253001", // numéro patient (à remplacer dynamiquement plus tard)
+                    "Votre consultation est confirmée.\n"
+                            + "Lien Google Meet : " + meetLink
+            );
 
-            AlertUtils.showInfo("Succès", "Le rendez-vous a été confirmé.");
+            AlertUtils.showInfo("Succès",
+                    "Le rendez-vous a été confirmé.\nLien Meet généré avec succès.");
+
             refreshTable();
 
-        } catch (SQLException e) {
-            AlertUtils.showError("Erreur SQL", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            AlertUtils.showError("Erreur", e.getMessage());
         }
     }
 
@@ -141,15 +167,5 @@ public class PsyDispoController {
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
-    @FXML
-    void retourMenu(ActionEvent event) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/MainMenu.fxml"));
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 }

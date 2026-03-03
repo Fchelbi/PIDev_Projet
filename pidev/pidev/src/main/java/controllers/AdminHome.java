@@ -195,4 +195,24 @@ public class AdminHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+    @FXML private VBox navPsys;
+    @FXML private HBox indicPsys;
+
+    // Et la méthode de navigation
+    @FXML
+    void showPsys(MouseEvent event) {
+        try {
+            setActiveNav(navPsys, indicPsys);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/AdminPsyGestion.fxml"));
+            Parent page = loader.load();
+            contentArea.getChildren().setAll(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            utils.LightDialog.showError("Erreur", "Impossible de charger la gestion Psys.");
+        }
+    }
+
+    // Les hovers
+    @FXML void onNavPsysEnter(MouseEvent e) { if(navPsys != currentActiveNav) navPsys.setStyle(NAV_ACTIVE); }
+    @FXML void onNavPsysExit(MouseEvent e)  { if(navPsys != currentActiveNav) navPsys.setStyle(NAV_NORMAL); }
 }

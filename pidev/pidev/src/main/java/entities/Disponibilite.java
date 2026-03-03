@@ -1,4 +1,4 @@
-package tn.esprit.projet.entities;
+package entities;
 import java.sql.Date;
 import java.sql.Time;
 

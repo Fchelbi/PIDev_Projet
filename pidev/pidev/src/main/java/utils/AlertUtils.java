@@ -1,4 +1,4 @@
-package tn.esprit.projet.utils;
+package utils;
 
 import javafx.scene.control.Alert;
 

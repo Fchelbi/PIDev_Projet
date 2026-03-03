@@ -4,7 +4,7 @@
 
 <VBox alignment="CENTER" spacing="20.0" prefHeight="400.0" prefWidth="600.0"
       style="-fx-background-color: #f4f4f4;" xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.projet.gui.patient.MainMenuController">
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainMenuController">
     <children>
         <Label text="Système de Gestion PI-DEV" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
         <Button text="Espace Administrateur" onAction="#openAdmin" prefWidth="250.0" style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;"/>

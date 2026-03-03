@@ -239,4 +239,48 @@ public class CoachHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+
+    // ─── Section Consultation ─────────────────────────────────
+    @FXML private VBox navDispo;        // renamed to match FXML
+    @FXML private HBox indicDispo;      // renamed to match FXML
+
+    @FXML
+    void showConsultation(MouseEvent event) {
+        // 1. Gestion visuelle (Désactiver l'ancien bouton, activer le nouveau)
+        if (currentActiveNav != null) {
+            currentActiveNav.setStyle(NAV_NORMAL);
+            // On cache l'indicateur de l'ancien (Accueil ou Message)
+            if (currentActiveNav == navAccueil) indicAccueil.setStyle(INDIC_HIDDEN);
+            if (currentActiveNav == navMessages) indicMessages.setStyle(INDIC_HIDDEN);
+        }
+
+        navDispo.setStyle(NAV_ACTIVE);
+        indicDispo.setStyle(INDIC_VISIBLE);
+        currentActiveNav = navDispo;
+
+        // 2. Chargement de l'interface dans la zone centrale
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/PsyDispoGestion.fxml"));
+            Parent page = loader.load();
+
+            // Si ton PatientConsultationController a besoin de l'utilisateur :
+            //PatientConsultationController ctrl = loader.getController();
+            //ctrl.setUser(currentUser);
+
+            contentArea.getChildren().setAll(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            utils.LightDialog.showError("Erreur", "Impossible de charger les consultations.");
+        }
+    }
+
+    @FXML
+    void onNavConsultationEnter(MouseEvent e) {
+        if(navDispo != currentActiveNav) navDispo.setStyle(NAV_ACTIVE);
+    }
+
+    @FXML
+    void onNavConsultationExit(MouseEvent e)  {
+        if(navDispo != currentActiveNav) navDispo.setStyle(NAV_NORMAL);
+    }
 }

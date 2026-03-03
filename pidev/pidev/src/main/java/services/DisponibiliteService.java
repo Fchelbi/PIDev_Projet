@@ -1,6 +1,6 @@
-package tn.esprit.projet.services;
+package services;
 
-import tn.esprit.projet.utils.MyDBConnexion;
+import utils.MyDBConnexion;
 import java.sql.*;
 
 public class DisponibiliteService {
