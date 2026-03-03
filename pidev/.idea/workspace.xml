@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="commit">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/MapController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Map.fxml" beforeDir="false" />
-    </list>
+    <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="commit" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -332,7 +325,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772492506493</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="commit">
+      <option name="closed" value="true" />
+      <created>1772498960839</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1772498960839</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
