@@ -119,18 +119,28 @@
                     </VBox>
 
                     <!-- Mot de passe + Confirmer -->
-                    <HBox spacing="16">
-                        <VBox HBox.hgrow="ALWAYS" spacing="5">
-                            <Label text="MOT DE PASSE" style="-fx-font-size: 10px; -fx-font-weight: 600; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
-                            <PasswordField fx:id="pfMdp" promptText="Min. 6 caractères"
-                                           style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
-                        </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="5">
-                            <Label text="CONFIRMER" style="-fx-font-size: 10px; -fx-font-weight: 600; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
-                            <PasswordField fx:id="pfConfirm" promptText="Répéter"
-                                           style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
-                        </VBox>
-                    </HBox>
+                    <VBox spacing="8">
+                        <HBox spacing="16">
+                            <VBox HBox.hgrow="ALWAYS" spacing="5">
+                                <Label text="MOT DE PASSE" style="-fx-font-size: 10px; -fx-font-weight: 600; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                                <PasswordField fx:id="pfMdp" promptText="Min. 8 car., 1 MAJ, 1 chiffre, 1 spécial"
+                                               style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                            </VBox>
+                            <VBox HBox.hgrow="ALWAYS" spacing="5">
+                                <Label text="CONFIRMER" style="-fx-font-size: 10px; -fx-font-weight: 600; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                                <PasswordField fx:id="pfConfirm" promptText="Répéter le mot de passe"
+                                               style="-fx-background-color: #F7F5F2; -fx-border-color: #E8E4DF; -fx-border-radius: 8; -fx-background-radius: 8; -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Indicateur force + règles -->
+                        <HBox spacing="20" alignment="CENTER_LEFT">
+                            <Label fx:id="lblStrength" text="" visible="false"
+                                   style="-fx-font-size:11px;-fx-text-fill:#A0AEC0;"/>
+                            <Label text="✓ 8 car.  ✓ Maj  ✓ Chiffre  ✓ Spécial (!@#...)"
+                                   style="-fx-font-size:10px;-fx-text-fill:#C0BAB2;-fx-font-style:italic;"/>
+                        </HBox>
+                    </VBox>
 
                     <!-- Rôle + Photo -->
                     <HBox spacing="16" alignment="CENTER_LEFT">
