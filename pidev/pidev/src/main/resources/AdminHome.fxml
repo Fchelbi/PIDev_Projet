@@ -74,18 +74,7 @@
             </VBox>
         </HBox>
 
-        <HBox alignment="CENTER_LEFT" spacing="0">
-            <HBox fx:id="indicPsys" prefWidth="4" prefHeight="42"
-                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
-            <VBox fx:id="navPsys" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
-                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
-                  onMouseClicked="#showPsys" onMouseEntered="#onNavPsysEnter" onMouseExited="#onNavPsysExit">
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="🧠" style="-fx-font-size:16px;"/>
-                    <Label text="Gestion Psys" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
-                </HBox>
-            </VBox>
-        </HBox>
+
 
         <HBox alignment="CENTER_LEFT" spacing="0">
             <HBox fx:id="indicProfil" prefWidth="4" prefHeight="42"
