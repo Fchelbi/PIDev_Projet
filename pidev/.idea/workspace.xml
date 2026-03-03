@@ -5,40 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e423ba35-730a-41f0-9638-818b56e78b9b" name="Changes" comment="commit">
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Callcontroller.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Messageriecontroller.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Notificationtoastcontroller.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/entities/Call.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/entities/Message.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/Audiocallservice.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/Callservice.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/Notificationservice.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/Servicemessage.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/services/Servicerapport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/Notificationhelper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/java/utils/Passwordutil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/Call.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/Messagerie.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pidev/src/main/resources/Notificationtoast.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/AdminHome.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/CoachHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/Coachstats.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Coachstats.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/MapController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/MapController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/MapController.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/PatientHome.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/Profil.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/Profil.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/RapportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/RapportController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/controllers/SignUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/controllers/SignUp.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/services/MapService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/services/PDFGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/services/PDFGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/java/services/serviceUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/java/services/serviceUser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/AdminHome.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/CoachHome.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Coachstats.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Coachstats.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Map.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Map.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/PatientHome.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Profil.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/Profil.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/SignUp.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/pidev/src/main/resources/SignUp.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pidev/src/main/resources/Map.fxml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -105,7 +77,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "#2 on Merging formation",
+    "git-widget-placeholder": "#2 on formation",
     "junie.onboarding.icon.badge.shown": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/Users/fatmachelbi/uni_project/pidev_java/pidev",
@@ -352,7 +324,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772471049450</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="commit">
+      <option name="closed" value="true" />
+      <created>1772492506493</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1772492506493</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
