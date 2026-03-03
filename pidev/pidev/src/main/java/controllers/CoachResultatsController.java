@@ -43,33 +43,94 @@ public class CoachResultatsController implements Initializable {
     private void loadResults() {
         if (resultsList == null) return;
         resultsList.getChildren().clear();
-        try {
-            List<QuizResult> all = quizResultService.selectALL();
-            String filter = cbFilter != null ? cbFilter.getValue() : "Tous";
 
-            List<QuizResult> filtered = all.stream()
-                    .filter(r -> {
-                        if ("Réussis".equals(filter)) return r.isPassed();
-                        if ("Échoués".equals(filter)) return !r.isPassed();
-                        return true;
-                    })
-                    .sorted((a, b) -> {
-                        if (a.getCompletedAt() == null) return 1;
-                        if (b.getCompletedAt() == null) return -1;
-                        return b.getCompletedAt().compareTo(a.getCompletedAt());
-                    })
-                    .collect(Collectors.toList());
+        try {
+            // ── Step 1: get only THIS coach's formations ──
+            FormationService formationService = new FormationService();
+            ParticipantService participantService = new ParticipantService();
+
+            List<Formation> coachFormations;
+            if (currentUser != null) {
+                coachFormations = formationService.selectByCoach(currentUser.getId_user());
+            } else {
+                coachFormations = formationService.selectALL();
+            }
+
+            // ── Step 2: get patient IDs enrolled in coach's formations ──
+            List<Integer> coachFormationIds = new ArrayList<>();
+            for (Formation f : coachFormations) {
+                coachFormationIds.add(f.getId());
+            }
+
+            List<Integer> coachPatientIds = new ArrayList<>();
+            for (Participant p : participantService.selectALL()) {
+                if (coachFormationIds.contains(p.getFormationId())) {
+                    if (!coachPatientIds.contains(p.getUserId())) {
+                        coachPatientIds.add(p.getUserId());
+                    }
+                }
+            }
+
+            // ── Step 3: get only results from those patients ──
+            List<QuizResult> coachResults = new ArrayList<>();
+            for (QuizResult r : quizResultService.selectALL()) {
+                if (coachPatientIds.contains(r.getUserId())) {
+                    coachResults.add(r);
+                }
+            }
+
+            // ── Step 4: apply filter ──
+            String filter = cbFilter != null ? cbFilter.getValue() : "Tous";
+            List<QuizResult> filtered = new ArrayList<>();
+            for (QuizResult r : coachResults) {
+                if ("Réussis".equals(filter) && !r.isPassed()) continue;
+                if ("Échoués".equals(filter) && r.isPassed()) continue;
+                filtered.add(r);
+            }
+
+            // ── Step 5: sort by date descending ──
+            filtered.sort((a, b) -> {
+                if (a.getCompletedAt() == null) return 1;
+                if (b.getCompletedAt() == null) return -1;
+                return b.getCompletedAt().compareTo(a.getCompletedAt());
+            });
+
+            // ── Step 6: load patient names from DB ──
+            serviceUser us = new serviceUser();
+            List<User> allUsers = us.selectALL();
 
             if (lblCount != null) lblCount.setText(filtered.size() + " résultat(s)");
 
             if (filtered.isEmpty()) {
-                Label empty = new Label("Aucun résultat trouvé.");
+                Label empty = new Label("Aucun résultat pour vos patients.");
                 empty.setStyle("-fx-font-size:15px;-fx-text-fill:#A0AEC0;-fx-padding:30;");
                 resultsList.getChildren().add(empty);
                 return;
             }
 
+            // ── Step 7: build cards ──
             for (QuizResult r : filtered) {
+
+                // Find patient name
+                String patientName = "Patient #" + r.getUserId();
+                for (User u : allUsers) {
+                    if (u.getId_user() == r.getUserId()) {
+                        patientName = u.getPrenom() + " " + u.getNom();
+                        break;
+                    }
+                }
+
+                // Find quiz name
+                String qName = "Quiz #" + r.getQuizId();
+                try {
+                    for (Quiz q : quizService.selectALL()) {
+                        if (q.getId() == r.getQuizId()) {
+                            qName = q.getTitle();
+                            break;
+                        }
+                    }
+                } catch (SQLException ignored) {}
+
                 HBox card = new HBox(15);
                 card.setPadding(new Insets(14));
                 card.setAlignment(Pos.CENTER_LEFT);
@@ -79,21 +140,15 @@ public class CoachResultatsController implements Initializable {
                 Label icon = new Label(r.isPassed() ? "✅" : "❌");
                 icon.setStyle("-fx-font-size:22px;");
 
-                String qName = "Quiz #" + r.getQuizId();
-                try {
-                    for (Quiz q : quizService.selectALL())
-                        if (q.getId() == r.getQuizId()) { qName = q.getTitle(); break; }
-                } catch (SQLException ignored) {}
-
                 VBox info = new VBox(3);
-                Label u = new Label("Patient #" + r.getUserId());
-                u.setStyle("-fx-font-weight:bold;-fx-text-fill:#2d3436;");
-                Label q = new Label(qName);
-                q.setStyle("-fx-text-fill:#636e72;-fx-font-size:12px;");
-                Label d = new Label(r.getCompletedAt() != null
+                Label lblPatient = new Label(patientName);
+                lblPatient.setStyle("-fx-font-weight:bold;-fx-text-fill:#2d3436;");
+                Label lblQuiz = new Label(qName);
+                lblQuiz.setStyle("-fx-text-fill:#636e72;-fx-font-size:12px;");
+                Label lblDate = new Label(r.getCompletedAt() != null
                         ? r.getCompletedAt().toString().substring(0, 16) : "—");
-                d.setStyle("-fx-text-fill:#b2bec3;-fx-font-size:11px;");
-                info.getChildren().addAll(u, q, d);
+                lblDate.setStyle("-fx-text-fill:#b2bec3;-fx-font-size:11px;");
+                info.getChildren().addAll(lblPatient, lblQuiz, lblDate);
 
                 HBox spacer = new HBox();
                 HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -105,6 +160,7 @@ public class CoachResultatsController implements Initializable {
                 card.getChildren().addAll(icon, info, spacer, score);
                 resultsList.getChildren().add(card);
             }
+
         } catch (SQLException e) {
             resultsList.getChildren().add(new Label("Erreur: " + e.getMessage()));
         }

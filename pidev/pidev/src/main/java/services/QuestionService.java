@@ -69,4 +69,11 @@ public class QuestionService implements CRUD<Question> {
         }
         return list;
     }
+    public int countAll() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM question";
+        Statement st = cnx.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        if (rs.next()) return rs.getInt(1);
+        return 0;
+    }
 }

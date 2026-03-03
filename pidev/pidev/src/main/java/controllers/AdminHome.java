@@ -22,7 +22,12 @@ import services.FormationService;
 import services.QuizService;
 import services.serviceUser;
 import utils.LightDialog;
-
+import services.ParticipantService;
+import services.QuizResultService;
+import entities.Participant;
+import entities.Formation;
+import java.util.HashMap;
+import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;                          // ✅ ADDED
@@ -34,6 +39,7 @@ import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javafx.scene.chart.*;
 
 public class AdminHome {
 
@@ -75,6 +81,8 @@ public class AdminHome {
     private User currentUser;
     private VBox currentActiveNav;
 
+    private ParticipantService participantService = new ParticipantService();
+    private QuizResultService quizResultService = new QuizResultService();
     // ── Nav styles ──────────────────────────────────────────────────────────
     private static final String NAV_NORMAL =
             "-fx-padding:12 20 12 16;-fx-cursor:hand;"
@@ -188,37 +196,124 @@ public class AdminHome {
     }
 
     private void loadFormationStats() {
+
         if (formationService == null) return;
+
         try {
             List<Formation> formations = formationService.selectALL();
+
             int total = formations.size();
             int avecVideo = 0;
             int avecQuiz = 0;
             Set<String> categories = new HashSet<>();
+
             for (Formation f : formations) {
+
                 if (f.getVideoUrl() != null && !f.getVideoUrl().trim().isEmpty())
                     avecVideo++;
+
                 if (f.getCategory() != null && !f.getCategory().trim().isEmpty())
                     categories.add(f.getCategory().trim());
+
                 if (quizService != null) {
                     try {
-                        if (quizService.selectByFormation(f.getId()) != null) avecQuiz++;
+                        if (quizService.selectByFormation(f.getId()) != null)
+                            avecQuiz++;
                     } catch (Exception ignored) {}
                 }
             }
-            if (lblNbFormations != null) lblNbFormations.setText(String.valueOf(total));
-            if (lblNbAvecVideo != null) lblNbAvecVideo.setText(String.valueOf(avecVideo));
-            if (lblNbAvecQuiz != null) lblNbAvecQuiz.setText(String.valueOf(avecQuiz));
+
+            if (lblNbFormations != null)
+                lblNbFormations.setText(String.valueOf(total));
+
+            if (lblNbAvecVideo != null)
+                lblNbAvecVideo.setText(String.valueOf(avecVideo));
+
+            if (lblNbAvecQuiz != null)
+                lblNbAvecQuiz.setText(String.valueOf(avecQuiz));
+
             if (lblNbCategories != null)
                 lblNbCategories.setText(String.valueOf(categories.size()));
+
+            // ✅ ADD THIS LINE
+            loadFormationChart(formations);
+
         } catch (SQLException e) {
+
+            System.err.println("Formation stats error: " + e.getMessage());
+
             if (lblNbFormations != null) lblNbFormations.setText("—");
             if (lblNbAvecVideo != null) lblNbAvecVideo.setText("—");
             if (lblNbAvecQuiz != null) lblNbAvecQuiz.setText("—");
             if (lblNbCategories != null) lblNbCategories.setText("—");
         }
     }
+    private void loadFormationChart(List<Formation> formations) {
+        if (wvChartAdmin == null) return;
+        // Build data rows for Google Charts
+        StringBuilder rows = new StringBuilder();
+        try {
+            serviceUser us2 = new serviceUser();
+            Map<Integer, String> coachNames = new HashMap<>();
+            for (User u : us2.selectALL())
+                if ("COACH".equalsIgnoreCase(u.getRole()))
+                    coachNames.put(u.getId_user(), u.getPrenom() + " " + u.getNom());
 
+            ParticipantService ps = new ParticipantService();
+            List<Participant> allPartic = ps.selectALL();
+            QuizService qs = new QuizService();
+
+            for (Formation f : formations) {
+                long inscrits = allPartic.stream()
+                        .filter(p -> p.getFormationId() == f.getId()).count();
+                String coach = coachNames.getOrDefault(f.getCoachId(), "—");
+                boolean hasQuiz = qs.selectByFormation(f.getId()) != null;
+                String title = f.getTitle().replace("'", "\\'").length() > 18
+                        ? f.getTitle().substring(0, 16) + "…"
+                        : f.getTitle().replace("'", "\\'");
+                rows.append(String.format(
+                        "['%s (%s)',%d,'%s'],%n",
+                        title, coach, inscrits, hasQuiz ? "#00B894" : "#E8956D"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Chart data error: " + e.getMessage());
+        }
+
+        if (rows.length() == 0) rows.append("['Aucune formation',0,'#A0AEC0'],");
+
+        String html = """
+        <!DOCTYPE html><html>
+        <head>
+        <script src="https://www.gstatic.com/charts/loader.js"></script>
+        <script>
+          google.charts.load('current',{packages:['corechart']});
+          google.charts.setOnLoadCallback(draw);
+          function draw() {
+            var data = google.visualization.arrayToDataTable([
+              ['Formation','Inscrits',{role:'style'}],
+              %s
+            ]);
+            new google.visualization.BarChart(
+              document.getElementById('chart')).draw(data,{
+              legend:{position:'none'},
+              backgroundColor:'transparent',
+              hAxis:{minValue:0,textStyle:{color:'#718096',fontSize:10}},
+              vAxis:{textStyle:{color:'#2D3748',fontSize:10,bold:true}},
+              chartArea:{width:'65%%',height:'85%%'},
+              bar:{groupWidth:'60%%'},
+              title:'Inscriptions par formation (vert=quiz OK, orange=sans quiz)',
+              titleTextStyle:{color:'#2D3748',fontSize:11,bold:true}
+            });
+          }
+        </script>
+        <style>body{margin:0;padding:4px;background:transparent;}
+        #chart{width:100%%;height:280px;background:white;border-radius:10px;}</style>
+        </head>
+        <body><div id="chart"></div></body></html>
+        """.formatted(rows.toString());
+
+        wvChartAdmin.getEngine().loadContent(html);
+    }
     // ════════════════════════════════════════════════════════════════════════
     //  QUOTABLE API
     // ════════════════════════════════════════════════════════════════════════
@@ -412,80 +507,139 @@ public class AdminHome {
     //  ADMIN CHARTS (Google Charts via WebView)
     // ════════════════════════════════════════════════════════════════════════
 
+
     private void loadAdminCharts(int patients, int coaches, int admins, int total) {
         if (wvChartAdmin == null) return;
         if (total == 0) {
             wvChartAdmin.getEngine().loadContent(
-                    "<html><body style='display:flex;align-items:center;"
-                            + "justify-content:center;height:260px;"
-                            + "font-family:sans-serif;color:#A0AEC0;'>"
-                            + "<p>Aucune donnée disponible</p></body></html>");
+                    "<html><body style='display:flex;align-items:center;justify-content:center;" +
+                            "height:260px;font-family:sans-serif;color:#A0AEC0;'>" +
+                            "<p>Aucune donnée disponible</p></body></html>");
             return;
         }
         String html = """
-                <!DOCTYPE html><html>
-                <head>
-                <script src="https://www.gstatic.com/charts/loader.js"></script>
-                <script>
-                  google.charts.load('current',{packages:['corechart']});
-                  google.charts.setOnLoadCallback(draw);
-                  function draw() { drawPie(); drawBar(); }
-                  function drawPie() {
-                    var d = google.visualization.arrayToDataTable([
-                      ['Role','Nombre'],
-                      ['Patients',%d],['Coaches',%d],['Admins',%d]
-                    ]);
-                    new google.visualization.PieChart(
-                      document.getElementById('pie')).draw(d,{
-                      pieHole:0.42,
-                      colors:['#E8956D','#F5C87A','#4A6FA5'],
-                      backgroundColor:'transparent',
-                      legend:{position:'bottom',
-                        textStyle:{color:'#718096',fontSize:10}},
-                      chartArea:{width:'90%%',height:'75%%'},
-                      title:'Repartition',
-                      titleTextStyle:{color:'#2D3748',fontSize:12,bold:true}
-                    });
-                  }
-                  function drawBar() {
-                    var d = google.visualization.arrayToDataTable([
-                      ['Role','Nombre',{role:'style'},{role:'annotation'}],
-                      ['Patients',%d,'color:#E8956D','%d'],
-                      ['Coaches', %d,'color:#F5C87A','%d'],
-                      ['Admins',  %d,'color:#4A6FA5','%d']
-                    ]);
-                    new google.visualization.BarChart(
-                      document.getElementById('bar')).draw(d,{
-                      legend:{position:'none'},
-                      backgroundColor:'transparent',
-                      hAxis:{minValue:0,
-                        textStyle:{color:'#718096',fontSize:10}},
-                      vAxis:{textStyle:{color:'#718096',fontSize:11,bold:true}},
-                      chartArea:{width:'70%%',height:'78%%'},
-                      bar:{groupWidth:'55%%'},
-                      annotations:{alwaysOutside:true,
-                        textStyle:{fontSize:11,bold:true}},
-                      title:'Nombre par role',
-                      titleTextStyle:{color:'#2D3748',fontSize:12,bold:true}
-                    });
-                  }
-                </script>
-                <style>
-                  body{margin:0;padding:4px;background:transparent;}
-                  .row{display:flex;gap:12px;height:270px;}
-                  .box{flex:1;background:white;border-radius:10px;
-                       overflow:hidden;
-                       box-shadow:0 1px 6px rgba(0,0,0,0.06);}
-                </style>
-                </head>
-                <body><div class="row">
-                  <div class="box" id="pie"></div>
-                  <div class="box" id="bar"></div>
-                </div></body></html>
-                """.formatted(
+            <!DOCTYPE html><html>
+            <head>
+            <script src="https://www.gstatic.com/charts/loader.js"></script>
+            <script>
+              google.charts.load('current',{packages:['corechart']});
+              google.charts.setOnLoadCallback(draw);
+              function draw() {
+                drawPie(); drawBar();
+              }
+              function drawPie() {
+                var d = google.visualization.arrayToDataTable([
+                  ['Role','Nombre'],
+                  ['Patients',%d],
+                  ['Coaches',%d],
+                  ['Admins',%d]
+                ]);
+                new google.visualization.PieChart(document.getElementById('pie')).draw(d,{
+                  pieHole:0.42,
+                  colors:['#E8956D','#F5C87A','#4A6FA5'],
+                  backgroundColor:'transparent',
+                  legend:{position:'bottom',textStyle:{color:'#718096',fontSize:10}},
+                  chartArea:{width:'90%%',height:'75%%'},
+                  title:'Repartition',
+                  titleTextStyle:{color:'#2D3748',fontSize:12,bold:true}
+                });
+              }
+              function drawBar() {
+                var d = google.visualization.arrayToDataTable([
+                  ['Role','Nombre',{role:'style'},{role:'annotation'}],
+                  ['Patients',%d,'color:#E8956D','%d'],
+                  ['Coaches', %d,'color:#F5C87A','%d'],
+                  ['Admins',  %d,'color:#4A6FA5','%d']
+                ]);
+                new google.visualization.BarChart(document.getElementById('bar')).draw(d,{
+                  legend:{position:'none'},
+                  backgroundColor:'transparent',
+                  hAxis:{minValue:0,textStyle:{color:'#718096',fontSize:10}},
+                  vAxis:{textStyle:{color:'#718096',fontSize:11,bold:true}},
+                  chartArea:{width:'70%%',height:'78%%'},
+                  bar:{groupWidth:'55%%'},
+                  annotations:{alwaysOutside:true,textStyle:{fontSize:11,bold:true}},
+                  title:'Nombre par role',
+                  titleTextStyle:{color:'#2D3748',fontSize:12,bold:true}
+                });
+              }
+            </script>
+            <style>
+              body{margin:0;padding:4px;background:transparent;}
+              .row{display:flex;gap:12px;height:270px;}
+              .box{flex:1;background:white;border-radius:10px;overflow:hidden;
+                   box-shadow:0 1px 6px rgba(0,0,0,0.06);}
+            </style>
+            </head>
+            <body><div class="row">
+              <div class="box" id="pie"></div>
+              <div class="box" id="bar"></div>
+            </div></body></html>
+            """.formatted(
                 patients, coaches, admins,
                 patients, patients, coaches, coaches, admins, admins
         );
+        wvChartAdmin.getEngine().loadContent(html);
+    }
+    private void loadFormationStatsChart(int formations, int quizzes, int questions) {
+
+        if (wvChartAdmin == null) return;
+
+        int total = formations + quizzes + questions;
+
+        if (total == 0) {
+            wvChartAdmin.getEngine().loadContent(
+                    "<html><body style='display:flex;align-items:center;justify-content:center;" +
+                            "height:260px;font-family:sans-serif;color:#A0AEC0;'>" +
+                            "<p>Aucune donnée disponible</p></body></html>");
+            return;
+        }
+
+        String html = """
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <script src="https://www.gstatic.com/charts/loader.js"></script>
+        <script>
+          google.charts.load('current',{packages:['corechart']});
+          google.charts.setOnLoadCallback(drawChart);
+
+          function drawChart() {
+
+            var data = google.visualization.arrayToDataTable([
+              ['Type','Nombre'],
+              ['Formations', %d],
+              ['Quiz', %d],
+              ['Questions', %d]
+            ]);
+
+            var options = {
+              pieHole: 0.4,
+              backgroundColor: 'transparent',
+              colors:['#6c5ce7','#00b894','#fdcb6e'],
+              legend:{position:'bottom'},
+              chartArea:{width:'90%%',height:'80%%'},
+              title:'Statistiques Formation',
+              titleTextStyle:{fontSize:14,bold:true}
+            };
+
+            var chart = new google.visualization.PieChart(
+              document.getElementById('chart')
+            );
+            chart.draw(data, options);
+          }
+        </script>
+        <style>
+          body{margin:0;background:transparent;}
+          #chart{width:100%%;height:280px;}
+        </style>
+        </head>
+        <body>
+          <div id="chart"></div>
+        </body>
+        </html>
+        """.formatted(formations, quizzes, questions);
+
         wvChartAdmin.getEngine().loadContent(html);
     }
 }

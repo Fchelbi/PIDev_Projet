@@ -34,6 +34,7 @@ public class CoachController implements Initializable {
     @FXML private Button btnPatients;
     @FXML private Label lblCoachName;
 
+    private List<Formation> formations;
     private FormationService formationService;
     private QuizService quizService;
     private QuizResultService quizResultService;
@@ -41,6 +42,8 @@ public class CoachController implements Initializable {
     private QuestionService questionService;
     private ReponseService reponseService;
     private int currentCoachId = 2;
+
+    private User currentUser;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -65,7 +68,7 @@ public class CoachController implements Initializable {
         );
         try {
             List<QuizResult> allResults = quizResultService.selectALL();
-            List<Formation> allFormations = formationService.selectALL();
+            List<Formation> allFormations = formationService.selectByCoach(currentCoachId);
             List<Participant> allPartic = participantService.selectALL();
             long passed = allResults.stream().filter(QuizResult::isPassed).count();
             long failed = allResults.size() - passed;
@@ -131,8 +134,18 @@ public class CoachController implements Initializable {
         tfSearch.setMaxWidth(320);
         page.getChildren().add(tfSearch);
         try {
-            List<Formation> formations = formationService.selectALL();
-            List<Participant> allPartic = participantService.selectALL();
+            List<Formation> allFormations = formationService.selectByCoach(currentCoachId);
+
+            List<Integer> myFormationIds = allFormations.stream()
+                    .map(Formation::getId).collect(Collectors.toList());
+            List<Participant> allPartic = participantService.selectALL().stream()
+                    .filter(p -> myFormationIds.contains(p.getFormationId()))
+                    .collect(Collectors.toList());
+            List<Integer> myPatientIds = allPartic.stream()
+                    .map(Participant::getUserId).distinct().collect(Collectors.toList());
+            List<QuizResult> allResults = quizResultService.selectALL().stream()
+                    .filter(r -> myPatientIds.contains(r.getUserId()))
+                    .collect(Collectors.toList());
             VBox list = new VBox(10);
             page.getChildren().add(list);
             Runnable refresh = () -> {
@@ -205,7 +218,19 @@ public class CoachController implements Initializable {
         filters.setAlignment(Pos.CENTER_LEFT);
         page.getChildren().add(filters);
         try {
-            List<QuizResult> allResults = quizResultService.selectALL();
+
+            List<Formation> allFormations = formationService.selectByCoach(currentCoachId);
+
+            List<Integer> myFormationIds = allFormations.stream()
+                    .map(Formation::getId).collect(Collectors.toList());
+            List<Participant> allPartic = participantService.selectALL().stream()
+                    .filter(p -> myFormationIds.contains(p.getFormationId()))
+                    .collect(Collectors.toList());
+            List<Integer> myPatientIds = allPartic.stream()
+                    .map(Participant::getUserId).distinct().collect(Collectors.toList());
+            List<QuizResult> allResults = quizResultService.selectALL().stream()
+                    .filter(r -> myPatientIds.contains(r.getUserId()))
+                    .collect(Collectors.toList());
             allResults.sort((a, b) -> {
                 if (a.getCompletedAt() == null) return 1;
                 if (b.getCompletedAt() == null) return -1;
@@ -247,8 +272,18 @@ public class CoachController implements Initializable {
         page.setPadding(new Insets(10));
         page.getChildren().addAll(styled("Suivi des Patients", 22, true), new Separator());
         try {
-            List<QuizResult> allResults = quizResultService.selectALL();
-            List<Participant> allPartic = participantService.selectALL();
+            List<Formation> allFormations = formationService.selectByCoach(currentCoachId);
+
+            List<Integer> myFormationIds = allFormations.stream()
+                    .map(Formation::getId).collect(Collectors.toList());
+            List<Participant> allPartic = participantService.selectALL().stream()
+                    .filter(p -> myFormationIds.contains(p.getFormationId()))
+                    .collect(Collectors.toList());
+            List<Integer> myPatientIds = allPartic.stream()
+                    .map(Participant::getUserId).distinct().collect(Collectors.toList());
+            List<QuizResult> allResults = quizResultService.selectALL().stream()
+                    .filter(r -> myPatientIds.contains(r.getUserId()))
+                    .collect(Collectors.toList());
             // ✅ FIX: java.util.Map explicite — pas controllers.Map
             java.util.Map<Integer, List<QuizResult>> byPatient = new LinkedHashMap<>();
             for (QuizResult r : allResults)
@@ -442,5 +477,12 @@ public class CoachController implements Initializable {
             fc.setCoachMode(currentCoachId);
             contentArea.getChildren().setAll(view);
         } catch (Exception e) { e.printStackTrace(); }
+    }
+    public void setUser(User user) {
+        this.currentUser = user;
+        this.currentCoachId = user.getId_user();
+        if (lblCoachName != null)
+            lblCoachName.setText(user.getPrenom() + " " + user.getNom());
+        showAccueil();
     }
 }

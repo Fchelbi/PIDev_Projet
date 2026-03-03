@@ -25,7 +25,15 @@ public class CertificateService {
         String fileName = "Certificate_" + formationTitle.replaceAll("[^a-zA-Z0-9]", "_")
                 + "_" + System.currentTimeMillis() + ".pdf";
         String desktop = System.getProperty("user.home") + File.separator + "Desktop";
+        File desktopDir = new File(desktop);
+
+        if (!desktopDir.exists()) {
+            desktop = System.getProperty("user.home"); // fallback to home directory
+        }
+
         String filePath = desktop + File.separator + fileName;
+
+        System.out.println("📄 Certificate saved: " + filePath);
 
         try {
             PdfWriter writer = new PdfWriter(filePath);

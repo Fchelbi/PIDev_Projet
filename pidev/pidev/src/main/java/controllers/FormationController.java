@@ -1,9 +1,6 @@
 package controllers;
-
-import entities.Formation;
-import entities.Quiz;
-import entities.Question;
-import entities.Reponse;
+import entities.*;
+import services.serviceUser;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -29,10 +26,8 @@ import utils.VideoPlayerUtil;
 import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FormationController implements Initializable {
 
@@ -76,6 +71,8 @@ public class FormationController implements Initializable {
     // ═══════════════════════════════════
     //  PRIVATE FIELDS
     // ═══════════════════════════════════
+    private java.util.Map<String, Integer> coachNameToId = new LinkedHashMap<>();
+
     private FormationService formationService;
     private QuizService quizService;
     private QuestionService questionService;
@@ -137,8 +134,7 @@ public class FormationController implements Initializable {
             cbCategory.setItems(FXCollections.observableArrayList(CATEGORIES));
         }
         if (cbCoach != null) {
-            cbCoach.setItems(FXCollections.observableArrayList(COACHES));
-            cbCoach.setValue("Non assigné");
+            loadCoachList();
         }
 
         if (tvFormations != null) {
@@ -399,16 +395,11 @@ public class FormationController implements Initializable {
         tfVideoUrl.setText(f.getVideoUrl());
         cbCategory.setValue(f.getCategory());
 
-        if (cbCoach != null) {
-            if (currentCoachId > 0) {
-                cbCoach.setVisible(false);
-                cbCoach.setManaged(false);
-            } else {
-                cbCoach.setVisible(true);
-                cbCoach.setManaged(true);
-                cbCoach.setValue(f.getCoachId() > 0
-                        ? "Coach #" + f.getCoachId() : "Non assigné");
-            }
+        if (cbCoach != null && currentCoachId == 0) {
+            coachNameToId.entrySet().stream()
+                    .filter(e -> e.getValue() == f.getCoachId())
+                    .findFirst()
+                    .ifPresent(e -> cbCoach.setValue(e.getKey()));
         }
 
         lblError.setText("");
@@ -649,13 +640,8 @@ public class FormationController implements Initializable {
         int coachId = currentCoachId;
         if (currentCoachId == 0 && cbCoach != null) {
             String selected = cbCoach.getValue();
-            if (selected != null && selected.startsWith("Coach #")) {
-                try {
-                    coachId = Integer.parseInt(selected.replace("Coach #", ""));
-                } catch (NumberFormatException e) {
-                    coachId = 0;
-                }
-            }
+            coachId = coachNameToId.getOrDefault(selected, 0);
+
         }
 
         if (isEditMode) {
@@ -1025,29 +1011,58 @@ public class FormationController implements Initializable {
             int finalCount = count;
             new Thread(() -> {
                 try {
-                    List<QuizGeneratorAPI.GeneratedQuestion> generated =
-                            quizGenerator.generateQuestions(
-                                    currentQuizFormation.getTitle(),
-                                    currentQuizFormation.getDescription(),
-                                    finalCount);
+
+                    List<QuizGeneratorAPI.GeneratedQuestion> generated;
+                    String videoUrl = tfVideoUrl != null ? tfVideoUrl.getText().trim() : "";
+
+                    // 🔍 If YouTube link exists → generate from video
+                    if (!videoUrl.isEmpty() && VideoPlayerUtil.isYouTubeUrl(videoUrl)) {
+
+                        javafx.application.Platform.runLater(() -> {
+                            if (lblQuizError != null) {
+                                lblQuizError.setText("⏳ Analyse de la vidéo YouTube...");
+                                lblQuizError.setStyle("-fx-text-fill: #0984e3;");
+                            }
+                        });
+
+                        generated = quizGenerator.generateFromYouTube(videoUrl, finalCount);
+
+                    } else {
+                        // 📚 Otherwise generate from formation title + description
+                        generated = quizGenerator.generateQuestions(
+                                currentQuizFormation.getTitle(),
+                                currentQuizFormation.getDescription(),
+                                finalCount);
+                    }
+
                     javafx.application.Platform.runLater(() -> {
-                        if (generated.isEmpty()) {
+
+                        if (generated == null || generated.isEmpty()) {
                             if (lblQuizError != null) {
                                 lblQuizError.setText("❌ Aucune question générée");
                                 lblQuizError.setStyle("-fx-text-fill: #d63031;");
                             }
                             return;
                         }
+
                         showGeneratedQuestionsPreview(quiz, generated);
-                        if (lblQuizError != null) lblQuizError.setText("");
+
+                        if (lblQuizError != null) {
+                            lblQuizError.setText("✅ Questions générées avec succès");
+                            lblQuizError.setStyle("-fx-text-fill: #00b894;");
+                        }
                     });
+
                 } catch (Exception e) {
+
                     javafx.application.Platform.runLater(() -> {
                         if (lblQuizError != null) {
                             lblQuizError.setText("❌ Erreur API: " + e.getMessage());
                             lblQuizError.setStyle("-fx-text-fill: #d63031;");
                         }
                     });
+
+                    e.printStackTrace();
                 }
             }).start();
         } catch (SQLException e) {
@@ -1417,5 +1432,23 @@ public class FormationController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         return alert.showAndWait();
+    }
+    private void loadCoachList() {
+        try {
+            serviceUser us = new serviceUser();
+            List<User> coaches = us.selectALL().stream()
+                    .filter(u -> u.getRole().equalsIgnoreCase("COACH"))
+                    .collect(Collectors.toList());
+            coachNameToId.clear();
+            coachNameToId.put("Non assigné", 0);
+            for (User u : coaches) {
+                String displayName = u.getPrenom() + " " + u.getNom();
+                coachNameToId.put(displayName, u.getId_user());
+            }
+            cbCoach.setItems(FXCollections.observableArrayList(coachNameToId.keySet()));
+            cbCoach.setValue("Non assigné");
+        } catch (SQLException e) {
+            System.err.println("Cannot load coaches: " + e.getMessage());
+        }
     }
 }

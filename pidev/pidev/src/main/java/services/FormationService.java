@@ -93,4 +93,11 @@ public class FormationService implements CRUD<Formation> {
                 rs.getInt("coach_id")
         );
     }
+    public int countAll() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM formation";
+        Statement st = cnx.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        if (rs.next()) return rs.getInt(1);
+        return 0;
+    }
 }

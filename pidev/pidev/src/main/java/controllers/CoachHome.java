@@ -24,7 +24,8 @@ import services.ParticipantService;
 import services.QuizResultService;
 import services.serviceUser;
 import utils.LightDialog;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -33,7 +34,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.SQLException;
 import java.time.Duration;
-import java.util.List;
+
 
 public class CoachHome {
 
@@ -166,30 +167,53 @@ public class CoachHome {
 
     private void refreshDashboardStats() {
         try {
+            // Step 1: get only THIS coach's formations
             List<Formation> formations = formationService != null
                     ? formationService.selectByCoach(currentUser.getId_user())
                     : List.of();
             if (lblNbFormations != null)
                 lblNbFormations.setText(String.valueOf(formations.size()));
 
-            long patients = 0, results = 0, passed = 0;
-            if (participantService != null && quizResultService != null) {
-                List<Participant> allPartic = participantService.selectALL();
-                for (Formation f : formations) {
-                    patients += allPartic.stream()
-                            .filter(p -> p.getFormationId() == f.getId())
-                            .map(Participant::getUserId).distinct().count();
+            // Step 2: get formation IDs belonging to this coach
+            List<Integer> myFormationIds = new ArrayList<>();
+            for (Formation f : formations) {
+                myFormationIds.add(f.getId());
+            }
+
+            // Step 3: get patients enrolled ONLY in coach's formations
+            List<Integer> myPatientIds = new ArrayList<>();
+            if (participantService != null) {
+                for (Participant p : participantService.selectALL()) {
+                    if (myFormationIds.contains(p.getFormationId())) {
+                        if (!myPatientIds.contains(p.getUserId())) {
+                            myPatientIds.add(p.getUserId());
+                        }
+                    }
                 }
-                List<QuizResult> allResults = quizResultService.selectALL();
+            }
+            if (lblNbPatients != null)
+                lblNbPatients.setText(String.valueOf(myPatientIds.size()));
+
+            // Step 4: get results ONLY from coach's patients
+            long results = 0, passed = 0;
+            if (quizResultService != null) {
+                List<QuizResult> allResults = new ArrayList<>();
+                for (QuizResult r : quizResultService.selectALL()) {
+                    if (myPatientIds.contains(r.getUserId())) {
+                        allResults.add(r);
+                    }
+                }
                 results = allResults.size();
                 passed = allResults.stream().filter(QuizResult::isPassed).count();
             }
-            if (lblNbPatients != null) lblNbPatients.setText(String.valueOf(patients));
-            if (lblNbResultats != null) lblNbResultats.setText(String.valueOf(results));
+
+            if (lblNbResultats != null)
+                lblNbResultats.setText(String.valueOf(results));
             if (lblTauxReussite != null) {
                 double taux = results > 0 ? (passed * 100.0 / results) : 0;
                 lblTauxReussite.setText(String.format("%.0f%%", taux));
             }
+
         } catch (SQLException e) {
             System.err.println("Dashboard stats: " + e.getMessage());
         }
