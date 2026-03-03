@@ -18,6 +18,8 @@ import entities.User;
 import entities.Call;
 import services.serviceUser;
 import utils.LightDialog;
+import javafx.event.ActionEvent;
+import javafx.scene.Node;
 
 import java.io.File;
 import java.io.IOException;
@@ -250,5 +252,50 @@ public class PatientHome {
                 ((Stage) lblWelcome.getScene().getWindow()).setScene(new Scene(root));
             } catch (IOException e) { e.printStackTrace(); }
         }
+    }
+
+    // ─── Section Consultation ─────────────────────────────────
+    @FXML private VBox navConsultation;
+    @FXML private HBox indicConsultation;
+
+    @FXML
+    void showConsultation(MouseEvent event) {
+        // 1. Gestion visuelle (Désactiver l'ancien bouton, activer le nouveau)
+        if (currentActiveNav != null) {
+            currentActiveNav.setStyle(NAV_NORMAL);
+            // On cache l'indicateur de l'ancien (Accueil ou Message)
+            if (currentActiveNav == navAccueil) indicAccueil.setStyle(INDIC_HIDDEN);
+            if (currentActiveNav == navMessages) indicMessages.setStyle(INDIC_HIDDEN);
+        }
+
+        navConsultation.setStyle(NAV_ACTIVE);
+        indicConsultation.setStyle(INDIC_VISIBLE);
+        currentActiveNav = navConsultation;
+
+        // 2. Chargement de l'interface dans la zone centrale
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/PatientConsultation.fxml"));
+            // Utilise le type de layout racine de ton PatientConsultation (VBox ou HBox)
+            Parent page = loader.load();
+
+            // Si ton PatientConsultationController a besoin de l'utilisateur :
+            // PatientConsultationController ctrl = loader.getController();
+            // ctrl.setUser(currentUser);
+
+            contentArea.getChildren().setAll(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            utils.LightDialog.showError("Erreur", "Impossible de charger les consultations.");
+        }
+    }
+
+    @FXML
+    void onNavConsultationEnter(MouseEvent e) {
+        if(navConsultation != currentActiveNav) navConsultation.setStyle(NAV_ACTIVE);
+    }
+
+    @FXML
+    void onNavConsultationExit(MouseEvent e)  {
+        if(navConsultation != currentActiveNav) navConsultation.setStyle(NAV_NORMAL);
     }
 }

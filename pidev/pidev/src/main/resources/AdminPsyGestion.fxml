@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane prefHeight="700.0" prefWidth="1100.0"
+            xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="controllers.AdminPsyController"
+            style="-fx-background-color: #F2F0EC;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15"
+              style="-fx-background-color: white;
+                     -fx-padding: 20 30;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 3);">
+
+            <VBox spacing="3">
+                <Label text="Attribution du rôle Psychologue"
+                       style="-fx-font-size: 22px; -fx-font-weight: 700; -fx-text-fill: #2D3748;"/>
+                <Label text="Sélectionnez un utilisateur pour modifier son statut ou ses infos"
+                       style="-fx-font-size: 12px; -fx-text-fill: #718096;"/>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+
+        </HBox>
+    </top>
+
+    <left>
+        <VBox prefWidth="240"
+              style="-fx-background-color: linear-gradient(to bottom, #3A5A90, #2E4A7A);
+                     -fx-padding: 30 20;
+                     -fx-spacing: 20;">
+
+            <Label text="🧠" style="-fx-font-size: 40px;" alignment="CENTER" maxWidth="Infinity"/>
+            <Label text="EchoCare Admin"
+                   style="-fx-font-size: 18px; -fx-font-weight: 700; -fx-text-fill: white;"
+                   alignment="CENTER" maxWidth="Infinity"/>
+
+            <Separator style="-fx-background-color: rgba(255,255,255,0.2);"/>
+
+            <Button text="👥 Liste des Utilisateurs"
+                    maxWidth="Infinity"
+                    alignment="CENTER_LEFT"
+                    style="-fx-background-color: rgba(255,255,255,0.1);
+                           -fx-text-fill: white;
+                           -fx-font-size: 13px;
+                           -fx-padding: 12 15;
+                           -fx-background-radius: 8;"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="20" style="-fx-padding: 30;">
+
+            <HBox spacing="15" alignment="CENTER_LEFT"
+                  style="-fx-background-color: white; -fx-padding: 15; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 5, 0, 0, 2);">
+
+                <Button text="➕ Ajouter comme Psychologue"
+                        onAction="#handleAjouterCommePsy"
+                        style="-fx-background-color: #6BCB77;
+                               -fx-text-fill: white;
+                               -fx-font-weight: 700;
+                               -fx-background-radius: 8;
+                               -fx-padding: 10 20;"/>
+
+                <Button text="✎ Modifier l'Utilisateur"
+                        onAction="#handleModifier"
+                        style="-fx-background-color: #4A6FA5;
+                               -fx-text-fill: white;
+                               -fx-font-weight: 600;
+                               -fx-background-radius: 8;
+                               -fx-padding: 10 20;"/>
+
+
+            </HBox>
+
+            <VBox VBox.vgrow="ALWAYS"
+                  style="-fx-background-color: white;
+                         -fx-padding: 25;
+                         -fx-background-radius: 14;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);">
+
+                <Label text="Répertoire Global des Utilisateurs"
+                       style="-fx-font-size: 16px;
+                              -fx-font-weight: 700;
+                              -fx-text-fill: #2D3748; -fx-margin-bottom: 15;"/>
+
+                <TableView fx:id="tableUsers"
+                           VBox.vgrow="ALWAYS"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10;">
+                    <columns>
+                        <TableColumn fx:id="colNom" text="Nom" prefWidth="150"/>
+                        <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="150"/>
+                        <TableColumn fx:id="colEmail" text="Email" prefWidth="280"/>
+                        <TableColumn fx:id="colRole" text="Rôle Actuel" prefWidth="180"/>
+                    </columns>
+                </TableView>
+
+            </VBox>
+
+        </VBox>
+    </center>
+
+</BorderPane>
