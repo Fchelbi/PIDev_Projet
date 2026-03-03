@@ -79,6 +79,21 @@
             </VBox>
         </HBox>
 
+
+        <!-- Espace Bien-être (Musique + Défis) -->
+        <HBox alignment="CENTER_LEFT" spacing="0">
+            <HBox fx:id="indicWellness" prefWidth="4" prefHeight="42"
+                  style="-fx-min-width:4;-fx-max-width:4;-fx-background-color:transparent;-fx-background-radius:0 2 2 0;"/>
+            <VBox fx:id="navWellness" HBox.hgrow="ALWAYS" alignment="CENTER_LEFT"
+                  style="-fx-padding:12 20 12 16;-fx-cursor:hand;-fx-background-color:transparent;-fx-background-radius:0 10 10 0;"
+                  onMouseClicked="#showWellness" onMouseEntered="#onNavWellnessEnter" onMouseExited="#onNavWellnessExit">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="🌿" style="-fx-font-size:16px;"/>
+                    <Label text="Espace Bien-être" style="-fx-text-fill:rgba(255,255,255,0.75);-fx-font-size:13px;"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
         <Region VBox.vgrow="ALWAYS"/>
         <VBox spacing="10" style="-fx-padding:15;-fx-border-color:rgba(255,255,255,0.1) transparent transparent transparent;-fx-border-width:1;">
             <HBox spacing="8" alignment="CENTER_LEFT">

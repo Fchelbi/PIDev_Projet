@@ -15,7 +15,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import entities.User;
-import entities.Call;
 import services.serviceUser;
 import utils.LightDialog;
 
@@ -37,8 +36,8 @@ public class PatientHome {
     @FXML private ImageView imgHeaderPhoto;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane accueilPane;
-    @FXML private VBox navAccueil, navMessages;
-    @FXML private HBox indicAccueil, indicMessages;
+    @FXML private VBox navAccueil, navMessages, navWellness;
+    @FXML private HBox indicAccueil, indicMessages, indicWellness;
     @FXML private Label lblMessagesBadge;
 
     private User currentUser;
@@ -251,4 +250,33 @@ public class PatientHome {
             } catch (IOException e) { e.printStackTrace(); }
         }
     }
+
+    // ── Wellness (Musicothérapie + Défis) ────────────────────
+    @FXML void showWellness(MouseEvent event) {
+        try {
+            setActiveNav(navWellness, indicWellness);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Wellness.fxml"));
+            VBox page = loader.load();
+            Wellnesscontroller ctrl = loader.getController();
+            ctrl.setUser(currentUser);
+            contentArea.getChildren().setAll(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger l'espace bien-être.");
+        }
+    }
+    @FXML void onNavWellnessEnter(MouseEvent e) { if(navWellness!=currentActiveNav) navWellness.setStyle(NAV_ACTIVE); }
+    @FXML void onNavWellnessExit(MouseEvent e)  { if(navWellness!=currentActiveNav) navWellness.setStyle(NAV_NORMAL); }
+
+    // ── setActiveNav ─────────────────────────────────────────
+    private void setActiveNav(VBox nav, HBox indic) {
+        VBox[]  navs   = {navAccueil, navMessages, navWellness};
+        HBox[]  indics = {indicAccueil, indicMessages, indicWellness};
+        for (VBox n : navs)   if (n != null) n.setStyle(NAV_NORMAL);
+        for (HBox i : indics) if (i != null) i.setStyle(INDIC_HIDDEN);
+        if (nav   != null) nav.setStyle(NAV_ACTIVE);
+        if (indic != null) indic.setStyle(INDIC_VISIBLE);
+        currentActiveNav = nav;
+    }
+
 }
