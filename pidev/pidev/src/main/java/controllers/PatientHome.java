@@ -46,6 +46,10 @@ public class PatientHome {
     @FXML private Label lblNom, lblEmail, lblTel;
     @FXML private Label lblAffirmation, lblAffirmStatus;
     @FXML private Label lblQuote, lblQuoteStatus, lblQuoteAuthor;
+    @FXML private Label lblTriviaQuestion, lblTriviaResult;
+    @FXML private javafx.scene.layout.HBox triviaButtons;
+    @FXML private javafx.scene.control.Button btnTriviaVrai, btnTriviaFaux;
+    private String currentTriviaAnswer = "";
     @FXML private ImageView imgHeaderPhoto;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane accueilPane;
@@ -288,6 +292,62 @@ public class PatientHome {
         i += s.length();
         int end = json.indexOf("\"", i);
         return end < 0 ? "" : json.substring(i, end).replace("\\n"," ").replace("\\'","'");
+    }
+
+
+    // ════════════════════════════════════════════════════════════════════
+    //  Fun & Learn — Trivia soft skills (patient)
+    // ════════════════════════════════════════════════════════════════════
+
+    private static final String[][] SOFTSKILLS_QUESTIONS = {
+            {"L'écoute active consiste à reformuler ce que dit l'interlocuteur.", "Vrai"},
+            {"Le langage non-verbal représente moins de 10% de la communication.", "Faux"},
+            {"L'intelligence émotionnelle peut se développer avec la pratique.", "Vrai"},
+            {"Un feedback constructif doit toujours commencer par une critique négative.", "Faux"},
+            {"La communication assertive permet d'exprimer ses besoins sans agressivité.", "Vrai"},
+            {"Les soft skills ne sont pas évaluables en milieu professionnel.", "Faux"},
+            {"L'empathie est une compétence clé du leadership.", "Vrai"},
+            {"Un conflit en équipe est toujours négatif pour la productivité.", "Faux"},
+            {"La communication non-violente (CNV) favorise la résolution de conflits.", "Vrai"},
+            {"Écouter activement signifie simplement ne pas parler pendant que l'autre parle.", "Faux"},
+            {"La gestion du stress est considérée comme une soft skill.", "Vrai"},
+            {"Un leader efficace impose toujours ses décisions sans consulter son équipe.", "Faux"},
+            {"La confiance en soi peut s'améliorer grâce à des exercices de visualisation positive.", "Vrai"},
+            {"La communication écrite est moins importante que la communication orale en entreprise.", "Faux"},
+            {"Savoir déléguer est une compétence managériale essentielle.", "Vrai"}
+    };
+
+    @FXML void loadPatientTrivia(MouseEvent e) {
+        if (lblTriviaQuestion == null) return;
+        // Pick a different question each time using time-based rotation
+        int idx = (int)(System.currentTimeMillis() / 3000 % SOFTSKILLS_QUESTIONS.length);
+        String[] q = SOFTSKILLS_QUESTIONS[idx];
+        currentTriviaAnswer = q[1];
+        lblTriviaQuestion.setText(q[0]);
+        lblTriviaQuestion.setStyle("-fx-font-size:13px;-fx-text-fill:#2D3748;-fx-font-style:italic;-fx-line-spacing:3;");
+        lblTriviaResult.setText("");
+        if (triviaButtons != null) { triviaButtons.setVisible(true); triviaButtons.setManaged(true); }
+        if (btnTriviaVrai != null) btnTriviaVrai.setDisable(false);
+        if (btnTriviaFaux != null) btnTriviaFaux.setDisable(false);
+    }
+
+    @FXML void onTriviaVrai(javafx.event.ActionEvent e) { checkPatientAnswer("Vrai"); }
+    @FXML void onTriviaFaux(javafx.event.ActionEvent e) { checkPatientAnswer("Faux"); }
+
+    private void checkPatientAnswer(String chosen) {
+        if (currentTriviaAnswer.isEmpty()) return;
+        boolean correct = chosen.equalsIgnoreCase(currentTriviaAnswer);
+        if (lblTriviaResult != null) {
+            if (correct) {
+                lblTriviaResult.setText("🎉 Bonne réponse ! La réponse est : " + currentTriviaAnswer.toUpperCase());
+                lblTriviaResult.setStyle("-fx-font-size:12px;-fx-font-weight:bold;-fx-text-fill:#00B894;");
+            } else {
+                lblTriviaResult.setText("❌ Mauvaise réponse. La bonne réponse était : " + currentTriviaAnswer.toUpperCase());
+                lblTriviaResult.setStyle("-fx-font-size:12px;-fx-font-weight:bold;-fx-text-fill:#E53E3E;");
+            }
+        }
+        if (btnTriviaVrai != null) btnTriviaVrai.setDisable(true);
+        if (btnTriviaFaux != null) btnTriviaFaux.setDisable(true);
     }
 
     @FXML void handleLogout(MouseEvent event) {

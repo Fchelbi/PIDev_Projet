@@ -350,7 +350,7 @@ public class AdminHome {
             Platform.runLater(() -> {
                 // Custom dialog with Vrai / Faux buttons
                 javafx.stage.Stage dialogStage = new javafx.stage.Stage();
-                dialogStage.setTitle("🎯 Quiz Soft Skills");
+                dialogStage.setTitle("🧠 Fun & Learn");
                 dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
 
                 javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(20);
@@ -358,7 +358,7 @@ public class AdminHome {
                 root.setAlignment(javafx.geometry.Pos.CENTER);
                 root.setPrefWidth(480);
 
-                javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("🎯 Quiz Communication & Soft Skills");
+                javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("🧠 Fun & Learn — Le savais-tu ?");
                 lblTitle.setStyle("-fx-font-size:15px;-fx-font-weight:bold;-fx-text-fill:#2D3748;");
 
                 javafx.scene.control.Label lblQ = new javafx.scene.control.Label(finalQ);
@@ -452,121 +452,6 @@ public class AdminHome {
     }
 
     // ════════════════════════════════════════════════════════════════════
-    //  API 3 + IA : OpenRouter — AI analysis of platform stats
-    // ════════════════════════════════════════════════════════════════════
-
-    @FXML
-    void analyzeWithAI(MouseEvent event) {
-        try {
-            int nbFormations = formationService != null ? formationService.selectALL().size() : 0;
-            List<User> users = us.selectALL();
-            long nbPatients = users.stream().filter(u -> "PATIENT".equalsIgnoreCase(u.getRole())).count();
-            long nbCoaches  = users.stream().filter(u -> "COACH".equalsIgnoreCase(u.getRole())).count();
-            long nbResults  = quizResultService != null ? quizResultService.selectALL().size() : 0;
-            long nbPassed   = quizResultService != null
-                    ? quizResultService.selectALL().stream().filter(QuizResult::isPassed).count() : 0;
-            double taux     = nbResults > 0 ? (nbPassed * 100.0 / nbResults) : 0;
-
-            String prompt = String.format(
-                    "Tu es un consultant en e-learning. Voici les statistiques de la plateforme EchoCare : " +
-                            "%d formations, %d patients, %d coaches, %d tentatives de quiz, taux de réussite %.0f%%. " +
-                            "Donne en 3-4 phrases une analyse et 2 recommandations concrètes. Réponds en français, de façon concise.",
-                    nbFormations, nbPatients, nbCoaches, nbResults, taux);
-
-            Alert loading = new Alert(Alert.AlertType.INFORMATION);
-            loading.setTitle("🤖 Analyse IA");
-            loading.setHeaderText("Analyse en cours...");
-            loading.setContentText("⏳ L'IA analyse vos statistiques...");
-            loading.show();
-
-            new Thread(() -> {
-                try {
-                    String body = "{\"model\":\"mistralai/mistral-7b-instruct:free\","
-                            + "\"messages\":[{\"role\":\"user\",\"content\":\""
-                            + prompt.replace("\"", "\\\"").replace("\n", "\\n") + "\"}],"
-                            + "\"max_tokens\":400}";
-                    HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(20)).build();
-                    HttpResponse<String> resp = c.send(
-                            HttpRequest.newBuilder()
-                                    .uri(URI.create("https://openrouter.ai/api/v1/chat/completions"))
-                                    .timeout(Duration.ofSeconds(45))
-                                    .header("Content-Type", "application/json")
-                                    .header("Authorization", "Bearer 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")
-                                    .header("HTTP-Referer", "https://echocare.app")
-                                    .POST(HttpRequest.BodyPublishers.ofString(body)).build(),
-                            HttpResponse.BodyHandlers.ofString());
-
-                    String analysis = parseAIResponse(resp.body());
-                    Platform.runLater(() -> {
-                        loading.close();
-                        Alert result = new Alert(Alert.AlertType.INFORMATION);
-                        result.setTitle("🤖 Analyse IA — EchoCare");
-                        result.setHeaderText("Analyse de vos statistiques");
-                        result.setContentText(analysis);
-                        result.getDialogPane().setPrefWidth(550);
-                        result.showAndWait();
-                    });
-                } catch (Exception e) {
-                    // Fallback: generate a local analysis without AI
-                    Platform.runLater(() -> {
-                        loading.close();
-                        try {
-                            List<User> u2 = us.selectALL();
-                            long p2 = u2.stream().filter(u -> "PATIENT".equalsIgnoreCase(u.getRole())).count();
-                            long c2 = u2.stream().filter(u -> "COACH".equalsIgnoreCase(u.getRole())).count();
-                            int f2 = formationService != null ? formationService.selectALL().size() : 0;
-                            long r2 = quizResultService != null ? quizResultService.selectALL().size() : 0;
-                            long passed2 = quizResultService != null ? quizResultService.selectALL().stream().filter(QuizResult::isPassed).count() : 0;
-                            double taux2 = r2 > 0 ? passed2 * 100.0 / r2 : 0;
-                            double ratio = c2 > 0 ? (double) p2 / c2 : 0;
-                            String fallback = String.format(
-                                    "📊 Analyse automatique EchoCare\n\n" +
-                                            "👥 Ratio patients/coach : %.1f patients par coach\n" +
-                                            "📚 Couverture formations : %d formations pour %d patients\n" +
-                                            "🎯 Performance quiz : %.0f%% de réussite (%d/%d tentatives)\n\n" +
-                                            "💡 Recommandations :\n" +
-                                            (taux2 < 60 ? "• Le taux de réussite est faible — envisagez de simplifier les quiz ou enrichir les formations.\n" : "• Bon taux de réussite ! Continuez à diversifier les contenus.\n") +
-                                            (ratio > 10 ? "• Ratio patients/coach élevé — recrutez de nouveaux coaches.\n" : "• Bonne répartition coaches/patients.\n") +
-                                            (f2 < 5 ? "• Peu de formations disponibles — ajoutez du contenu pour fidéliser les patients." : "• Catalogue de formations bien fourni."),
-                                    ratio, f2, p2, taux2, passed2, r2);
-                            Alert fallbackAlert = new Alert(Alert.AlertType.INFORMATION);
-                            fallbackAlert.setTitle("📊 Analyse locale");
-                            fallbackAlert.setHeaderText("Analyse (mode hors-ligne)");
-                            fallbackAlert.setContentText(fallback);
-                            fallbackAlert.getDialogPane().setPrefWidth(520);
-                            fallbackAlert.showAndWait();
-                        } catch (Exception ex) {
-                            Alert err = new Alert(Alert.AlertType.ERROR);
-                            err.setTitle("Erreur"); err.setContentText("Erreur : " + ex.getMessage()); err.showAndWait();
-                        }
-                    });
-                }
-            }, "ai-analysis-thread").start();
-
-        } catch (SQLException e) {
-            LightDialog.showError("Erreur", e.getMessage());
-        }
-    }
-
-    private String parseAIResponse(String raw) {
-        int ci = raw.indexOf("\"content\":\"");
-        if (ci < 0) return "Analyse non disponible.";
-        ci += 11;
-        StringBuilder sb = new StringBuilder();
-        while (ci < raw.length()) {
-            char ch = raw.charAt(ci);
-            if (ch == '\\' && ci + 1 < raw.length()) {
-                char next = raw.charAt(ci + 1);
-                if (next == '"')  { sb.append('"');  ci += 2; continue; }
-                if (next == 'n')  { sb.append('\n'); ci += 2; continue; }
-                if (next == '\\') { sb.append('\\'); ci += 2; continue; }
-            } else if (ch == '"') break;
-            sb.append(ch); ci++;
-        }
-        return sb.toString().isBlank() ? "Analyse non disponible." : sb.toString();
-    }
-
-    // ════════════════════════════════════════════════════════════════════
     //  FONCTIONNALITÉ AVANCÉE : Export rapport statistiques texte
     // ════════════════════════════════════════════════════════════════════
 
@@ -616,8 +501,8 @@ public class AdminHome {
 
             Alert a = new Alert(Alert.AlertType.INFORMATION);
             a.setTitle("📄 Rapport exporté");
-            a.setHeaderText("Rapport enregistré !");
-            a.setContentText("Fichier : " + path);
+            a.setHeaderText("✅ Rapport enregistré avec succès !");
+            a.setContentText("Votre rapport EchoCare a été sauvegardé dans votre dossier personnel.");
             ButtonType openBtn = new ButtonType("📂 Ouvrir");
             ButtonType ok = new ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE);
             a.getButtonTypes().setAll(openBtn, ok);
