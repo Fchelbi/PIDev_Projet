@@ -25,44 +25,36 @@ import java.net.http.*;
 import java.sql.SQLException;
 import java.time.Duration;
 
-/**
- * PatientHome — contrôleur principal patient, wired to PatientHome.fxml.
- *
- * FICHIERS À SUPPRIMER :
- *   DELETE AdminController.java  (wired to old AdminDashboard.fxml — disparu)
- *   DELETE CoachController.java  (wired to old CoachDashboard.fxml — disparu)
- *   DELETE PatientController.java (la grosse classe avec takeQuiz, showAccueil...)
- *          wired to PatientDashboard.fxml — disparu
- *
- *   GARDER PatientPageController.java (l'interface légère, juste setUser())
- *          utilisée par les 3 sub-pages formations du patient.
- *
- * loadSubPage() utilise PatientPageController (interface) — pas PatientController (classe).
- */
 public class PatientHome {
 
+    // ── Labels ────────────────────────────────────────────────────────────
     @FXML private Label lblWelcome, lblAvatarHeader;
     @FXML private Label lblNbRdv, lblNbSeances;
     @FXML private Label lblNom, lblEmail, lblTel;
     @FXML private Label lblAffirmation, lblAffirmStatus;
     @FXML private Label lblQuote, lblQuoteStatus, lblQuoteAuthor;
     @FXML private Label lblTriviaQuestion, lblTriviaResult;
+    @FXML private Label lblMessagesBadge;
+
+    // ── Trivia buttons ────────────────────────────────────────────────────
     @FXML private javafx.scene.layout.HBox triviaButtons;
     @FXML private javafx.scene.control.Button btnTriviaVrai, btnTriviaFaux;
     private String currentTriviaAnswer = "";
+
+    // ── Layout ────────────────────────────────────────────────────────────
     @FXML private ImageView imgHeaderPhoto;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane accueilPane;
-    @FXML private VBox navAccueil, navMessages, navWellness;
-    @FXML private HBox indicAccueil, indicMessages, indicWellness;
-    @FXML private VBox navMessages;
-    @FXML private HBox indicMessages;
-    @FXML private Label lblMessagesBadge;
-    @FXML private VBox navChatbot;
-    @FXML private HBox indicChatbot;
+
+    // ── Navigation YOUR module ────────────────────────────────────────────
     @FXML private VBox navAccueil, navFormations, navMesFormations, navResultats, navProfil;
     @FXML private HBox indicAccueil, indicFormations, indicMesFormations, indicResultats, indicProfil;
 
+    // ── Navigation FRIEND modules ─────────────────────────────────────────
+    @FXML private VBox navMessages, navWellness, navChatbot;
+    @FXML private HBox indicMessages, indicWellness, indicChatbot;
+
+    // ── State ─────────────────────────────────────────────────────────────
     private User currentUser;
     private final serviceUser us = new serviceUser();
     private VBox currentActiveNav;
@@ -109,6 +101,7 @@ public class PatientHome {
         imgHeaderPhoto.setVisible(false); lblAvatarHeader.setVisible(true);
     }
 
+    // API 1 — affirmations.dev
     private void loadAffirmation() {
         if (lblAffirmation == null) return;
         Platform.runLater(() -> { if (lblAffirmStatus != null) lblAffirmStatus.setText("⏳ Chargement..."); lblAffirmation.setText(""); });
@@ -125,45 +118,25 @@ public class PatientHome {
     }
 
     @FXML void refreshAffirmation(MouseEvent e) { loadAffirmation(); }
+
+    // API 2 — Quotable.io
     @FXML void refreshQuote(MouseEvent e) { loadQuotableQuote(); }
 
     private void loadQuotableQuote() {
         if (lblQuote == null) return;
-        Platform.runLater(() -> {
-            if (lblQuoteStatus != null) lblQuoteStatus.setText("⏳ Chargement...");
-            lblQuote.setText("");
-            if (lblQuoteAuthor != null) lblQuoteAuthor.setText("");
-        });
+        Platform.runLater(() -> { if (lblQuoteStatus != null) lblQuoteStatus.setText("⏳ Chargement..."); lblQuote.setText(""); if (lblQuoteAuthor != null) lblQuoteAuthor.setText(""); });
         new Thread(() -> {
             try {
                 HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
-                String url = "https://api.quotable.io/random?tags=inspirational,wisdom,happiness&maxLength=150";
-                HttpResponse<String> resp = c.send(
-                        HttpRequest.newBuilder().uri(URI.create(url))
-                                .timeout(Duration.ofSeconds(8)).header("User-Agent", "EchoCare/1.0").GET().build(),
-                        HttpResponse.BodyHandlers.ofString());
+                HttpResponse<String> resp = c.send(HttpRequest.newBuilder().uri(URI.create("https://api.quotable.io/random?tags=inspirational,wisdom,happiness&maxLength=150")).timeout(Duration.ofSeconds(8)).header("User-Agent","EchoCare/1.0").GET().build(), HttpResponse.BodyHandlers.ofString());
                 String content2 = extractValue(resp.body(), "content");
-                String author  = extractValue(resp.body(), "author");
+                String author   = extractValue(resp.body(), "author");
                 if (content2.isBlank()) throw new Exception("empty");
-                Platform.runLater(() -> {
-                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation du jour");
-                    lblQuote.setText("❝  " + content2 + "  ❞");
-                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— " + author);
-                });
+                Platform.runLater(() -> { if (lblQuoteStatus!=null) lblQuoteStatus.setText("💬 Citation du jour"); lblQuote.setText("❝  " + content2 + "  ❞"); if (lblQuoteAuthor!=null) lblQuoteAuthor.setText("— " + author); });
             } catch (Exception e2) {
-                String[][] fallbacks = {
-                        {"Le seul moyen de faire du bon travail est d'aimer ce que vous faites.", "Steve Jobs"},
-                        {"La vie, c'est ce qui arrive quand vous êtes occupé à faire d'autres projets.", "John Lennon"},
-                        {"La santé est la plus grande richesse.", "Virgile"},
-                        {"Chaque jour est une nouvelle chance de changer votre vie.", "Anonyme"},
-                        {"Prenez soin de votre corps, c'est le seul endroit où vous devez vivre.", "Jim Rohn"}
-                };
-                String[] chosen = fallbacks[(int)(System.currentTimeMillis() / 10000 % fallbacks.length)];
-                Platform.runLater(() -> {
-                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation");
-                    lblQuote.setText("❝  " + chosen[0] + "  ❞");
-                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— " + chosen[1]);
-                });
+                String[][] fb = {{"Le seul moyen de faire du bon travail est d'aimer ce que vous faites.","Steve Jobs"},{"La santé est la plus grande richesse.","Virgile"},{"Chaque jour est une nouvelle chance de changer votre vie.","Anonyme"}};
+                String[] ch = fb[(int)(System.currentTimeMillis()/10000%fb.length)];
+                Platform.runLater(() -> { if (lblQuoteStatus!=null) lblQuoteStatus.setText("💬 Citation"); lblQuote.setText("❝  "+ch[0]+"  ❞"); if (lblQuoteAuthor!=null) lblQuoteAuthor.setText("— "+ch[1]); });
             }
         }, "quote-thread").start();
     }
@@ -182,7 +155,7 @@ public class PatientHome {
                 try {
                     entities.User caller = us.getUserById(call.getId_caller());
                     if (caller == null) return;
-                    utils.Notificationhelper.show("📞", caller.getPrenom() + " " + caller.getNom() + " · " + caller.getRole(), "Appel entrant — Appuyez pour répondre", () -> openCallScreen(caller, call));
+                    utils.Notificationhelper.show("📞", caller.getPrenom()+" "+caller.getNom()+" · "+caller.getRole(), "Appel entrant — Appuyez pour répondre", () -> openCallScreen(caller, call));
                 } catch (Exception ex) { ex.printStackTrace(); }
             });
         } catch (Exception e) { System.err.println("Notifications not available: " + e.getMessage()); }
@@ -211,24 +184,29 @@ public class PatientHome {
     }
 
     private void showAccueilFromProfil() { setActiveNav(navAccueil, indicAccueil); contentArea.getChildren().setAll(accueilPane); }
+
     @FXML void showAccueil(MouseEvent event)       { setActiveNav(navAccueil, indicAccueil); contentArea.getChildren().setAll(accueilPane); }
     @FXML void showAllFormations(MouseEvent event) { setActiveNav(navFormations, indicFormations); loadSubPage("PatientFormations.fxml", "Formations"); }
     @FXML void showMyFormations(MouseEvent event)  { setActiveNav(navMesFormations, indicMesFormations); loadSubPage("PatientMesFormations.fxml", "Mes Formations"); }
     @FXML void showMyResults(MouseEvent event)     { setActiveNav(navResultats, indicResultats); loadSubPage("PatientResultats.fxml", "Mes Résultats"); }
     @FXML void showMessages(MouseEvent event)      { openMessagerie(); }
 
-    @FXML void showProfil(MouseEvent event) {
-        setActiveNav(navProfil, indicProfil);
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml"));
-            ScrollPane page = loader.load();
-            Profil ctrl = loader.getController();
-            ctrl.setCurrentUser(currentUser); ctrl.setOnPhotoChanged(this::refreshUserData); ctrl.setOnBackToAccueil(this::showAccueilFromProfil);
-            contentArea.getChildren().setAll(page);
-        } catch (IOException e) { e.printStackTrace(); LightDialog.showError("Erreur", "Impossible de charger le profil."); }
+    @FXML void showWellness(MouseEvent event) {
+        try { setActiveNav(navWellness, indicWellness); FXMLLoader loader = new FXMLLoader(getClass().getResource("/Wellness.fxml")); VBox page = loader.load(); Wellnesscontroller ctrl = loader.getController(); ctrl.setUser(currentUser); contentArea.getChildren().setAll(page); }
+        catch (IOException e) { e.printStackTrace(); LightDialog.showError("Erreur", "Impossible de charger l'espace bien-être."); }
     }
 
-    // FIXED: uses PatientPageController interface — NOT PatientController class
+    @FXML void showChatbot(MouseEvent event) {
+        try { setActiveNav(navChatbot, indicChatbot); FXMLLoader loader = new FXMLLoader(getClass().getResource("/Chatbot.fxml")); VBox page = loader.load(); ChatbotController ctrl = loader.getController(); ctrl.setCurrentUser(currentUser); contentArea.getChildren().setAll(page); }
+        catch (IOException e) { e.printStackTrace(); LightDialog.showError("Erreur", "Impossible de charger le chatbot."); }
+    }
+
+    @FXML void showProfil(MouseEvent event) {
+        setActiveNav(navProfil, indicProfil);
+        try { FXMLLoader loader = new FXMLLoader(getClass().getResource("/Profil.fxml")); ScrollPane page = loader.load(); Profil ctrl = loader.getController(); ctrl.setCurrentUser(currentUser); ctrl.setOnPhotoChanged(this::refreshUserData); ctrl.setOnBackToAccueil(this::showAccueilFromProfil); contentArea.getChildren().setAll(page); }
+        catch (IOException e) { e.printStackTrace(); LightDialog.showError("Erreur", "Impossible de charger le profil."); }
+    }
+
     private void loadSubPage(String fxmlName, String title) {
         try {
             java.net.URL res = getClass().getResource("/" + fxmlName);
@@ -236,9 +214,8 @@ public class PatientHome {
             FXMLLoader loader = new FXMLLoader(res);
             Parent page = loader.load();
             Object ctrl = loader.getController();
-            if (ctrl instanceof PatientPageController ppc) {
-                ppc.setUser(currentUser);
-            } else if (ctrl != null) {
+            if (ctrl instanceof PatientPageController ppc) { ppc.setUser(currentUser); }
+            else if (ctrl != null) {
                 try { ctrl.getClass().getMethod("setUser", entities.User.class).invoke(ctrl, currentUser); }
                 catch (NoSuchMethodException ignored) {}
                 catch (Exception e) { System.err.println("[PatientHome] setUser() failed: " + e.getMessage()); }
@@ -248,17 +225,13 @@ public class PatientHome {
     }
 
     private ScrollPane buildPlaceholder(String title) {
-        VBox outer = new VBox(0);
-        VBox content = new VBox(16); content.setAlignment(javafx.geometry.Pos.CENTER); content.setStyle("-fx-padding:80;");
-        Label icon = new Label("🚧"); icon.setStyle("-fx-font-size:50px;");
-        Label msg  = new Label("Page en cours de développement"); msg.setStyle("-fx-font-size:17px;-fx-font-weight:600;-fx-text-fill:#4A5568;");
-        content.getChildren().addAll(icon, msg);
-        outer.getChildren().add(content);
-        ScrollPane sp = new ScrollPane(outer); sp.setFitToWidth(true);
-        sp.setStyle("-fx-background:transparent;-fx-background-color:#F2F0EC;");
-        return sp;
+        VBox outer = new VBox(0); VBox content = new VBox(16); content.setAlignment(javafx.geometry.Pos.CENTER); content.setStyle("-fx-padding:80;");
+        Label icon = new Label("🚧"); icon.setStyle("-fx-font-size:50px;"); Label msg = new Label("Page en cours de développement"); msg.setStyle("-fx-font-size:17px;-fx-font-weight:600;-fx-text-fill:#4A5568;");
+        content.getChildren().addAll(icon, msg); outer.getChildren().add(content);
+        ScrollPane sp = new ScrollPane(outer); sp.setFitToWidth(true); sp.setStyle("-fx-background:transparent;-fx-background-color:#F2F0EC;"); return sp;
     }
 
+    // Nav hover handlers
     @FXML void onNavAccueilEnter(MouseEvent e)        { if (navAccueil       != currentActiveNav) navAccueil.setStyle(NAV_ACTIVE); }
     @FXML void onNavAccueilExit(MouseEvent e)         { if (navAccueil       != currentActiveNav) navAccueil.setStyle(NAV_NORMAL); }
     @FXML void onNavFormationsEnter(MouseEvent e)     { if (navFormations    != currentActiveNav) navFormations.setStyle(NAV_ACTIVE); }
@@ -271,6 +244,10 @@ public class PatientHome {
     @FXML void onNavProfilExit(MouseEvent e)          { if (navProfil        != currentActiveNav) navProfil.setStyle(NAV_NORMAL); }
     @FXML void onNavMessagesEnter(MouseEvent e)       { if (navMessages      != currentActiveNav) navMessages.setStyle(NAV_ACTIVE); }
     @FXML void onNavMessagesExit(MouseEvent e)        { if (navMessages      != currentActiveNav) navMessages.setStyle(NAV_NORMAL); }
+    @FXML void onNavWellnessEnter(MouseEvent e)       { if (navWellness      != currentActiveNav) navWellness.setStyle(NAV_ACTIVE); }
+    @FXML void onNavWellnessExit(MouseEvent e)        { if (navWellness      != currentActiveNav) navWellness.setStyle(NAV_NORMAL); }
+    @FXML void onNavChatbotEnter(MouseEvent e)        { if (navChatbot       != currentActiveNav) navChatbot.setStyle(NAV_ACTIVE); }
+    @FXML void onNavChatbotExit(MouseEvent e)         { if (navChatbot       != currentActiveNav) navChatbot.setStyle(NAV_NORMAL); }
     @FXML void onCardFormationsEnter(MouseEvent e)    { ((VBox)e.getSource()).setStyle(CARD_HOVER); }
     @FXML void onCardFormationsExit(MouseEvent e)     { ((VBox)e.getSource()).setStyle(CARD_NORMAL); }
     @FXML void onCardMesFormationsEnter(MouseEvent e) { ((VBox)e.getSource()).setStyle(CARD_HOVER); }
@@ -280,9 +257,10 @@ public class PatientHome {
     @FXML void onCardProfilEnter(MouseEvent e)        { ((VBox)e.getSource()).setStyle(CARD_HOVER); }
     @FXML void onCardProfilExit(MouseEvent e)         { ((VBox)e.getSource()).setStyle(CARD_NORMAL); }
 
+    // ONE setActiveNav covering ALL nav items from both modules
     private void setActiveNav(VBox nav, HBox indic) {
-        VBox[] navs   = {navAccueil, navFormations, navMesFormations, navResultats, navProfil, navMessages};
-        HBox[] indics = {indicAccueil, indicFormations, indicMesFormations, indicResultats, indicProfil, indicMessages};
+        VBox[] navs   = {navAccueil, navFormations, navMesFormations, navResultats, navProfil, navMessages, navWellness, navChatbot};
+        HBox[] indics = {indicAccueil, indicFormations, indicMesFormations, indicResultats, indicProfil, indicMessages, indicWellness, indicChatbot};
         for (VBox n : navs)   if (n != null) n.setStyle(NAV_NORMAL);
         for (HBox i : indics) if (i != null) i.setStyle(INDIC_HIDDEN);
         if (nav   != null) nav.setStyle(NAV_ACTIVE);
@@ -290,19 +268,7 @@ public class PatientHome {
         currentActiveNav = nav;
     }
 
-    private String extractValue(String json, String key) {
-        String s = "\"" + key + "\":\"";
-        int i = json.indexOf(s); if (i < 0) return "";
-        i += s.length();
-        int end = json.indexOf("\"", i);
-        return end < 0 ? "" : json.substring(i, end).replace("\\n"," ").replace("\\'","'");
-    }
-
-
-    // ════════════════════════════════════════════════════════════════════
-    //  Fun & Learn — Trivia soft skills (patient)
-    // ════════════════════════════════════════════════════════════════════
-
+    // Fun & Learn — Trivia soft skills
     private static final String[][] SOFTSKILLS_QUESTIONS = {
             {"L'écoute active consiste à reformuler ce que dit l'interlocuteur.", "Vrai"},
             {"Le langage non-verbal représente moins de 10% de la communication.", "Faux"},
@@ -323,7 +289,6 @@ public class PatientHome {
 
     @FXML void loadPatientTrivia(MouseEvent e) {
         if (lblTriviaQuestion == null) return;
-        // Pick a different question each time using time-based rotation
         int idx = (int)(System.currentTimeMillis() / 3000 % SOFTSKILLS_QUESTIONS.length);
         String[] q = SOFTSKILLS_QUESTIONS[idx];
         currentTriviaAnswer = q[1];
@@ -342,16 +307,16 @@ public class PatientHome {
         if (currentTriviaAnswer.isEmpty()) return;
         boolean correct = chosen.equalsIgnoreCase(currentTriviaAnswer);
         if (lblTriviaResult != null) {
-            if (correct) {
-                lblTriviaResult.setText("🎉 Bonne réponse ! La réponse est : " + currentTriviaAnswer.toUpperCase());
-                lblTriviaResult.setStyle("-fx-font-size:12px;-fx-font-weight:bold;-fx-text-fill:#00B894;");
-            } else {
-                lblTriviaResult.setText("❌ Mauvaise réponse. La bonne réponse était : " + currentTriviaAnswer.toUpperCase());
-                lblTriviaResult.setStyle("-fx-font-size:12px;-fx-font-weight:bold;-fx-text-fill:#E53E3E;");
-            }
+            if (correct) { lblTriviaResult.setText("🎉 Bonne réponse ! La réponse est : " + currentTriviaAnswer.toUpperCase()); lblTriviaResult.setStyle("-fx-font-size:12px;-fx-font-weight:bold;-fx-text-fill:#00B894;"); }
+            else         { lblTriviaResult.setText("❌ Mauvaise réponse. La bonne réponse était : " + currentTriviaAnswer.toUpperCase()); lblTriviaResult.setStyle("-fx-font-size:12px;-fx-font-weight:bold;-fx-text-fill:#E53E3E;"); }
         }
         if (btnTriviaVrai != null) btnTriviaVrai.setDisable(true);
         if (btnTriviaFaux != null) btnTriviaFaux.setDisable(true);
+    }
+
+    private String extractValue(String json, String key) {
+        String s = "\"" + key + "\":\""; int i = json.indexOf(s); if (i < 0) return ""; i += s.length(); int end = json.indexOf("\"", i);
+        return end < 0 ? "" : json.substring(i, end).replace("\\n"," ").replace("\\'","'");
     }
 
     @FXML void handleLogout(MouseEvent event) {
@@ -360,52 +325,4 @@ public class PatientHome {
             catch (IOException e) { e.printStackTrace(); }
         }
     }
-
-    // ── Wellness (Musicothérapie + Défis) ────────────────────
-    @FXML void showWellness(MouseEvent event) {
-        try {
-            setActiveNav(navWellness, indicWellness);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Wellness.fxml"));
-            VBox page = loader.load();
-            Wellnesscontroller ctrl = loader.getController();
-            ctrl.setUser(currentUser);
-            contentArea.getChildren().setAll(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LightDialog.showError("Erreur", "Impossible de charger l'espace bien-être.");
-        }
-    }
-    @FXML void onNavWellnessEnter(MouseEvent e) { if(navWellness!=currentActiveNav) navWellness.setStyle(NAV_ACTIVE); }
-    @FXML void onNavWellnessExit(MouseEvent e)  { if(navWellness!=currentActiveNav) navWellness.setStyle(NAV_NORMAL); }
-
-    // ── setActiveNav ─────────────────────────────────────────
-    private void setActiveNav(VBox nav, HBox indic) {
-        VBox[]  navs   = {navAccueil, navMessages, navWellness, navChatbot};
-        HBox[]  indics = {indicAccueil, indicMessages, indicWellness, indicChatbot };
-        for (VBox n : navs)   if (n != null) n.setStyle(NAV_NORMAL);
-        for (HBox i : indics) if (i != null) i.setStyle(INDIC_HIDDEN);
-        if (nav   != null) nav.setStyle(NAV_ACTIVE);
-        if (indic != null) indic.setStyle(INDIC_VISIBLE);
-        currentActiveNav = nav;
-    }
-
-    @FXML void onNavChatbotEnter(MouseEvent e) { if(navChatbot!=currentActiveNav) navChatbot.setStyle(NAV_ACTIVE); }
-    @FXML void onNavChatbotExit(MouseEvent e)  { if(navChatbot!=currentActiveNav) navChatbot.setStyle(NAV_NORMAL); }
-
-    // ── 3. Ajoute cette méthode pour ouvrir le chatbot ──
-    @FXML
-    void showChatbot(MouseEvent event) {
-        try {
-            setActiveNav(navChatbot, indicChatbot);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Chatbot.fxml"));
-            VBox page = loader.load();
-            ChatbotController ctrl = loader.getController();
-            ctrl.setCurrentUser(currentUser);
-            contentArea.getChildren().setAll(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LightDialog.showError("Erreur", "Impossible de charger le chatbot.");
-        }
-    }
-
 }
