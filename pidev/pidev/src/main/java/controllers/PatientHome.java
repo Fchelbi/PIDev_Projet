@@ -104,7 +104,7 @@ public class PatientHome {
     private void loadAffirmation() {
         if (lblAffirmation == null) return;
         Platform.runLater(() -> {
-            if (lblAffirmStatus != null) lblAffirmStatus.setText("Chargement...");
+            if (lblAffirmStatus != null) lblAffirmStatus.setText("Chargement....");
             lblAffirmation.setText("");
         });
         Thread t = new Thread(() -> {

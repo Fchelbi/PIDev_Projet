@@ -36,7 +36,7 @@ public class ChatbotController {
 
     private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
     private static final String MODEL   = "llama-3.3-70b-versatile";
-    private static final String API_KEY = "GROCK_KEY";
+    private static final String API_KEY = "GROQ_KEY";
     private static final DateTimeFormatter FMT  = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DFMT = DateTimeFormatter.ofPattern("dd/MM HH:mm");
 
