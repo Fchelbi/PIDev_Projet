@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ServiceUserTest {
 
     static serviceUser us;
-    // Hédhi variable bch nkhabiw fiha l ID mta3 l user elli bch nasn3ouh
-    // Bch njarbou bih l modification wel suppression mba3d
     static int idUserTest;
 
     @BeforeAll
@@ -23,25 +21,19 @@ public class ServiceUserTest {
     @Test
     @Order(1)
     void testAjouterUser() throws SQLException {
-        // 1. Création User de test
-        // N.B: L'ID 0 ma yhemmech khater l base ta3tih ID auto-increment
-        User u = new User(0, "TestNom", "TestPrenom", "test.junit@esprit.tn", "pass123", "Client", "11111111");
+        // ✅ FIX: "Client" n'existe pas comme rôle → remplacé par "PATIENT"
+        User u = new User(0, "TestNom", "TestPrenom", "test.junit@esprit.tn", "pass123", "PATIENT", "11111111");
 
-        // 2. Appel Service Ajouter
         us.insertOne(u);
 
-        // 3. Vérification
         List<User> users = us.selectALL();
 
-        // Nlawej 3al user elli zedtou bel email mte3ou (Unique)
         Optional<User> userAjoute = users.stream()
                 .filter(user -> user.getEmail().equals("test.junit@esprit.tn"))
                 .findFirst();
 
-        // Nthabbet elli howa mawjoud
         assertTrue(userAjoute.isPresent(), "Erreur: User non ajouté !");
 
-        // NEKHO L ID MTE3OU W NKHABBIOUH (Important barcha lel test modification)
         idUserTest = userAjoute.get().getId_user();
         System.out.println("Test 1 OK : User ajouté avec ID = " + idUserTest);
     }
@@ -49,23 +41,19 @@ public class ServiceUserTest {
     @Test
     @Order(2)
     void testModifierUser() throws SQLException {
-        // 1. Préparer l user b l ID elli khabbineh (idUserTest)
         User u = new User();
-        u.setId_user(idUserTest); // <-- Houni l astuce bch test ywali dynamique
+        u.setId_user(idUserTest);
         u.setNom("NomModifie");
         u.setPrenom("PrenomModifie");
-        u.setEmail("test.junit@esprit.tn"); // Nafs l email
+        u.setEmail("test.junit@esprit.tn");
         u.setMdp("passChanged");
-        u.setRole("Admin");
+        u.setRole("ADMIN"); // ✅ FIX: "Admin" → "ADMIN" (cohérent avec les rôles du système)
         u.setNum_tel("22222222");
 
-        // 2. Appel Service Modifier
         us.updateOne(u);
 
-        // 3. Vérification
         List<User> users = us.selectALL();
 
-        // Nchoufou eske l nom tbaddel walla lé
         boolean isModified = users.stream()
                 .anyMatch(user -> user.getId_user() == idUserTest && user.getNom().equals("NomModifie"));
 
@@ -73,7 +61,6 @@ public class ServiceUserTest {
         System.out.println("Test 2 OK : User ID " + idUserTest + " modifié.");
     }
 
-    // Bonus : Test Suppression (Nettoyage)
     @Test
     @Order(3)
     void testSupprimerUser() throws SQLException {
@@ -84,7 +71,6 @@ public class ServiceUserTest {
 
         List<User> users = us.selectALL();
 
-        // Nthabtou elli howa ma3adch mawjoud
         boolean exists = users.stream()
                 .anyMatch(user -> user.getId_user() == idUserTest);
 

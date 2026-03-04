@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.FormationController"
+      spacing="0"
+      style="-fx-background-color: #F2F0EC;">
+
+    <!-- ══ TOP BAR ══ -->
+    <HBox alignment="CENTER_LEFT" spacing="15"
+          style="-fx-padding: 22 30; -fx-background-color: white;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);">
+        <VBox spacing="3">
+            <Label text="📚 Les Formations"
+                   style="-fx-font-size:22px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+            <Label text="Gérez vos formations, vidéos et quiz"
+                   style="-fx-font-size:12px;-fx-text-fill:#718096;"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="tfSearch" promptText="🔍 Rechercher..."
+                   prefWidth="240" onKeyReleased="#handleSearch"
+                   style="-fx-background-color:#F7FAFC;-fx-border-color:#E2E8F0;
+                          -fx-border-radius:8;-fx-background-radius:8;
+                          -fx-border-width:1.5;-fx-padding:9 14;-fx-font-size:13px;"/>
+        <Button text="➕ Ajouter" onAction="#showAddForm"
+                style="-fx-background-color:#E8956D;-fx-text-fill:white;
+                       -fx-font-size:13px;-fx-font-weight:600;
+                       -fx-padding:10 22;-fx-background-radius:8;-fx-cursor:hand;
+                       -fx-effect:dropshadow(gaussian,rgba(232,149,109,0.4),8,0,0,3);"/>
+    </HBox>
+
+    <!-- ══ CONTENT STACK ══ -->
+    <StackPane fx:id="formationContent" VBox.vgrow="ALWAYS">
+
+        <!-- ══════════════════════════════════════════
+             TABLE SECTION  (default visible)
+        ══════════════════════════════════════════ -->
+        <VBox fx:id="tableSection" spacing="16"
+              style="-fx-padding:25 30 30 30;">
+
+            <TableView fx:id="tvFormations" prefHeight="490" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color:white;-fx-background-radius:12;
+                              -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);
+                              -fx-border-color:transparent;">
+                <columns>
+                    <TableColumn fx:id="colTitle"       text="Titre"       prefWidth="190"/>
+                    <TableColumn fx:id="colDescription" text="Description" prefWidth="220"/>
+                    <TableColumn fx:id="colCategory"    text="Catégorie"   prefWidth="120"/>
+                    <TableColumn fx:id="colVideo"       text="Vidéo"       prefWidth="72"/>
+                    <TableColumn fx:id="colQuiz"        text="Quiz"        prefWidth="72"/>
+                    <TableColumn fx:id="colActions"     text="Actions"     prefWidth="130"/>
+                </columns>
+                <placeholder>
+                    <VBox alignment="CENTER" spacing="10" style="-fx-padding:40;">
+                        <Label text="📭" style="-fx-font-size:40px;"/>
+                        <Label text="Aucune formation trouvée"
+                               style="-fx-font-size:15px;-fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
+                    </VBox>
+                </placeholder>
+            </TableView>
+
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label fx:id="lblTotal" text="Total: 0"
+                       style="-fx-font-size:13px;-fx-text-fill:#718096;-fx-font-weight:600;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🔄 Rafraîchir" onAction="#handleRefresh"
+                        style="-fx-background-color:#4A6FA5;-fx-text-fill:white;
+                               -fx-font-size:12px;-fx-padding:8 18;
+                               -fx-background-radius:8;-fx-cursor:hand;"/>
+            </HBox>
+        </VBox>
+
+        <!-- ══════════════════════════════════════════
+             ADD / EDIT FORM  (hidden by default)
+             Two-column: formation details LEFT, quiz RIGHT
+        ══════════════════════════════════════════ -->
+        <ScrollPane fx:id="formScrollPane" fitToWidth="true" hbarPolicy="NEVER"
+                    visible="false" managed="false"
+                    style="-fx-background:transparent;-fx-background-color:transparent;">
+            <VBox fx:id="formSection" spacing="20"
+                  style="-fx-padding:25 30 30 30;">
+
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Button text="↩️ Retour" onAction="#showTable"
+                            style="-fx-background-color:#4A6FA5;-fx-text-fill:white;
+                                   -fx-font-size:13px;-fx-padding:9 18;
+                                   -fx-background-radius:8;-fx-cursor:hand;"/>
+                    <Label fx:id="lblFormTitle" text="➕ Ajouter Formation"
+                           style="-fx-font-size:20px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+                </HBox>
+
+                <HBox spacing="20" alignment="TOP_LEFT">
+
+                    <!-- LEFT card: formation fields -->
+                    <VBox spacing="16" HBox.hgrow="ALWAYS"
+                          style="-fx-background-color:white;-fx-padding:28;
+                                 -fx-background-radius:14;
+                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),12,0,0,3);
+                                 -fx-border-color:#E2E8F0;-fx-border-radius:14;-fx-border-width:1;">
+
+                        <Label text="📋 Informations de la formation"
+                               style="-fx-font-size:14px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+
+                        <VBox spacing="5">
+                            <Label text="Titre *"
+                                   style="-fx-font-size:12px;-fx-font-weight:600;-fx-text-fill:#718096;"/>
+                            <TextField fx:id="tfTitle"
+                                       promptText="Ex: Communication non-violente"
+                                       style="-fx-background-color:#F7FAFC;-fx-border-color:#E2E8F0;
+                                              -fx-border-radius:8;-fx-background-radius:8;
+                                              -fx-border-width:1.5;-fx-padding:11;-fx-font-size:14px;"/>
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Description *"
+                                   style="-fx-font-size:12px;-fx-font-weight:600;-fx-text-fill:#718096;"/>
+                            <TextArea fx:id="taDescription"
+                                      promptText="Décrivez le contenu..."
+                                      prefRowCount="4" wrapText="true"
+                                      style="-fx-background-color:#F7FAFC;-fx-border-color:#E2E8F0;
+                                             -fx-border-radius:8;-fx-background-radius:8;
+                                             -fx-border-width:1.5;-fx-padding:11;-fx-font-size:13px;"/>
+                        </VBox>
+
+                        <HBox spacing="12">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Catégorie *"
+                                       style="-fx-font-size:12px;-fx-font-weight:600;-fx-text-fill:#718096;"/>
+                                <ComboBox fx:id="cbCategory"
+                                          promptText="Choisir une catégorie..."
+                                          maxWidth="Infinity"
+                                          style="-fx-background-color:#F7FAFC;
+                                                 -fx-border-color:#E2E8F0;
+                                                 -fx-border-radius:8;-fx-background-radius:8;
+                                                 -fx-border-width:1.5;"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Coach assigné"
+                                       style="-fx-font-size:12px;-fx-font-weight:600;-fx-text-fill:#718096;"/>
+                                <ComboBox fx:id="cbCoach"
+                                          promptText="Choisir un coach..."
+                                          maxWidth="Infinity"
+                                          style="-fx-background-color:#F7FAFC;
+                                                 -fx-border-color:#E2E8F0;
+                                                 -fx-border-radius:8;-fx-background-radius:8;
+                                                 -fx-border-width:1.5;"/>
+                            </VBox>
+                        </HBox>
+
+                        <VBox spacing="5">
+                            <Label text="🎬 Vidéo (YouTube ou fichier MP4)"
+                                   style="-fx-font-size:12px;-fx-font-weight:600;-fx-text-fill:#718096;"/>
+                            <HBox spacing="8">
+                                <TextField fx:id="tfVideoUrl"
+                                           promptText="https://youtube.com/watch?v=... ou chemin local"
+                                           HBox.hgrow="ALWAYS"
+                                           style="-fx-background-color:#F7FAFC;-fx-border-color:#E2E8F0;
+                                                  -fx-border-radius:8;-fx-background-radius:8;
+                                                  -fx-border-width:1.5;-fx-padding:11;-fx-font-size:12px;"/>
+                                <Button text="📁" onAction="#handleChooseVideo"
+                                        style="-fx-background-color:#718096;-fx-text-fill:white;
+                                               -fx-cursor:hand;-fx-background-radius:8;
+                                               -fx-padding:10 13;-fx-font-size:14px;"/>
+                                <Button text="🔍 YouTube" onAction="#handleSearchYouTube"
+                                        style="-fx-background-color:#d63031;-fx-text-fill:white;
+                                               -fx-cursor:hand;-fx-background-radius:8;
+                                               -fx-padding:10 12;-fx-font-weight:700;
+                                               -fx-font-size:12px;"/>
+                            </HBox>
+                        </VBox>
+
+                        <Label fx:id="lblError" text="" wrapText="true"
+                               style="-fx-text-fill:#E53E3E;-fx-font-size:12px;
+                                      -fx-background-color:#FFF5F5;-fx-padding:8 12;
+                                      -fx-background-radius:6;"/>
+
+                        <HBox spacing="10">
+                            <Button fx:id="btnSave" text="✅ Enregistrer"
+                                    onAction="#handleSave"
+                                    style="-fx-background-color:#E8956D;-fx-text-fill:white;
+                                           -fx-font-size:13px;-fx-font-weight:700;
+                                           -fx-padding:11 24;-fx-background-radius:8;-fx-cursor:hand;
+                                           -fx-effect:dropshadow(gaussian,rgba(232,149,109,0.4),8,0,0,3);"/>
+                            <Button text="🔄 Effacer" onAction="#handleClear"
+                                    style="-fx-background-color:#F7FAFC;-fx-text-fill:#4A5568;
+                                           -fx-font-size:13px;-fx-padding:11 18;
+                                           -fx-background-radius:8;-fx-cursor:hand;
+                                           -fx-border-color:#E2E8F0;-fx-border-width:1.5;
+                                           -fx-border-radius:8;"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- RIGHT card: inline quiz panel -->
+                    <VBox spacing="14" prefWidth="360" minWidth="320"
+                          style="-fx-background-color:white;-fx-padding:28;
+                                 -fx-background-radius:14;
+                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),12,0,0,3);
+                                 -fx-border-color:#E2E8F0;-fx-border-radius:14;-fx-border-width:1;">
+
+                        <Label text="📝 Quiz associé"
+                               style="-fx-font-size:14px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
+
+                        <Label text="💡 Enregistrez la formation d'abord, puis créez le quiz."
+                               wrapText="true"
+                               style="-fx-font-size:11px;-fx-text-fill:#718096;
+                                      -fx-background-color:#EBF4FF;-fx-padding:8 10;
+                                      -fx-background-radius:6;-fx-font-style:italic;"/>
+
+                        <VBox spacing="5">
+                            <Label text="Titre du Quiz"
+                                   style="-fx-font-size:12px;-fx-font-weight:600;-fx-text-fill:#718096;"/>
+                            <TextField fx:id="tfQuizTitle"
+                                       promptText="Ex: Quiz Communication"
+                                       style="-fx-background-color:#F7FAFC;-fx-border-color:#E2E8F0;
+                                              -fx-border-radius:8;-fx-background-radius:8;
+                                              -fx-border-width:1.5;-fx-padding:11;-fx-font-size:13px;"/>
+                        </VBox>
+
+                        <VBox spacing="5">
+                            <Label text="Score minimum (%)"
+                                   style="-fx-font-size:12px;-fx-font-weight:600;-fx-text-fill:#718096;"/>
+                            <TextField fx:id="tfPassingScore" promptText="70" maxWidth="130"
+                                       style="-fx-background-color:#F7FAFC;-fx-border-color:#E2E8F0;
+                                              -fx-border-radius:8;-fx-background-radius:8;
+                                              -fx-border-width:1.5;-fx-padding:11;-fx-font-size:13px;"/>
+                        </VBox>
+
+                        <Label fx:id="lblQuizError" text="" wrapText="true"
+                               style="-fx-text-fill:#E53E3E;-fx-font-size:11px;"/>
+
+                        <HBox spacing="8">
+                            <Button fx:id="btnSaveQuiz" text="✅ Créer Quiz"
+                                    onAction="#handleSaveQuiz"
+                                    style="-fx-background-color:#00B894;-fx-text-fill:white;
+                                           -fx-font-size:12px;-fx-font-weight:700;
+                                           -fx-padding:9 16;-fx-background-radius:8;-fx-cursor:hand;"/>
+                            <Button text="🗑️ Supprimer" onAction="#handleDeleteQuiz"
+                                    style="-fx-background-color:#E53E3E;-fx-text-fill:white;
+                                           -fx-font-size:12px;-fx-padding:9 14;
+                                           -fx-background-radius:8;-fx-cursor:hand;"/>
+                        </HBox>
+
+                        <Separator style="-fx-opacity:0.4;"/>
+
+                        <!-- Questions appear here after quiz is saved -->
+                        <VBox fx:id="questionsArea" spacing="10"
+                              visible="false" managed="false">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="📋 Questions"
+                                       style="-fx-font-size:13px;-fx-font-weight:700;
+                                              -fx-text-fill:#2D3748;"/>
+                            </HBox>
+                            <VBox fx:id="questionsList" spacing="8"/>
+                            <HBox spacing="8">
+                                <Button text="➕ Ajouter question"
+                                        onAction="#handleAddQuestion"
+                                        style="-fx-background-color:#4A6FA5;-fx-text-fill:white;
+                                               -fx-font-size:11px;-fx-padding:8 13;
+                                               -fx-background-radius:7;-fx-cursor:hand;"/>
+                                <Button text="🤖 Générer IA"
+                                        onAction="#handleAutoGenerateQuestions"
+                                        style="-fx-background-color:#6C5CE7;-fx-text-fill:white;
+                                               -fx-font-size:11px;-fx-font-weight:700;
+                                               -fx-padding:8 13;-fx-background-radius:7;
+                                               -fx-cursor:hand;"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+
+        <!-- ══════════════════════════════════════════
+             VIDEO PLAYER  (hidden by default)
+        ══════════════════════════════════════════ -->
+        <VBox fx:id="videoSection" spacing="0"
+              visible="false" managed="false"
+              style="-fx-background-color:#111827;"/>
+
+    </StackPane>
+</VBox>

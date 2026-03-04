@@ -7,6 +7,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        MainFX.main(args);
         serviceUser su = new serviceUser();
 
         // 1. Test Ajouter (INSERT)

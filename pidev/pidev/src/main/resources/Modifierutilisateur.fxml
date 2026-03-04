@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<VBox spacing="0" prefWidth="480" prefHeight="580"
+      style="-fx-background-color: #FAF8F4;"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.ModifierUtilisateur">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="14"
+          style="-fx-padding: 20 24; -fx-background-color: linear-gradient(to right, #3A5A90, #4A6FA5);">
+        <StackPane prefWidth="40" prefHeight="40">
+            <Circle radius="20" fill="rgba(255,255,255,0.2)"/>
+            <Label text="✏️" style="-fx-font-size: 18px;"/>
+        </StackPane>
+        <VBox spacing="2">
+            <Label fx:id="lblTitle" text="Modifier l'utilisateur"
+                   style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+            <Label text="Modifiez les informations de l'utilisateur"
+                   style="-fx-font-size: 10px; -fx-text-fill: rgba(255,255,255,0.65);"/>
+        </VBox>
+    </HBox>
+
+    <!-- Form -->
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS"
+                style="-fx-background: transparent; -fx-background-color: transparent;">
+        <VBox spacing="16" style="-fx-padding: 24;">
+
+            <!-- Nom + Prénom -->
+            <HBox spacing="14">
+                <VBox HBox.hgrow="ALWAYS" spacing="5">
+                    <Label text="NOM" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                    <TextField fx:id="tfNom"
+                               style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                      -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                </VBox>
+                <VBox HBox.hgrow="ALWAYS" spacing="5">
+                    <Label text="PRÉNOM" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                    <TextField fx:id="tfPrenom"
+                               style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                      -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Email -->
+            <VBox spacing="5">
+                <Label text="ADRESSE EMAIL" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                <TextField fx:id="tfEmail"
+                           style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <!-- Tel -->
+            <VBox spacing="5">
+                <Label text="TÉLÉPHONE" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                <TextField fx:id="tfTel" promptText="8 chiffres"
+                           style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <!-- Rôle -->
+            <VBox spacing="5">
+                <Label text="RÔLE" style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                <ComboBox fx:id="cbRole" maxWidth="Infinity"
+                          style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                 -fx-border-radius: 8; -fx-background-radius: 8;
+                                 -fx-border-width: 1.5; -fx-padding: 4 10; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <!-- Nouveau mot de passe (optionnel) -->
+            <VBox spacing="5"
+                  style="-fx-background-color: #FFF8F0; -fx-padding: 16; -fx-background-radius: 10;
+                         -fx-border-color: #F5C87A; -fx-border-radius: 10; -fx-border-width: 1;">
+                <Label text="NOUVEAU MOT DE PASSE (optionnel)"
+                       style="-fx-font-size: 10px; -fx-font-weight: 700; -fx-letter-spacing: 1; -fx-text-fill: #A0AEC0;"/>
+                <PasswordField fx:id="pfMdp" promptText="Laisser vide pour ne pas changer"
+                               style="-fx-background-color: white; -fx-border-color: #E8E4DF;
+                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                      -fx-border-width: 1.5; -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                <Label text="💡 Minimum 6 caractères si vous souhaitez changer le mot de passe"
+                       style="-fx-font-size: 10px; -fx-text-fill: #A0AEC0;"/>
+            </VBox>
+
+            <!-- Buttons -->
+            <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 8 0 0 0;">
+                <Button text="Annuler" onAction="#handleCancel" prefWidth="120"
+                        style="-fx-background-color: #F7F5F2; -fx-text-fill: #718096;
+                               -fx-font-size: 13px; -fx-font-weight: 600;
+                               -fx-padding: 11 18; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                <Button text="💾  Sauvegarder" onAction="#handleSave" prefWidth="165"
+                        style="-fx-background-color: #E8956D; -fx-text-fill: white;
+                               -fx-font-size: 13px; -fx-font-weight: 700;
+                               -fx-padding: 11 18; -fx-background-radius: 10; -fx-cursor: hand;
+                               -fx-effect: dropshadow(gaussian, rgba(232,149,109,0.4), 10, 0, 0, 4);"/>
+            </HBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>
