@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+
+<VBox spacing="0"
+      xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controllers.ChatbotController"
+      fx:id="rootPane"
+      style="-fx-background-color: #F2F0EC;">
+
+    <!-- ── Header ── -->
+    <HBox alignment="CENTER_LEFT" spacing="14"
+          style="-fx-padding: 18 24;
+                 -fx-background-color: linear-gradient(to right, #3A5A90, #4A6FA5);
+                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.15),8,0,0,3);">
+
+        <!-- Avatar Écho -->
+        <StackPane prefWidth="46" prefHeight="46">
+            <Circle radius="23" fill="rgba(255,255,255,0.15)"
+                    stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
+            <Label text="🧠" style="-fx-font-size: 22px;"/>
+        </StackPane>
+
+        <VBox spacing="2">
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Écho — Assistant IA"
+                       style="-fx-font-size: 16px; -fx-font-weight: 700; -fx-text-fill: white;"/>
+                <HBox spacing="5" alignment="CENTER"
+                      style="-fx-background-color: rgba(82,183,136,0.25);
+                             -fx-background-radius: 20; -fx-padding: 2 8;">
+                    <Circle radius="4" fill="#52B788"/>
+                    <Label text="En ligne"
+                           style="-fx-font-size: 10px; -fx-text-fill: #52B788; -fx-font-weight: 600;"/>
+                </HBox>
+            </HBox>
+            <Label text="Votre compagnon bien-être disponible 24h/24"
+                   style="-fx-font-size: 10px; -fx-text-fill: rgba(255,255,255,0.65);"/>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Bouton reset -->
+        <Button text="Historique" onAction="#showHistory"
+                style="-fx-background-color: rgba(255,255,255,0.15);
+               -fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: 600;
+               -fx-background-radius: 20; -fx-padding: 6 14; -fx-cursor: hand;">
+            <tooltip><Tooltip text="Voir l'historique des conversations"/></tooltip>
+        </Button>
+        <Button text="🔄" onAction="#clearChat"
+                style="-fx-background-color: rgba(255,255,255,0.15);
+               -fx-text-fill: white; -fx-font-size: 14px;
+               -fx-background-radius: 20; -fx-padding: 6 12; -fx-cursor: hand;">
+            <tooltip><Tooltip text="Nouvelle conversation"/></tooltip>
+        </Button>
+    </HBox>
+
+    <!-- ── Boutons humeur rapide ── -->
+    <HBox spacing="8" alignment="CENTER"
+          style="-fx-padding: 10 20;
+                 -fx-background-color: white;
+                 -fx-border-color: transparent transparent #F0EDE8 transparent;
+                 -fx-border-width: 1;">
+        <Label text="Comment vous sentez-vous ?"
+               style="-fx-font-size: 11px; -fx-text-fill: #A0AEC0; -fx-font-weight: 600;"/>
+        <Button text="😊 Bien"     onAction="#sendBien"
+                style="-fx-background-color: #E8F8F0; -fx-text-fill: #52B788;
+                       -fx-font-size: 11px; -fx-font-weight: 600;
+                       -fx-padding: 5 12; -fx-background-radius: 20; -fx-cursor: hand;
+                       -fx-border-color: #52B788; -fx-border-radius: 20; -fx-border-width: 1;"/>
+        <Button text="😐 Moyen"    onAction="#sendMoyen"
+                style="-fx-background-color: #FFFCE8; -fx-text-fill: #C8960A;
+                       -fx-font-size: 11px; -fx-font-weight: 600;
+                       -fx-padding: 5 12; -fx-background-radius: 20; -fx-cursor: hand;
+                       -fx-border-color: #F5C87A; -fx-border-radius: 20; -fx-border-width: 1;"/>
+        <Button text="😰 Stressé"  onAction="#sendStresse"
+                style="-fx-background-color: #FFF0E8; -fx-text-fill: #E8956D;
+                       -fx-font-size: 11px; -fx-font-weight: 600;
+                       -fx-padding: 5 12; -fx-background-radius: 20; -fx-cursor: hand;
+                       -fx-border-color: #E8956D; -fx-border-radius: 20; -fx-border-width: 1;"/>
+        <Button text="😢 Triste"   onAction="#sendTriste"
+                style="-fx-background-color: #EBF4FF; -fx-text-fill: #4A6FA5;
+                       -fx-font-size: 11px; -fx-font-weight: 600;
+                       -fx-padding: 5 12; -fx-background-radius: 20; -fx-cursor: hand;
+                       -fx-border-color: #4A6FA5; -fx-border-radius: 20; -fx-border-width: 1;"/>
+    </HBox>
+
+    <!-- ── Messages ── -->
+    <ScrollPane fx:id="scrollMessages" fitToWidth="true" hbarPolicy="NEVER"
+                VBox.vgrow="ALWAYS"
+                style="-fx-background: #F7F5F2; -fx-background-color: #F7F5F2;">
+        <VBox fx:id="messagesContainer" spacing="8"
+              style="-fx-padding: 16 0; -fx-background-color: #F7F5F2;"/>
+    </ScrollPane>
+
+    <!-- Typing indicator -->
+    <HBox alignment="CENTER_LEFT" spacing="10"
+          style="-fx-padding: 6 26 2 26; -fx-background-color: #F7F5F2;">
+        <Label fx:id="lblTyping" text="Écho est en train d'écrire..."
+               visible="false" managed="false"
+               style="-fx-font-size: 11px; -fx-text-fill: #A0AEC0; -fx-font-style: italic;"/>
+    </HBox>
+
+    <!-- ── Input bar ── -->
+    <HBox spacing="10" alignment="CENTER"
+          style="-fx-padding: 12 18;
+                 -fx-background-color: white;
+                 -fx-border-color: #F0EDE8 transparent transparent transparent;
+                 -fx-border-width: 1;">
+        <TextField fx:id="tfMessage"
+                   promptText="Parlez à Écho... (Entrée pour envoyer)"
+                   HBox.hgrow="ALWAYS"
+                   onKeyPressed="#onEnterPressed"
+                   style="-fx-background-color: #F7F5F2;
+                          -fx-border-color: #E8E4DF;
+                          -fx-border-radius: 22; -fx-background-radius: 22;
+                          -fx-border-width: 1.5; -fx-padding: 11 18; -fx-font-size: 13px;"/>
+        <Button text="Envoyer ➤" onAction="#sendMessage"
+                style="-fx-background-color: #E8956D; -fx-text-fill: white;
+                       -fx-font-size: 13px; -fx-font-weight: 700;
+                       -fx-padding: 11 20; -fx-background-radius: 22; -fx-cursor: hand;
+                       -fx-effect: dropshadow(gaussian,rgba(232,149,109,0.4),8,0,0,2);"/>
+    </HBox>
+
+    <!-- Disclaimer -->
+    <HBox alignment="CENTER"
+          style="-fx-padding: 6 20; -fx-background-color: white;">
+        <Label text="⚠️  Écho est un assistant IA, pas un médecin. En cas de détresse, contactez votre coach."
+               style="-fx-font-size: 9px; -fx-text-fill: #CBD5E0;"
+               wrapText="true"/>
+    </HBox>
+
+</VBox>
