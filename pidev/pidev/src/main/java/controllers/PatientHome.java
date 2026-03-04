@@ -39,6 +39,8 @@ public class PatientHome {
     @FXML private VBox navAccueil, navMessages, navWellness;
     @FXML private HBox indicAccueil, indicMessages, indicWellness;
     @FXML private Label lblMessagesBadge;
+    @FXML private VBox navChatbot;
+    @FXML private HBox indicChatbot;
 
     private User currentUser;
     private final serviceUser us = new serviceUser();
@@ -270,13 +272,32 @@ public class PatientHome {
 
     // ── setActiveNav ─────────────────────────────────────────
     private void setActiveNav(VBox nav, HBox indic) {
-        VBox[]  navs   = {navAccueil, navMessages, navWellness};
-        HBox[]  indics = {indicAccueil, indicMessages, indicWellness};
+        VBox[]  navs   = {navAccueil, navMessages, navWellness, navChatbot};
+        HBox[]  indics = {indicAccueil, indicMessages, indicWellness, indicChatbot };
         for (VBox n : navs)   if (n != null) n.setStyle(NAV_NORMAL);
         for (HBox i : indics) if (i != null) i.setStyle(INDIC_HIDDEN);
         if (nav   != null) nav.setStyle(NAV_ACTIVE);
         if (indic != null) indic.setStyle(INDIC_VISIBLE);
         currentActiveNav = nav;
+    }
+
+    @FXML void onNavChatbotEnter(MouseEvent e) { if(navChatbot!=currentActiveNav) navChatbot.setStyle(NAV_ACTIVE); }
+    @FXML void onNavChatbotExit(MouseEvent e)  { if(navChatbot!=currentActiveNav) navChatbot.setStyle(NAV_NORMAL); }
+
+    // ── 3. Ajoute cette méthode pour ouvrir le chatbot ──
+    @FXML
+    void showChatbot(MouseEvent event) {
+        try {
+            setActiveNav(navChatbot, indicChatbot);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Chatbot.fxml"));
+            VBox page = loader.load();
+            ChatbotController ctrl = loader.getController();
+            ctrl.setCurrentUser(currentUser);
+            contentArea.getChildren().setAll(page);
+        } catch (IOException e) {
+            e.printStackTrace();
+            LightDialog.showError("Erreur", "Impossible de charger le chatbot.");
+        }
     }
 
 }
