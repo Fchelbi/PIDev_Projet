@@ -38,8 +38,8 @@ public class PatientHome {
     @FXML private ImageView imgHeaderPhoto;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane accueilPane;
-    @FXML private VBox navAccueil, navMessages, navWellness, navChatbot, navConsultation;
-    @FXML private HBox indicAccueil, indicMessages, indicWellness, indicChatbot, indicConsultation;
+    @FXML private VBox navAccueil, navMessages, navWellness, navChatbot;
+    @FXML private HBox indicAccueil, indicMessages, indicWellness, indicChatbot;
     @FXML private Label lblMessagesBadge;
 
     private User currentUser;
@@ -104,7 +104,7 @@ public class PatientHome {
     private void loadAffirmation() {
         if (lblAffirmation == null) return;
         Platform.runLater(() -> {
-            if (lblAffirmStatus != null) lblAffirmStatus.setText("Chargement....");
+            if (lblAffirmStatus != null) lblAffirmStatus.setText("Chargement...");
             lblAffirmation.setText("");
         });
         Thread t = new Thread(() -> {
@@ -194,8 +194,8 @@ public class PatientHome {
 
     // ── setActiveNav (utilitaire commun) ─────────────────────
     private void setActiveNav(VBox nav, HBox indic) {
-        VBox[] navs   = {navAccueil, navMessages, navWellness, navChatbot, navConsultation};
-        HBox[] indics = {indicAccueil, indicMessages, indicWellness, indicChatbot, indicConsultation};
+        VBox[] navs   = {navAccueil, navMessages, navWellness, navChatbot};
+        HBox[] indics = {indicAccueil, indicMessages, indicWellness, indicChatbot};
         for (VBox n : navs)   if (n != null) n.setStyle(NAV_NORMAL);
         for (HBox i : indics) if (i != null) i.setStyle(INDIC_HIDDEN);
         if (nav   != null) nav.setStyle(NAV_ACTIVE);
@@ -276,7 +276,6 @@ public class PatientHome {
 
     @FXML void onNavChatbotEnter(MouseEvent e) { if(navChatbot!=currentActiveNav) navChatbot.setStyle(NAV_ACTIVE); }
     @FXML void onNavChatbotExit(MouseEvent e)  { if(navChatbot!=currentActiveNav) navChatbot.setStyle(NAV_NORMAL); }
-
 
     // ── Logout ───────────────────────────────────────────────
     @FXML void handleLogout(MouseEvent event) {
