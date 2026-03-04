@@ -8,7 +8,7 @@ public class MyDBConnexion {
 
     private static final String USERNAME = "root";
     private static final String PASSWORD = "root";   // ✅ une seule déclaration
-    private static final String URL = "jdbc:mysql://192.166.145.1:3306/project";
+    private static final String URL = "jdbc:mysql://localhost:3306/project";
 
     private Connection cnx;
     private static MyDBConnexion instance;
