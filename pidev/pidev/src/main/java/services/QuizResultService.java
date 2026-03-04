@@ -126,4 +126,31 @@ public class QuizResultService implements CRUD<QuizResult> {
                         rs.getTimestamp("completed_at").toLocalDateTime() : null
         );
     }
+    public double getSuccessRateByFormation(int formationId) {
+        double rate = 0;
+        try {
+            String sql = "SELECT COUNT(*) AS total, " +
+                    "SUM(CASE WHEN passed = 1 THEN 1 ELSE 0 END) AS passedCount " +
+                    "FROM quiz_result WHERE formation_id = ?";
+
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setInt(1, formationId);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                int total = rs.getInt("total");
+                int passed = rs.getInt("passedCount");
+
+                if (total > 0) {
+                    rate = (passed * 100.0) / total;
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return rate;
+    }
 }

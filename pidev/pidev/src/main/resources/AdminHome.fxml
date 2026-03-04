@@ -126,8 +126,8 @@
                     style="-fx-background: transparent; -fx-background-color: transparent;">
             <VBox spacing="0">
 
-                <!-- Top bar -->
-                <HBox alignment="CENTER_LEFT" spacing="15"
+                <!-- ══ TOP BAR ══ -->
+                <HBox alignment="CENTER_LEFT" spacing="12"
                       style="-fx-padding: 22 30; -fx-background-color: white;
                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);">
                     <VBox spacing="3">
@@ -137,21 +137,34 @@
                                style="-fx-font-size: 12px; -fx-text-fill: #718096;"/>
                     </VBox>
                     <Region HBox.hgrow="ALWAYS"/>
-                    <Button text="🔄  Actualiser" onAction="#refreshStats"
-                            style="-fx-background-color: #E8956D; -fx-text-fill: white;
-                                   -fx-font-size: 12px; -fx-padding: 9 20;
-                                   -fx-background-radius: 8; -fx-cursor: hand;
-                                   -fx-effect: dropshadow(gaussian, rgba(232,149,109,0.35), 8, 0, 0, 3);"/>
+                    <!-- 🤖 AI BUTTON -->
+                    <Button text="🤖 Analyser IA" onMouseClicked="#analyzeWithAI"
+                            style="-fx-background-color:#6C5CE7;-fx-text-fill:white;
+                                   -fx-font-size:12px;-fx-font-weight:700;
+                                   -fx-padding:9 16;-fx-background-radius:8;-fx-cursor:hand;
+                                   -fx-effect:dropshadow(gaussian,rgba(108,92,231,0.4),8,0,0,3);"/>
+                    <!-- 📄 EXPORT BUTTON -->
+                    <Button text="📄 Exporter Rapport" onMouseClicked="#exportReport"
+                            style="-fx-background-color:#4A6FA5;-fx-text-fill:white;
+                                   -fx-font-size:12px;-fx-font-weight:700;
+                                   -fx-padding:9 16;-fx-background-radius:8;-fx-cursor:hand;
+                                   -fx-effect:dropshadow(gaussian,rgba(74,111,165,0.4),8,0,0,3);"/>
+                    <!-- 🔄 REFRESH BUTTON -->
+                    <Button text="🔄 Actualiser" onAction="#refreshStats"
+                            style="-fx-background-color:#E8956D;-fx-text-fill:white;
+                                   -fx-font-size:12px;-fx-padding:9 20;
+                                   -fx-background-radius:8;-fx-cursor:hand;
+                                   -fx-effect:dropshadow(gaussian,rgba(232,149,109,0.35),8,0,0,3);"/>
                 </HBox>
 
                 <VBox spacing="20" style="-fx-padding: 25 30 30 30;">
 
-                    <!-- ── Section label: Utilisateurs ── -->
+                    <!-- ══ USER STATS ══ -->
                     <Label text="👥  Statistiques Utilisateurs"
                            style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #4A5568;"/>
 
-                    <!-- ── 4 User Stat Cards ── -->
                     <HBox spacing="16">
+                        <!-- Patients -->
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
                               style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
                                      -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
@@ -169,10 +182,11 @@
                                        style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#E8956D;-fx-background-color:#FFF0E8;-fx-padding:4 10;-fx-background-radius:20;"/>
                             </HBox>
                             <ProgressBar fx:id="pbPatients" progress="0" maxWidth="Infinity" prefHeight="8"
-                                         style="-fx-accent: #E8956D; -fx-background-color: #FFF0E8; -fx-background-radius: 4; -fx-border-radius:4;"/>
+                                         style="-fx-accent:#E8956D;-fx-background-color:#FFF0E8;-fx-background-radius:4;-fx-border-radius:4;"/>
                             <Label text="inscrits sur la plateforme" style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
                         </VBox>
 
+                        <!-- Coaches -->
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
                               style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
                                      -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
@@ -190,10 +204,11 @@
                                        style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#C8960A;-fx-background-color:#FFFCE8;-fx-padding:4 10;-fx-background-radius:20;"/>
                             </HBox>
                             <ProgressBar fx:id="pbCoaches" progress="0" maxWidth="Infinity" prefHeight="8"
-                                         style="-fx-accent: #F5C87A; -fx-background-color: #FFFCE8; -fx-background-radius: 4; -fx-border-radius:4;"/>
+                                         style="-fx-accent:#F5C87A;-fx-background-color:#FFFCE8;-fx-background-radius:4;-fx-border-radius:4;"/>
                             <Label text="psychologues actifs" style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
                         </VBox>
 
+                        <!-- Admins -->
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
                               style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
                                      -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
@@ -211,10 +226,11 @@
                                        style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#4A6FA5;-fx-background-color:#EBF4FF;-fx-padding:4 10;-fx-background-radius:20;"/>
                             </HBox>
                             <ProgressBar fx:id="pbAdmins" progress="0" maxWidth="Infinity" prefHeight="8"
-                                         style="-fx-accent: #4A6FA5; -fx-background-color: #EBF4FF; -fx-background-radius: 4; -fx-border-radius:4;"/>
+                                         style="-fx-accent:#4A6FA5;-fx-background-color:#EBF4FF;-fx-background-radius:4;-fx-border-radius:4;"/>
                             <Label text="administrateurs système" style="-fx-font-size:11px;-fx-text-fill:#CBD5E0;"/>
                         </VBox>
 
+                        <!-- Total -->
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
                               style="-fx-background-color: linear-gradient(to bottom, #4A6FA5, #3A5A90);
                                      -fx-padding:22;-fx-background-radius:14;
@@ -229,13 +245,12 @@
                         </VBox>
                     </HBox>
 
-                    <!-- ── Section label: Formations ── -->
+                    <!-- ══ FORMATION STATS ══ -->
                     <Label text="📚  Statistiques Formations"
                            style="-fx-font-size: 14px; -fx-font-weight: 700; -fx-text-fill: #4A5568;"/>
 
-                    <!-- ── 4 Formation Stat Cards ── -->
                     <HBox spacing="16">
-                        <!-- Total Formations -->
+                        <!-- Total -->
                         <VBox HBox.hgrow="ALWAYS" spacing="8"
                               style="-fx-background-color:white;-fx-padding:22;-fx-background-radius:14;
                                      -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
@@ -301,17 +316,51 @@
                         </VBox>
                     </HBox>
 
-                    <!-- Google Charts -->
+                    <!-- ══ API 1 : QUOTABLE — Citation du jour ══ -->
                     <VBox spacing="10"
-                          style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:18 20;
+                          style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:20 24;
+                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label fx:id="lblQuoteStatus" text="💬 Citation du jour"
+                                   style="-fx-font-size:13px;-fx-font-weight:700;-fx-text-fill:#4A5568;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <!-- REFRESH QUOTE BUTTON — triggers API 1 Quotable.io -->
+                            <Button text="🔄 Nouvelle citation" onMouseClicked="#refreshQuote"
+                                    style="-fx-background-color:#EBF4FF;-fx-text-fill:#4A6FA5;
+                                           -fx-font-size:11px;-fx-font-weight:600;
+                                           -fx-padding:6 14;-fx-background-radius:20;-fx-cursor:hand;"/>
+                        </HBox>
+                        <Label fx:id="lblQuote" text="⏳ Chargement..."
+                               wrapText="true"
+                               style="-fx-font-size:14px;-fx-text-fill:#2D3748;-fx-font-style:italic;-fx-line-spacing:3;"/>
+                        <Label fx:id="lblQuoteAuthor" text=""
+                               style="-fx-font-size:12px;-fx-text-fill:#A0AEC0;-fx-font-weight:600;"/>
+                    </VBox>
+
+                    <!-- ══ CHARTS ══ -->
+                    <VBox spacing="16"
+                          style="-fx-background-color:white;-fx-background-radius:14;-fx-padding:20 24;
                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.07),10,0,0,2);">
                         <HBox alignment="CENTER_LEFT" spacing="8">
-                            <Label text="Repartition des utilisateurs"
+                            <Label text="📊 Graphiques de la plateforme"
                                    style="-fx-font-size:15px;-fx-font-weight:700;-fx-text-fill:#2D3748;"/>
-                            <Label text="(necessite internet · Google Charts)"
+                            <Label text="(nécessite internet · Google Charts)"
                                    style="-fx-font-size:10px;-fx-text-fill:#A0AEC0;-fx-font-style:italic;"/>
                         </HBox>
-                        <WebView fx:id="wvChartAdmin" prefHeight="280" maxHeight="280"/>
+
+                        <!-- User donut chart -->
+                        <VBox spacing="6">
+                            <Label text="Répartition des utilisateurs"
+                                   style="-fx-font-size:13px;-fx-font-weight:600;-fx-text-fill:#4A5568;"/>
+                            <WebView fx:id="wvUserChart" prefHeight="270"/>
+                        </VBox>
+
+                        <!-- Formation donut chart -->
+                        <VBox spacing="6">
+                            <Label text="Inscriptions par catégorie de formation"
+                                   style="-fx-font-size:13px;-fx-font-weight:600;-fx-text-fill:#4A5568;"/>
+                            <WebView fx:id="wvFormationChart" prefHeight="280"/>
+                        </VBox>
                     </VBox>
 
                     <VBox style="-fx-padding: 5 0;"/>

@@ -14,10 +14,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
-/**
- * Mes Résultats de Quiz.
- * implements PatientPageController — NOT PatientController (that class is untouched).
- */
 public class PatientResultatsController implements Initializable, PatientController {
 
     @FXML private VBox resultsList;
@@ -32,8 +28,8 @@ public class PatientResultatsController implements Initializable, PatientControl
 
     @Override
     public void setUser(User user) {
-        this.currentUser = user;
-        if (user != null) this.currentUserId = user.getId_user();
+        this.currentUser   = user;
+        this.currentUserId = user != null ? user.getId_user() : 1;
         loadResults();
     }
 
@@ -57,7 +53,8 @@ public class PatientResultatsController implements Initializable, PatientControl
 
             if (results.isEmpty()) {
                 VBox empty = new VBox(10);
-                empty.setAlignment(Pos.CENTER); empty.setPadding(new Insets(50));
+                empty.setAlignment(Pos.CENTER);
+                empty.setPadding(new Insets(50));
                 Label icon = new Label("📭"); icon.setStyle("-fx-font-size:40px;");
                 Label txt  = new Label("Aucun résultat de quiz"); txt.setStyle("-fx-font-size:16px;-fx-text-fill:#A0AEC0;-fx-font-weight:600;");
                 Label sub  = new Label("Inscrivez-vous à une formation et passez un quiz"); sub.setStyle("-fx-font-size:12px;-fx-text-fill:#CBD5E0;");
@@ -67,7 +64,7 @@ public class PatientResultatsController implements Initializable, PatientControl
             }
             for (QuizResult r : results) resultsList.getChildren().add(createResultCard(r));
         } catch (SQLException e) {
-            resultsList.getChildren().add(new Label("Erreur: " + e.getMessage()));
+            resultsList.getChildren().add(new Label("Erreur : " + e.getMessage()));
         }
     }
 
@@ -85,20 +82,15 @@ public class PatientResultatsController implements Initializable, PatientControl
         Label icon = new Label(r.isPassed() ? "✅" : "❌");
         icon.setStyle("-fx-font-size:24px;");
 
-        String quizName = "Quiz #" + r.getQuizId();
+        String quizName      = "Quiz #" + r.getQuizId();
         String formationTitle = "";
         try {
             for (Quiz q : quizService.selectALL()) {
                 if (q.getId() == r.getQuizId()) {
                     quizName = q.getTitle();
-                    try {
-                        for (Formation f : new FormationService().selectALL()) {
-                            if (f.getId() == q.getFormationId()) {
-                                formationTitle = f.getTitle();
-                                break;
-                            }
-                        }
-                    } catch (Exception ignored) {}
+                    for (Formation f : new FormationService().selectALL()) {
+                        if (f.getId() == q.getFormationId()) { formationTitle = f.getTitle(); break; }
+                    }
                     break;
                 }
             }
@@ -108,11 +100,13 @@ public class PatientResultatsController implements Initializable, PatientControl
         Label lblQuiz = new Label(quizName);
         lblQuiz.setStyle("-fx-font-weight:bold;-fx-font-size:14px;-fx-text-fill:#2d3436;");
         info.getChildren().add(lblQuiz);
+
         if (!formationTitle.isEmpty()) {
             Label lblF = new Label("📚 " + formationTitle);
             lblF.setStyle("-fx-text-fill:#4A6FA5;-fx-font-size:12px;");
             info.getChildren().add(lblF);
         }
+
         Label lblDate = new Label(r.getCompletedAt() != null ? r.getCompletedAt().toString().substring(0, 16) : "—");
         lblDate.setStyle("-fx-text-fill:#b2bec3;-fx-font-size:11px;");
         Label lblDetail = new Label(r.getScore() + "/" + r.getTotalPoints() + " pts");
@@ -146,22 +140,25 @@ public class PatientResultatsController implements Initializable, PatientControl
     // ════════════════════════════════════════════════════════════════════
 
     private void downloadCertificate(QuizResult r, String formationTitle) {
-        String name = currentUser != null ? currentUser.getPrenom() + " " + currentUser.getNom() : "Patient #" + currentUserId;
+        String name = currentUser != null
+                ? currentUser.getPrenom() + " " + currentUser.getNom()
+                : "Patient #" + currentUserId;
         String cert = certificateService.generateCertificate(name, formationTitle, r.getScore(), r.getTotalPoints(), r.getPercentage());
         if (cert != null) {
             Alert a = new Alert(Alert.AlertType.INFORMATION);
-            a.setTitle("📜 Certificat"); a.setContentText("Certificat généré :\n" + cert);
+            a.setTitle("📜 Certificat");
+            a.setContentText("Certificat généré :\n" + cert);
             ButtonType openBtn = new ButtonType("📂 Ouvrir");
             ButtonType later   = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
             a.getButtonTypes().setAll(openBtn, later);
             a.showAndWait().ifPresent(b -> {
-                if (b == openBtn) { try { java.awt.Desktop.getDesktop().open(new java.io.File(cert)); } catch (Exception ex) {} }
+                if (b == openBtn) {
+                    try { java.awt.Desktop.getDesktop().open(new java.io.File(cert)); }
+                    catch (Exception ex) { System.err.println("Cannot open cert: " + ex.getMessage()); }
+                }
             });
-        } else showInfo("Erreur lors de la génération du certificat.");
-    }
-
-    private void showInfo(String msg) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
-        a.setTitle("Info"); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
+        } else {
+            new Alert(Alert.AlertType.ERROR, "Erreur lors de la génération du certificat.").showAndWait();
+        }
     }
 }
