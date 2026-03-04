@@ -45,7 +45,7 @@ public class PatientHome {
     @FXML private Label lblNbRdv, lblNbSeances;
     @FXML private Label lblNom, lblEmail, lblTel;
     @FXML private Label lblAffirmation, lblAffirmStatus;
-    @FXML private Label lblAdvice, lblAdviceStatus;
+    @FXML private Label lblQuote, lblQuoteStatus, lblQuoteAuthor;
     @FXML private ImageView imgHeaderPhoto;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane accueilPane;
@@ -72,7 +72,7 @@ public class PatientHome {
         this.currentUser = user;
         refreshUserData();
         loadAffirmation();
-        loadAdvice();
+        loadQuotableQuote();
         startNotifications();
         setActiveNav(navAccueil, indicAccueil);
     }
@@ -116,23 +116,49 @@ public class PatientHome {
         }, "affirmation-thread").start();
     }
 
-    private void loadAdvice() {
-        if (lblAdvice == null) return;
-        Platform.runLater(() -> { if (lblAdviceStatus != null) lblAdviceStatus.setText("⏳ Chargement..."); lblAdvice.setText(""); });
+    @FXML void refreshAffirmation(MouseEvent e) { loadAffirmation(); }
+    @FXML void refreshQuote(MouseEvent e) { loadQuotableQuote(); }
+
+    private void loadQuotableQuote() {
+        if (lblQuote == null) return;
+        Platform.runLater(() -> {
+            if (lblQuoteStatus != null) lblQuoteStatus.setText("⏳ Chargement...");
+            lblQuote.setText("");
+            if (lblQuoteAuthor != null) lblQuoteAuthor.setText("");
+        });
         new Thread(() -> {
             try {
                 HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
-                HttpResponse<String> resp = c.send(HttpRequest.newBuilder().uri(URI.create("https://api.adviceslip.com/advice")).timeout(Duration.ofSeconds(8)).header("User-Agent","EchoCare/1.0").GET().build(), HttpResponse.BodyHandlers.ofString());
-                String text = extractValue(resp.body(), "advice");
-                Platform.runLater(() -> { if (lblAdviceStatus!=null) lblAdviceStatus.setText("🌿 Conseil bien-être"); lblAdvice.setText("💡  " + text); });
-            } catch (Exception e) {
-                Platform.runLater(() -> { if (lblAdviceStatus!=null) lblAdviceStatus.setText("🌿 Conseil"); lblAdvice.setText("💡  Prenez soin de votre santé mentale chaque jour."); });
+                String url = "https://api.quotable.io/random?tags=inspirational,wisdom,happiness&maxLength=150";
+                HttpResponse<String> resp = c.send(
+                        HttpRequest.newBuilder().uri(URI.create(url))
+                                .timeout(Duration.ofSeconds(8)).header("User-Agent", "EchoCare/1.0").GET().build(),
+                        HttpResponse.BodyHandlers.ofString());
+                String content2 = extractValue(resp.body(), "content");
+                String author  = extractValue(resp.body(), "author");
+                if (content2.isBlank()) throw new Exception("empty");
+                Platform.runLater(() -> {
+                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation du jour");
+                    lblQuote.setText("❝  " + content2 + "  ❞");
+                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— " + author);
+                });
+            } catch (Exception e2) {
+                String[][] fallbacks = {
+                        {"Le seul moyen de faire du bon travail est d'aimer ce que vous faites.", "Steve Jobs"},
+                        {"La vie, c'est ce qui arrive quand vous êtes occupé à faire d'autres projets.", "John Lennon"},
+                        {"La santé est la plus grande richesse.", "Virgile"},
+                        {"Chaque jour est une nouvelle chance de changer votre vie.", "Anonyme"},
+                        {"Prenez soin de votre corps, c'est le seul endroit où vous devez vivre.", "Jim Rohn"}
+                };
+                String[] chosen = fallbacks[(int)(System.currentTimeMillis() / 10000 % fallbacks.length)];
+                Platform.runLater(() -> {
+                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation");
+                    lblQuote.setText("❝  " + chosen[0] + "  ❞");
+                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— " + chosen[1]);
+                });
             }
-        }, "advice-thread").start();
+        }, "quote-thread").start();
     }
-
-    @FXML void refreshAffirmation(MouseEvent e) { loadAffirmation(); }
-    @FXML void refreshAdvice(MouseEvent e) { loadAdvice(); }
 
     private void startNotifications() {
         try {

@@ -40,9 +40,6 @@ public class AdminHome {
     @FXML private WebView wvUserChart;
     @FXML private WebView wvFormationChart;
 
-    // ── Quote ─────────────────────────────────────────────────────────────
-    @FXML private Label lblQuoteStatus, lblQuote, lblQuoteAuthor;
-
     // ── Layout ────────────────────────────────────────────────────────────
     @FXML private StackPane contentArea;
     @FXML private ScrollPane dashboardPane;
@@ -83,7 +80,6 @@ public class AdminHome {
         this.currentUser = user;
         refreshUserData();
         refreshStats(null);
-        loadQuotableQuote();
         setActiveNav(navDashboard, indicDashboard);
     }
 
@@ -299,68 +295,160 @@ public class AdminHome {
     }
 
     // ════════════════════════════════════════════════════════════════════
-    //  API 1 : Quotable.io — Citation du jour
-    // ════════════════════════════════════════════════════════════════════
-
-    private void loadQuotableQuote() {
-        if (lblQuote == null) return;
-        Platform.runLater(() -> {
-            if (lblQuoteStatus != null) lblQuoteStatus.setText("⏳ Chargement...");
-            lblQuote.setText("");
-            if (lblQuoteAuthor != null) lblQuoteAuthor.setText("");
-        });
-        new Thread(() -> {
-            try {
-                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
-                HttpResponse<String> resp = client.send(
-                        HttpRequest.newBuilder()
-                                .uri(URI.create("https://api.quotable.io/random?tags=inspirational,leadership,wisdom"))
-                                .timeout(Duration.ofSeconds(8)).header("User-Agent", "EchoCare/1.0").GET().build(),
-                        HttpResponse.BodyHandlers.ofString());
-                String content = extractJsonValue(resp.body(), "content");
-                String author  = extractJsonValue(resp.body(), "author");
-                Platform.runLater(() -> {
-                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation du jour");
-                    lblQuote.setText("❝  " + content + "  ❞");
-                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— " + author);
-                });
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    if (lblQuoteStatus != null) lblQuoteStatus.setText("💬 Citation");
-                    lblQuote.setText("❝  Le succès n'est pas la clé du bonheur. Le bonheur est la clé du succès.  ❞");
-                    if (lblQuoteAuthor != null) lblQuoteAuthor.setText("— Albert Schweitzer");
-                });
-            }
-        }, "quote-thread").start();
-    }
-
-    @FXML void refreshQuote(MouseEvent event) { loadQuotableQuote(); }
 
     // ════════════════════════════════════════════════════════════════════
     //  API 2 : NumbersAPI — Fun fact about total users count
     // ════════════════════════════════════════════════════════════════════
 
-    private void showNumberFact(int number) {
+    // API 2 : Open Trivia DB — interactive Vrai/Faux quiz on communication & soft skills
+    // Called after exportReport(). Player clicks Vrai or Faux and gets instant feedback.
+    private void showTriviaFact() {
+        // Embedded communication & soft skills questions (always available, no network needed)
+        // Also tries Open Trivia DB online for variety
+        String[][] localQuestions = {
+                {"L'écoute active consiste à reformuler ce que dit l'interlocuteur.", "Vrai"},
+                {"Le langage non-verbal représente moins de 10% de la communication.", "Faux"},
+                {"L'intelligence émotionnelle peut se développer avec la pratique.", "Vrai"},
+                {"Un feedback constructif doit toujours commencer par une critique.", "Faux"},
+                {"La communication assertive permet d'exprimer ses besoins sans agressivité.", "Vrai"},
+                {"Les soft skills ne sont pas évaluables en entreprise.", "Faux"},
+                {"L'empathie est une compétence clé du leadership.", "Vrai"},
+                {"Un conflit en équipe est toujours négatif pour la productivité.", "Faux"},
+                {"La communication non-violente (CNV) favorise la résolution de conflits.", "Vrai"},
+                {"Écouter activement signifie simplement ne pas parler.", "Faux"}
+        };
+
         new Thread(() -> {
+            String questionText;
+            String correctAnswer;
+
+            // Try Open Trivia DB first, fall back to local questions
             try {
-                HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
-                HttpResponse<String> resp = c.send(
+                HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(6)).build();
+                HttpResponse<String> resp = client.send(
                         HttpRequest.newBuilder()
-                                .uri(URI.create("http://numbersapi.com/" + number + "/trivia?json"))
-                                .timeout(Duration.ofSeconds(6)).header("User-Agent", "EchoCare/1.0").GET().build(),
+                                .uri(URI.create("https://opentdb.com/api.php?amount=1&type=boolean&category=9"))
+                                .timeout(Duration.ofSeconds(8)).header("User-Agent", "EchoCare/1.0").GET().build(),
                         HttpResponse.BodyHandlers.ofString());
-                String text = extractJsonValue(resp.body(), "text");
-                if (!text.isBlank()) {
-                    Platform.runLater(() -> {
-                        Alert a = new Alert(Alert.AlertType.INFORMATION);
-                        a.setTitle("💡 Le saviez-vous ?");
-                        a.setHeaderText("À propos du chiffre " + number + " :");
-                        a.setContentText(text);
-                        a.showAndWait();
-                    });
-                }
-            } catch (Exception ignored) {}
-        }, "numbers-thread").start();
+                String body = resp.body();
+                String q = extractQuestionFromTrivia(body);
+                String ans = extractAnswerFromTrivia(body);
+                if (!q.isBlank() && !ans.isBlank()) {
+                    questionText = q;
+                    correctAnswer = ans; // "True" or "False"
+                } else { throw new Exception("empty"); }
+            } catch (Exception e) {
+                // Fall back to local communication questions
+                int idx = (int)(System.currentTimeMillis() / 5000 % localQuestions.length);
+                questionText = localQuestions[idx][0];
+                correctAnswer = localQuestions[idx][1]; // "Vrai" or "Faux"
+            }
+
+            final String finalQ = questionText;
+            final String finalA = correctAnswer;
+
+            Platform.runLater(() -> {
+                // Custom dialog with Vrai / Faux buttons
+                javafx.stage.Stage dialogStage = new javafx.stage.Stage();
+                dialogStage.setTitle("🎯 Quiz Soft Skills");
+                dialogStage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+
+                javafx.scene.layout.VBox root = new javafx.scene.layout.VBox(20);
+                root.setStyle("-fx-padding:30;-fx-background-color:#F7FAFC;");
+                root.setAlignment(javafx.geometry.Pos.CENTER);
+                root.setPrefWidth(480);
+
+                javafx.scene.control.Label lblTitle = new javafx.scene.control.Label("🎯 Quiz Communication & Soft Skills");
+                lblTitle.setStyle("-fx-font-size:15px;-fx-font-weight:bold;-fx-text-fill:#2D3748;");
+
+                javafx.scene.control.Label lblQ = new javafx.scene.control.Label(finalQ);
+                lblQ.setWrapText(true);
+                lblQ.setStyle("-fx-font-size:14px;-fx-text-fill:#4A5568;-fx-font-style:italic;"
+                        + "-fx-background-color:white;-fx-padding:16;-fx-background-radius:10;"
+                        + "-fx-border-color:#E2E8F0;-fx-border-radius:10;");
+                lblQ.setMaxWidth(420);
+
+                javafx.scene.control.Label lblResult = new javafx.scene.control.Label("");
+                lblResult.setWrapText(true);
+                lblResult.setStyle("-fx-font-size:13px;-fx-font-weight:bold;");
+
+                javafx.scene.layout.HBox buttons = new javafx.scene.layout.HBox(16);
+                buttons.setAlignment(javafx.geometry.Pos.CENTER);
+
+                javafx.scene.control.Button btnVrai = new javafx.scene.control.Button("✅  VRAI");
+                btnVrai.setStyle("-fx-background-color:#00B894;-fx-text-fill:white;-fx-font-size:14px;"
+                        + "-fx-font-weight:bold;-fx-padding:12 30;-fx-background-radius:10;-fx-cursor:hand;");
+
+                javafx.scene.control.Button btnFaux = new javafx.scene.control.Button("❌  FAUX");
+                btnFaux.setStyle("-fx-background-color:#E53E3E;-fx-text-fill:white;-fx-font-size:14px;"
+                        + "-fx-font-weight:bold;-fx-padding:12 30;-fx-background-radius:10;-fx-cursor:hand;");
+
+                javafx.scene.control.Button btnClose = new javafx.scene.control.Button("Fermer");
+                btnClose.setStyle("-fx-background-color:#E2E8F0;-fx-text-fill:#4A5568;-fx-font-size:12px;"
+                        + "-fx-padding:8 20;-fx-background-radius:8;-fx-cursor:hand;");
+                btnClose.setVisible(false);
+                btnClose.setOnAction(ev -> dialogStage.close());
+
+                javafx.event.EventHandler<javafx.event.ActionEvent> checkAnswer = ev -> {
+                    String chosen = (ev.getSource() == btnVrai) ? "Vrai" : "Faux";
+                    boolean norm = finalA.equalsIgnoreCase("vrai") || finalA.equalsIgnoreCase("true");
+                    boolean correct = (chosen.equals("Vrai") && norm) || (chosen.equals("Faux") && !norm);
+                    if (correct) {
+                        lblResult.setText("🎉 Bonne réponse ! La réponse est : " + (norm ? "VRAI" : "FAUX"));
+                        lblResult.setStyle("-fx-font-size:13px;-fx-font-weight:bold;-fx-text-fill:#00B894;");
+                    } else {
+                        lblResult.setText("❌ Mauvaise réponse. La bonne réponse était : " + (norm ? "VRAI" : "FAUX"));
+                        lblResult.setStyle("-fx-font-size:13px;-fx-font-weight:bold;-fx-text-fill:#E53E3E;");
+                    }
+                    btnVrai.setDisable(true);
+                    btnFaux.setDisable(true);
+                    btnClose.setVisible(true);
+                };
+
+                btnVrai.setOnAction(checkAnswer);
+                btnFaux.setOnAction(checkAnswer);
+                buttons.getChildren().addAll(btnVrai, btnFaux);
+
+                root.getChildren().addAll(lblTitle, lblQ, buttons, lblResult, btnClose);
+                dialogStage.setScene(new javafx.scene.Scene(root));
+                dialogStage.show();
+            });
+        }, "trivia-thread").start();
+    }
+
+    private String extractQuestionFromTrivia(String body) {
+        try {
+            int i = body.indexOf("\"question\":\"");
+            if (i == -1) return "";
+            i += 12;
+            StringBuilder sb = new StringBuilder();
+            while (i < body.length()) {
+                char ch = body.charAt(i);
+                if (ch == '"') break;
+                if (ch == '\\' && i + 1 < body.length()) {
+                    i++;
+                    char nx = body.charAt(i);
+                    if (nx == 'u' && i + 4 < body.length()) {
+                        try { sb.append((char) Integer.parseInt(body.substring(i + 1, i + 5), 16)); i += 5; continue; }
+                        catch (Exception ignored) {}
+                    }
+                    sb.append(nx);
+                } else sb.append(ch);
+                i++;
+            }
+            return sb.toString().replace("&quot;", "\"").replace("&#039;", "'")
+                    .replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">");
+        } catch (Exception e) { return ""; }
+    }
+
+    private String extractAnswerFromTrivia(String body) {
+        try {
+            int i = body.indexOf("\"correct_answer\":\"");
+            if (i == -1) return "";
+            i += 19;
+            int end = body.indexOf("\"", i);
+            return end == -1 ? "" : body.substring(i, end);
+        } catch (Exception e) { return ""; }
     }
 
     // ════════════════════════════════════════════════════════════════════
@@ -393,15 +481,15 @@ public class AdminHome {
 
             new Thread(() -> {
                 try {
-                    String body = "{\"model\":\"google/gemma-3-1b-it:free\","
+                    String body = "{\"model\":\"mistralai/mistral-7b-instruct:free\","
                             + "\"messages\":[{\"role\":\"user\",\"content\":\""
                             + prompt.replace("\"", "\\\"").replace("\n", "\\n") + "\"}],"
                             + "\"max_tokens\":400}";
-                    HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(15)).build();
+                    HttpClient c = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(20)).build();
                     HttpResponse<String> resp = c.send(
                             HttpRequest.newBuilder()
                                     .uri(URI.create("https://openrouter.ai/api/v1/chat/completions"))
-                                    .timeout(Duration.ofSeconds(30))
+                                    .timeout(Duration.ofSeconds(45))
                                     .header("Content-Type", "application/json")
                                     .header("Authorization", "Bearer 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")
                                     .header("HTTP-Referer", "https://echocare.app")
@@ -419,12 +507,38 @@ public class AdminHome {
                         result.showAndWait();
                     });
                 } catch (Exception e) {
+                    // Fallback: generate a local analysis without AI
                     Platform.runLater(() -> {
                         loading.close();
-                        Alert err = new Alert(Alert.AlertType.ERROR);
-                        err.setTitle("Erreur IA");
-                        err.setContentText("Impossible de contacter l'IA : " + e.getMessage());
-                        err.showAndWait();
+                        try {
+                            List<User> u2 = us.selectALL();
+                            long p2 = u2.stream().filter(u -> "PATIENT".equalsIgnoreCase(u.getRole())).count();
+                            long c2 = u2.stream().filter(u -> "COACH".equalsIgnoreCase(u.getRole())).count();
+                            int f2 = formationService != null ? formationService.selectALL().size() : 0;
+                            long r2 = quizResultService != null ? quizResultService.selectALL().size() : 0;
+                            long passed2 = quizResultService != null ? quizResultService.selectALL().stream().filter(QuizResult::isPassed).count() : 0;
+                            double taux2 = r2 > 0 ? passed2 * 100.0 / r2 : 0;
+                            double ratio = c2 > 0 ? (double) p2 / c2 : 0;
+                            String fallback = String.format(
+                                    "📊 Analyse automatique EchoCare\n\n" +
+                                            "👥 Ratio patients/coach : %.1f patients par coach\n" +
+                                            "📚 Couverture formations : %d formations pour %d patients\n" +
+                                            "🎯 Performance quiz : %.0f%% de réussite (%d/%d tentatives)\n\n" +
+                                            "💡 Recommandations :\n" +
+                                            (taux2 < 60 ? "• Le taux de réussite est faible — envisagez de simplifier les quiz ou enrichir les formations.\n" : "• Bon taux de réussite ! Continuez à diversifier les contenus.\n") +
+                                            (ratio > 10 ? "• Ratio patients/coach élevé — recrutez de nouveaux coaches.\n" : "• Bonne répartition coaches/patients.\n") +
+                                            (f2 < 5 ? "• Peu de formations disponibles — ajoutez du contenu pour fidéliser les patients." : "• Catalogue de formations bien fourni."),
+                                    ratio, f2, p2, taux2, passed2, r2);
+                            Alert fallbackAlert = new Alert(Alert.AlertType.INFORMATION);
+                            fallbackAlert.setTitle("📊 Analyse locale");
+                            fallbackAlert.setHeaderText("Analyse (mode hors-ligne)");
+                            fallbackAlert.setContentText(fallback);
+                            fallbackAlert.getDialogPane().setPrefWidth(520);
+                            fallbackAlert.showAndWait();
+                        } catch (Exception ex) {
+                            Alert err = new Alert(Alert.AlertType.ERROR);
+                            err.setTitle("Erreur"); err.setContentText("Erreur : " + ex.getMessage()); err.showAndWait();
+                        }
                     });
                 }
             }, "ai-analysis-thread").start();
@@ -514,7 +628,7 @@ public class AdminHome {
                 }
             });
             // Also show a fun fact about total user count
-            showNumberFact(users.size());
+            showTriviaFact();
 
         } catch (Exception e) {
             LightDialog.showError("Erreur export", e.getMessage());
@@ -530,7 +644,6 @@ public class AdminHome {
         setActiveNav(navDashboard, indicDashboard);
         contentArea.getChildren().setAll(dashboardPane);
         refreshStats(null);
-        loadQuotableQuote();
     }
 
     @FXML

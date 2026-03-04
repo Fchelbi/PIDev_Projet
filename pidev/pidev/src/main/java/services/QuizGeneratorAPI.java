@@ -206,7 +206,7 @@ public class QuizGeneratorAPI {
                 + "\"model\":" + jsonStr(OPENROUTER_MODEL) + ","
                 + "\"messages\":[{\"role\":\"user\",\"content\":"
                 + jsonStr(buildPrompt(title, context, count)) + "}],"
-                + "\"max_tokens\":2500,\"temperature\":0.7}";
+                + "\"max_tokens\":2500,\"temperature\":0.95}";
 
         String raw = httpPost(OPENROUTER_URL, body,
                 "Authorization", "Bearer " + OPENROUTER_KEY,
@@ -243,10 +243,21 @@ public class QuizGeneratorAPI {
     // ════════════════════════════════════════════════════════════════════
 
     private String buildPrompt(String title, String context, int count) {
-        return "Tu es un expert en création de quiz pédagogiques. "
-                + "Génère exactement " + count + " questions QCM basées sur ce contenu : \"" + title + "\". "
-                + "Utilise ce contenu pour créer des questions précises sur ce qui est réellement dit/expliqué : "
-                + context + ". "
+        // Add timestamp seed so AI generates different questions each call
+        long seed = System.currentTimeMillis() % 9999;
+        String[] angles = {
+                "Concentre-toi sur les concepts fondamentaux.",
+                "Axe les questions sur les applications pratiques.",
+                "Mets l'accent sur les définitions et terminologie.",
+                "Crée des questions sur les causes et conséquences.",
+                "Focus sur les exemples concrets et cas réels."
+        };
+        String angle = angles[(int)(seed % angles.length)];
+        return "Tu es un expert en création de quiz pédagogiques. Seed:" + seed + ". "
+                + "Génère exactement " + count + " questions QCM DIFFÉRENTES ET VARIÉES sur : \"" + title + "\". "
+                + angle + " "
+                + "Contenu de référence : " + context + ". "
+                + "IMPORTANT: Ne répète pas les mêmes questions. Varie les formulations et angles d'approche. "
                 + "Réponds UNIQUEMENT avec un tableau JSON valide, sans texte avant ni après, sans balises markdown. "
                 + "Format exact : [{\"question\":\"Texte ?\",\"options\":[\"A\",\"B\",\"C\",\"D\"],\"correct\":0,\"points\":10}] "
                 + "Règles : correct = index(0-3) de la bonne réponse. points = 5 ou 10. Questions en français. JSON UNIQUEMENT.";

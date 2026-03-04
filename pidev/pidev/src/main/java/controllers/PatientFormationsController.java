@@ -129,9 +129,15 @@ public class PatientFormationsController implements Initializable, PatientContro
         lblDesc.setWrapText(true);
         lblDesc.setMaxHeight(50);
 
-        // Coach name if available
+        // Coach name — fetch real name from DB
         if (f.getCoachId() > 0) {
-            Label lblCoach = new Label("👤 Coach #" + f.getCoachId());
+            String coachName = "Coach";
+            try {
+                services.serviceUser userSvc = new services.serviceUser();
+                entities.User coach = userSvc.getUserById(f.getCoachId());
+                if (coach != null) coachName = coach.getPrenom() + " " + coach.getNom();
+            } catch (Exception ignored) {}
+            Label lblCoach = new Label("👤 " + coachName);
             lblCoach.setStyle("-fx-text-fill:#4A6FA5;-fx-font-size:11px;");
             card.getChildren().addAll(lblCat, lblTitle, lblDesc, lblCoach);
         } else {
