@@ -277,21 +277,6 @@ public class PatientHome {
     @FXML void onNavChatbotEnter(MouseEvent e) { if(navChatbot!=currentActiveNav) navChatbot.setStyle(NAV_ACTIVE); }
     @FXML void onNavChatbotExit(MouseEvent e)  { if(navChatbot!=currentActiveNav) navChatbot.setStyle(NAV_NORMAL); }
 
-    // ── Consultation (code collègue) ─────────────────────────
-    @FXML void showConsultation(MouseEvent event) {
-        try {
-            setActiveNav(navConsultation, indicConsultation);
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/PatientConsultation.fxml"));
-            Parent page = loader.load();
-            contentArea.getChildren().setAll(page);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LightDialog.showError("Erreur", "Impossible de charger les consultations.");
-        }
-    }
-
-    @FXML void onNavConsultationEnter(MouseEvent e) { if(navConsultation!=currentActiveNav) navConsultation.setStyle(NAV_ACTIVE); }
-    @FXML void onNavConsultationExit(MouseEvent e)  { if(navConsultation!=currentActiveNav) navConsultation.setStyle(NAV_NORMAL); }
 
     // ── Logout ───────────────────────────────────────────────
     @FXML void handleLogout(MouseEvent event) {
